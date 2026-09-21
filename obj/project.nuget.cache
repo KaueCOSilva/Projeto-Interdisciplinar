@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "Lh3LPW3n/oU=",
+  "dgSpecHash": "5Ve/N44SJkg=",
   "success": true,
-  "projectFilePath": "/mnt/NVME/MeuProjeto3/SIVAD/SIVAD.csproj",
+  "projectFilePath": "/home/kakesty/Documentos/GitHub/Projeto-Interdisciplinar/SIVAD.csproj",
   "expectedPackageFiles": [
     "/home/kakesty/.nuget/packages/microsoft.aspnetcore.app.ref/10.0.12/microsoft.aspnetcore.app.ref.10.0.12.nupkg.sha512"
   ],

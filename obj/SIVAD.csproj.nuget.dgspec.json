@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/mnt/NVME/MeuProjeto3/SIVAD/SIVAD.csproj": {}
+    "/home/kakesty/Documentos/GitHub/Projeto-Interdisciplinar/SIVAD.csproj": {}
   },
   "projects": {
-    "/mnt/NVME/MeuProjeto3/SIVAD/SIVAD.csproj": {
+    "/home/kakesty/Documentos/GitHub/Projeto-Interdisciplinar/SIVAD.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/mnt/NVME/MeuProjeto3/SIVAD/SIVAD.csproj",
+        "projectUniqueName": "/home/kakesty/Documentos/GitHub/Projeto-Interdisciplinar/SIVAD.csproj",
         "projectName": "SIVAD",
-        "projectPath": "/mnt/NVME/MeuProjeto3/SIVAD/SIVAD.csproj",
+        "projectPath": "/home/kakesty/Documentos/GitHub/Projeto-Interdisciplinar/SIVAD.csproj",
         "packagesPath": "/home/kakesty/.nuget/packages/",
-        "outputPath": "/mnt/NVME/MeuProjeto3/SIVAD/obj/",
+        "outputPath": "/home/kakesty/Documentos/GitHub/Projeto-Interdisciplinar/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/home/kakesty/.nuget/NuGet/NuGet.Config"
