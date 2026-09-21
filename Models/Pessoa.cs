@@ -1,5 +1,5 @@
 public class Pessoa
 {
-    private int Id{get; set;}
-    private string Nome{get; set;}
+    public int Id { get; set; }
+    public string Nome { get; set; }
 }
