@@ -1,5 +1,8 @@
-public class Administrador : Pessoa
+namespace SIVAD.Models
 {
-    public string CPF { get; set; }
-    public string Email { get; set; }
+    public class Administrador : Pessoa
+    {
+        public string CPF { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+    }
 }

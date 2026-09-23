@@ -1,5 +1,8 @@
-public class Pessoa
+namespace SIVAD.Models
 {
-    public int Id { get; set; }
-    public string Nome { get; set; }
+    public class Pessoa
+    {
+        public int Id { get; set; }
+        public string Nome { get; set; } = string.Empty;
+    }
 }

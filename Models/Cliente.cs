@@ -1,4 +1,7 @@
-public class Cliente : Pessoa
+namespace SIVAD.Models
 {
-    public string CPF { get; set; }
+    public class Cliente : Pessoa
+    {
+        public string CPF { get; set; } = string.Empty;
+    }
 }

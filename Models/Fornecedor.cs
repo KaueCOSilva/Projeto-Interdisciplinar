@@ -1,4 +1,7 @@
-public class Fornecedor : Pessoa
+namespace SIVAD.Models
 {
-    public string CNPJ { get; set; }
+    public class Fornecedor : Pessoa
+    {
+        public string CNPJ { get; set; } = string.Empty;
+    }
 }

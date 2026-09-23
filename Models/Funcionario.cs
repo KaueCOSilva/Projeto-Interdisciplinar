@@ -1,3 +1,6 @@
-public class Funcionario : Pessoa
+namespace SIVAD.Models
 {
+    public class Funcionario : Pessoa
+    {
+    }
 }

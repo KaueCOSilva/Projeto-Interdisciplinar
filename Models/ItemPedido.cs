@@ -1,11 +1,14 @@
-public class ItemPedido
+namespace SIVAD.Models
 {
-    public int PedidoCodigo { get; set; }
-    public Pedido Pedido { get; set; }
+    public class ItemPedido
+    {
+        public int PedidoCodigo { get; set; }
+        public Pedido Pedido { get; set; } = null!;
 
-    public int ProdutoCodigo { get; set; }
-    public Produto Produto { get; set; }
+        public int ProdutoCodigo { get; set; }
+        public Produto Produto { get; set; } = null!;
 
-    public int Qtd { get; set; }
-    public decimal PrecoTotal { get; set; }
+        public int Qtd { get; set; }
+        public decimal PrecoTotal { get; set; }
+    }
 }
