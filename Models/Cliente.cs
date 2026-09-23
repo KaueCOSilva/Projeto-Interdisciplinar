@@ -1,4 +1,4 @@
-public class Cliente:Pessoa
+public class Cliente : Pessoa
 {
-    private string Cpf{get; set;}
+    public string CPF { get; set; }
 }

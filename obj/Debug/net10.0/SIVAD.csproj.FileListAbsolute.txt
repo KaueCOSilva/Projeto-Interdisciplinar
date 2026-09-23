@@ -27,3 +27,5 @@
 /home/kakesty/Documentos/GitHub/Projeto-Interdisciplinar/obj/Debug/net10.0/SIVAD.pdb
 /home/kakesty/Documentos/GitHub/Projeto-Interdisciplinar/obj/Debug/net10.0/SIVAD.genruntimeconfig.cache
 /home/kakesty/Documentos/GitHub/Projeto-Interdisciplinar/obj/Debug/net10.0/ref/SIVAD.dll
+/home/kakesty/Documentos/GitHub/Projeto-Interdisciplinar/obj/Debug/net10.0/SIVAD.RazorAssemblyInfo.cache
+/home/kakesty/Documentos/GitHub/Projeto-Interdisciplinar/obj/Debug/net10.0/SIVAD.RazorAssemblyInfo.cs

@@ -1,4 +1,3 @@
-public class Funcionario: Pessoa 
+public class Funcionario : Pessoa
 {
-  
 }

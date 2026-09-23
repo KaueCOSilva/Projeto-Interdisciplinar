@@ -1,10 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "5Ve/N44SJkg=",
+  "dgSpecHash": "qAflljaKL+k=",
   "success": true,
-  "projectFilePath": "/home/kakesty/Documentos/GitHub/Projeto-Interdisciplinar/SIVAD.csproj",
+  "projectFilePath": "/home/saintsbossilo/Documentos/GitHub/Projeto-Interdisciplinar/SIVAD.csproj",
   "expectedPackageFiles": [
-    "/home/kakesty/.nuget/packages/microsoft.aspnetcore.app.ref/10.0.12/microsoft.aspnetcore.app.ref.10.0.12.nupkg.sha512"
+    "/home/saintsbossilo/.nuget/packages/microsoft.aspnetcore.app.ref/10.0.12/microsoft.aspnetcore.app.ref.10.0.12.nupkg.sha512"
   ],
   "logs": []
 }

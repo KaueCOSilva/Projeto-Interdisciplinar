@@ -1,4 +1,4 @@
-public class Fornecedor: Pessoa
+public class Fornecedor : Pessoa
 {
-    private string Cnpj{get; set;}
+    public string CNPJ { get; set; }
 }

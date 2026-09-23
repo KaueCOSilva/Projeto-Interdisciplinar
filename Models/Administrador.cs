@@ -1,5 +1,5 @@
-public class Administrador: Pessoa 
+public class Administrador : Pessoa
 {
-  private string CPF {get;set};
-  private string email {get;set};
+    public string CPF { get; set; }
+    public string Email { get; set; }
 }
