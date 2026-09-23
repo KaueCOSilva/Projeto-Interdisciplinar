@@ -1,2 +1,3 @@
-# Ignorar o arquivo de script do banco de dados
+# Ignorar arquivos de script SQL e a pasta DataBase
+DataBase/
 *.sql
