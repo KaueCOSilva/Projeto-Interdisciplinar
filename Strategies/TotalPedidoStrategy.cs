@@ -7,8 +7,14 @@ namespace SIVAD.Strategies
         public float CalcularTotal(object entidade)
         {
             var pedido = (Pedido)entidade;
-            // Insira aqui a lógica de cálculo do pedido
-            return 0; 
+            if (pedido?.Itens == null) return 0f;
+
+            float total = 0f;
+            foreach (var item in pedido.Itens)
+            {
+                total += (float)item.PrecoTotal * item.Qtd;
+            }
+            return total;
         }
     }
 }

@@ -7,8 +7,14 @@ namespace SIVAD.Strategies
         public float CalcularTotal(object entidade)
         {
             var compra = (CompraEstoque)entidade;
-            // Insira aqui a lógica de cálculo do estoque
-            return 0; 
+            if (compra?.Itens == null) return 0f;
+
+            float total = 0f;
+            foreach (var item in compra.Itens)
+            {
+                total += (float)item.Valor * item.Quantidade;
+            }
+            return total;
         }
     }
 }

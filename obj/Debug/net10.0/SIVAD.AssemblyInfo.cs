@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SIVAD")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+70a49fc0ead1c9225a0ed2f97f68e7f1aaa08947")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3fc404a2f2e4d4086b561f66665045cc6c97c76c")]
 [assembly: System.Reflection.AssemblyProductAttribute("SIVAD")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SIVAD")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
