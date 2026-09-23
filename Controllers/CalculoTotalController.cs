@@ -1,62 +1,63 @@
-using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using SIVAD.Models;
+using Microsoft.EntityFrameworkCore;
+using SIVAD.Data;
 using SIVAD.Strategies;
 
 namespace SIVAD.Controllers
 {
     public class CalculoTotalController : Controller
     {
+        private readonly AppDbContext _context;
         private readonly TotalPedidoStrategy _totalPedidoStrategy;
         private readonly TotalCompraEstoqueStrategy _totalCompraEstoqueStrategy;
 
         public CalculoTotalController(
+            AppDbContext context,
             TotalPedidoStrategy totalPedidoStrategy,
             TotalCompraEstoqueStrategy totalCompraEstoqueStrategy)
         {
+            _context = context;
             _totalPedidoStrategy = totalPedidoStrategy;
             _totalCompraEstoqueStrategy = totalCompraEstoqueStrategy;
         }
 
-        // Acessível via: /CalculoTotal/CalcularPedido
+        // Acessível em: /CalculoTotal/CalcularPedido
         [HttpGet]
-        public IActionResult CalcularPedido()
+        public async Task<IActionResult> CalcularPedido()
         {
-            // Criando um pedido simulado para teste
-            var pedido = new Pedido
+            // Busca o primeiro pedido cadastrado no SQL Server, trazendo seus itens
+            var pedido = await _context.Pedidos
+                .Include(p => p.Itens)
+                .FirstOrDefaultAsync();
+
+            if (pedido == null)
             {
-                Codigo = 1,
-                Itens = new List<ItemPedido>
-                {
-                    new ItemPedido { Qtd = 2, PrecoTotal = 50.00m }, // 100.00
-                    new ItemPedido { Qtd = 1, PrecoTotal = 35.50m }  // 35.50
-                }
-            };
+                return NotFound("Nenhum pedido encontrado no banco de dados.");
+            }
 
             float total = _totalPedidoStrategy.CalcularTotal(pedido);
 
-            // Passa o valor 'total' para a View CalcularPedido.cshtml
             return View(total);
         }
 
-        // Acessível via: /CalculoTotal/CalcularCompraEstoque
+        // Acessível em: /CalculoTotal/CalcularCompraEstoque
         [HttpGet]
-        public IActionResult CalcularCompraEstoque()
+        public async Task<IActionResult> CalcularCompraEstoque()
         {
-            // Criando uma compra de estoque simulada para teste
-            var compra = new CompraEstoque
+            // Busca a primeira compra de estoque cadastrada no SQL Server, trazendo seus itens
+            var compra = await _context.CompraEstoque
+                .Include(c => c.Itens)
+                .FirstOrDefaultAsync();
+
+            if (compra == null)
             {
-                Numero = 1,
-                Itens = new List<ItemCompraEstoque>
-                {
-                    new ItemCompraEstoque { Quantidade = 10, Valor = 12.00m }, // 120.00
-                    new ItemCompraEstoque { Quantidade = 5,  Valor = 30.00m }  // 150.00
-                }
-            };
+                return NotFound("Nenhuma compra de estoque encontrada no banco de dados.");
+            }
 
             float total = _totalCompraEstoqueStrategy.CalcularTotal(compra);
 
-            // Passa o valor 'total' para a View CalcularCompraEstoque.cshtml
             return View(total);
         }
     }

@@ -1,9 +1,15 @@
+using Microsoft.EntityFrameworkCore;
+using SIVAD.Data;
 using SIVAD.Strategies;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+// Configuração da Conexão com o SQL Server
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Registrar as estratégias de cálculo para Injeção de Dependência
 builder.Services.AddScoped<TotalPedidoStrategy>();

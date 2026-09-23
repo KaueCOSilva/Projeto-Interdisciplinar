@@ -1,2 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
-<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" />
+<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
+    <Import Project="$(NuGetPackageRoot)microsoft.extensions.logging.abstractions/10.0.12/buildTransitive/net8.0/Microsoft.Extensions.Logging.Abstractions.targets" Condition="Exists('$(NuGetPackageRoot)microsoft.extensions.logging.abstractions/10.0.12/buildTransitive/net8.0/Microsoft.Extensions.Logging.Abstractions.targets')" />
+    <Import Project="$(NuGetPackageRoot)microsoft.identity.client.nativeinterop/0.20.6/buildtransitive/netstandard2.0/Microsoft.Identity.Client.NativeInterop.targets" Condition="Exists('$(NuGetPackageRoot)microsoft.identity.client.nativeinterop/0.20.6/buildtransitive/netstandard2.0/Microsoft.Identity.Client.NativeInterop.targets')" />
+    <Import Project="$(NuGetPackageRoot)microsoft.extensions.options/10.0.12/buildTransitive/net8.0/Microsoft.Extensions.Options.targets" Condition="Exists('$(NuGetPackageRoot)microsoft.extensions.options/10.0.12/buildTransitive/net8.0/Microsoft.Extensions.Options.targets')" />
+  </ImportGroup>
+</Project>
