@@ -42,6 +42,7 @@ namespace SIVAD.Controllers
             return View(total);
         }
 
+
         // Acessível em: /CalculoTotal/CalcularCompraEstoque
         [HttpGet]
         public async Task<IActionResult> CalcularCompraEstoque()
