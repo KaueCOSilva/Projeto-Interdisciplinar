@@ -22,10 +22,22 @@ build_property._RazorSourceGeneratorDebug =
 build_property.EffectiveAnalysisLevelStyle = 10.0
 build_property.EnableCodeStyleSeverity = 
 
+[/home/kakesty/Documentos/GitHub/Projeto-Interdisciplinar/Views/Autenticacao/Login.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQXV0ZW50aWNhY2FvL0xvZ2luLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/home/kakesty/Documentos/GitHub/Projeto-Interdisciplinar/Views/Autenticacao/RecuperacaoSenha.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQXV0ZW50aWNhY2FvL1JlY3VwZXJhY2FvU2VuaGEuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
 [/home/kakesty/Documentos/GitHub/Projeto-Interdisciplinar/Views/CalculoTotal/CalcularCompraEstoque.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQ2FsY3Vsb1RvdGFsL0NhbGN1bGFyQ29tcHJhRXN0b3F1ZS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
 [/home/kakesty/Documentos/GitHub/Projeto-Interdisciplinar/Views/CalculoTotal/CalcularPedido.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQ2FsY3Vsb1RvdGFsL0NhbGN1bGFyUGVkaWRvLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/home/kakesty/Documentos/GitHub/Projeto-Interdisciplinar/Views/_ViewImports.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvX1ZpZXdJbXBvcnRzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
