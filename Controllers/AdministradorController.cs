@@ -20,6 +20,7 @@ namespace SIVAD.Controllers
         // INDEX
         // =====================================================
 
+        // Verificar com o professor sobre o uso do Index. Manter assim? 
         public IActionResult Index()
         {
             return RedirectToAction("Dashboard");
