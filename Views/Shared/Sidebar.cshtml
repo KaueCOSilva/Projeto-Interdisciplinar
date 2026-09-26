@@ -1,0 +1,166 @@
+<aside class="sidebar">
+
+    <div class="logo-area">
+
+        <div class="logo-icon">
+            <i class="bi bi-shop"></i>
+        </div>
+
+        <div class="logo-text">
+            <div class="logo-title">
+                Sistema ERP
+            </div>
+
+            <div class="logo-subtitle">
+                Gestão Comercial
+            </div>
+        </div>
+
+    </div>
+
+
+    <nav class="menu">
+
+        <!-- DASHBOARD -->
+
+        <a asp-controller="Administrador"
+           asp-action="Dashboard"
+           class="menu-item @(ViewContext.RouteData.Values["action"]?.ToString() == "Dashboard" ? "active" : "")">
+
+            <i class="bi bi-grid"></i>
+
+            <span>Dashboard</span>
+
+        </a>
+
+
+        <!-- RELATÓRIOS -->
+
+        <a asp-controller="Administrador"
+           asp-action="Relatorios"
+           class="menu-item @(ViewContext.RouteData.Values["action"]?.ToString() == "Relatorios" ? "active" : "")">
+
+            <i class="bi bi-file-earmark-text"></i>
+
+            <span>Relatórios</span>
+
+        </a>
+
+
+        <!-- ESTOQUE -->
+
+        <a href="#"
+           class="menu-item">
+
+            <i class="bi bi-box-seam"></i>
+
+            <span>Estoque</span>
+
+        </a>
+
+
+        <!-- MOVIMENTO DE COMPRAS -->
+
+        <a href="#"
+           class="menu-item">
+
+            <i class="bi bi-cart3"></i>
+
+            <span>Movimento de Compras</span>
+
+        </a>
+
+
+        <!-- FUNCIONÁRIOS -->
+
+        <div>
+
+            <a href="#"
+               class="menu-item">
+
+                <i class="bi bi-people"></i>
+
+                <span>Funcionários</span>
+
+                <i class="bi bi-chevron-up menu-arrow"></i>
+
+            </a>
+
+
+            <div class="submenu">
+
+                <a href="#"
+                   class="submenu-item">
+
+                    <i class="bi bi-person-plus"></i>
+
+                    <span>Cadastro de Funcionário</span>
+
+                </a>
+
+
+                <a href="#"
+                   class="submenu-item">
+
+                    <i class="bi bi-person-gear"></i>
+
+                    <span>Gerenciamento de Usuários</span>
+
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <!-- NOTIFICAÇÕES -->
+
+        <a href="#"
+           class="menu-item">
+
+            <i class="bi bi-bell"></i>
+
+            <span>Notificações</span>
+
+        </a>
+
+    </nav>
+
+
+    <!-- USUÁRIO -->
+
+    <div class="sidebar-bottom">
+
+        <div class="user-area">
+
+            <div class="user-avatar">
+                JD
+            </div>
+
+            <div class="user-info">
+
+                <span class="user-name">
+                    João Silva
+                </span>
+
+                <span class="user-role">
+                    Administrador
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <a href="#"
+           class="logout">
+
+            <i class="bi bi-box-arrow-right"></i>
+
+            <span>Sair</span>
+
+        </a>
+
+    </div>
+
+</aside>

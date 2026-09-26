@@ -5,10 +5,30 @@ namespace SIVAD.Controllers
 {
     public class AdministradorController : Controller
     {
-        public IActionResult Index()
+        // =====================================================
+        // DASHBOARD
+        // =====================================================
+
+        [HttpGet]
+        public IActionResult Dashboard()
         {
             return View();
         }
+
+
+        // =====================================================
+        // INDEX
+        // =====================================================
+
+        public IActionResult Index()
+        {
+            return RedirectToAction("Dashboard");
+        }
+
+
+        // =====================================================
+        // LOGIN
+        // =====================================================
 
         [HttpGet]
         public IActionResult Login()
@@ -21,14 +41,22 @@ namespace SIVAD.Controllers
         {
             // A autenticação será implementada posteriormente.
 
-            if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(senha))
+            if (string.IsNullOrEmpty(email) ||
+                string.IsNullOrEmpty(senha))
             {
-                ViewBag.Mensagem = "Informe o e-mail e a senha.";
+                ViewBag.Mensagem =
+                    "Informe o e-mail e a senha.";
+
                 return View();
             }
 
-            return RedirectToAction("Index");
+            return RedirectToAction("Dashboard");
         }
+
+
+        // =====================================================
+        // CADASTRO DE USUÁRIO
+        // =====================================================
 
         [HttpGet]
         public IActionResult CadastrarUsuario()
@@ -46,16 +74,26 @@ namespace SIVAD.Controllers
                 return View(pessoa);
             }
 
-            return RedirectToAction("Index");
+            return RedirectToAction("Dashboard");
         }
+
+
+        // =====================================================
+        // EXCLUIR USUÁRIO
+        // =====================================================
 
         [HttpPost]
         public IActionResult ExcluirUsuario(int id)
         {
             // A exclusão será implementada posteriormente.
 
-            return RedirectToAction("Index");
+            return RedirectToAction("Dashboard");
         }
+
+
+        // =====================================================
+        // CADASTRO DE PRODUTO
+        // =====================================================
 
         [HttpGet]
         public IActionResult CadastrarProduto()
@@ -73,7 +111,13 @@ namespace SIVAD.Controllers
                 return View(produto);
             }
 
-            return RedirectToAction("Index");
+            return RedirectToAction("Dashboard");
+        }
+
+        [HttpGet]
+        public IActionResult Relatorios()
+        {
+            return View();
         }
     }
 }
