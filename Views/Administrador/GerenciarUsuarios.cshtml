@@ -1,0 +1,136 @@
+@{
+    ViewData["Title"] = "Gerenciamento de Usuários";
+}
+<!doctype html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewData["Title"] - SIVAD</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
+    <link rel="stylesheet" href="/css/erp.css?v=2" />
+</head>
+<body class="user-management-page">
+    <div class="user-management-shell">
+        <partial name="Sidebar" />
+
+        <main class="user-management-main-content">
+            <header class="user-management-topbar">
+                <div class="user-management-topbar-title">
+                    <h1>Gerenciamento de Usuários</h1>
+                    <p>Bem-vindo ao sistema de gestão</p>
+                </div>
+                <div class="user-management-topbar-actions" aria-label="Ações do usuário">
+                    <button class="user-management-notification" type="button" aria-label="Notificações">
+                        <i class="bi bi-bell" aria-hidden="true"></i>
+                        <span aria-hidden="true"></span>
+                    </button>
+                    <div class="user-management-topbar-avatar" aria-label="João Dias">JD</div>
+                </div>
+            </header>
+
+            <div class="user-management-content">
+                <section class="user-management-intro" aria-labelledby="user-management-heading">
+                    <h2 id="user-management-heading">Gerenciamento de Usuários</h2>
+                    <p>Gerencie usuários e altere senhas</p>
+                </section>
+
+                <section class="user-management-panel user-password-panel" aria-labelledby="password-panel-heading">
+                    <div class="user-management-panel-heading">
+                        <span class="user-management-panel-icon" aria-hidden="true">
+                            <i class="bi bi-lock"></i>
+                        </span>
+                        <h3 id="password-panel-heading">Alteração de Senha</h3>
+                    </div>
+
+                    <form class="user-password-form" autocomplete="off">
+                        <div class="user-password-fields">
+                            <div class="user-management-field">
+                                <label for="new-password">Nova Senha</label>
+                                <input id="new-password" class="form-control user-management-input" type="password" placeholder="Digite a nova senha" autocomplete="new-password" />
+                            </div>
+                            <div class="user-management-field">
+                                <label for="target-username">Nome do Usuário</label>
+                                <input id="target-username" class="form-control user-management-input" type="text" placeholder="Digite o nome do usuário" autocomplete="off" />
+                            </div>
+                            <div class="user-management-field">
+                                <label for="confirm-new-password">Confirmar Nova Senha</label>
+                                <input id="confirm-new-password" class="form-control user-management-input" type="password" placeholder="Digite novamente a senha" autocomplete="new-password" />
+                            </div>
+                            <div class="user-management-field">
+                                <label for="user-uid">UID</label>
+                                <input id="user-uid" class="form-control user-management-input" type="text" placeholder="Identificador único" autocomplete="off" />
+                            </div>
+                        </div>
+                        <button class="user-password-submit" type="button">Confirmar</button>
+                    </form>
+                </section>
+
+                <section class="user-management-panel registered-users-panel" aria-labelledby="registered-users-heading">
+                    <div class="registered-users-heading">
+                        <h3 id="registered-users-heading">Usuários Cadastrados</h3>
+                    </div>
+                    <div class="registered-users-list">
+                        <article class="registered-user-row">
+                            <div class="registered-user-identity">
+                                <span class="registered-user-avatar" aria-hidden="true">JS</span>
+                                <div class="registered-user-details">
+                                    <strong>João Silva</strong>
+                                    <small>UID001 <span aria-hidden="true">•</span> Administrador</small>
+                                </div>
+                            </div>
+                            <div class="registered-user-actions">
+                                <button class="registered-user-edit" type="button">Editar</button>
+                                <button class="registered-user-remove" type="button">Remover</button>
+                            </div>
+                        </article>
+
+                        <article class="registered-user-row">
+                            <div class="registered-user-identity">
+                                <span class="registered-user-avatar" aria-hidden="true">MS</span>
+                                <div class="registered-user-details">
+                                    <strong>Maria Santos</strong>
+                                    <small>UID002 <span aria-hidden="true">•</span> Funcionário</small>
+                                </div>
+                            </div>
+                            <div class="registered-user-actions">
+                                <button class="registered-user-edit" type="button">Editar</button>
+                                <button class="registered-user-remove" type="button">Remover</button>
+                            </div>
+                        </article>
+
+                        <article class="registered-user-row">
+                            <div class="registered-user-identity">
+                                <span class="registered-user-avatar" aria-hidden="true">PO</span>
+                                <div class="registered-user-details">
+                                    <strong>Pedro Oliveira</strong>
+                                    <small>UID003 <span aria-hidden="true">•</span> Funcionário</small>
+                                </div>
+                            </div>
+                            <div class="registered-user-actions">
+                                <button class="registered-user-edit" type="button">Editar</button>
+                                <button class="registered-user-remove" type="button">Remover</button>
+                            </div>
+                        </article>
+
+                        <article class="registered-user-row">
+                            <div class="registered-user-identity">
+                                <span class="registered-user-avatar" aria-hidden="true">AC</span>
+                                <div class="registered-user-details">
+                                    <strong>Ana Costa</strong>
+                                    <small>UID004 <span aria-hidden="true">•</span> Funcionário</small>
+                                </div>
+                            </div>
+                            <div class="registered-user-actions">
+                                <button class="registered-user-edit" type="button">Editar</button>
+                                <button class="registered-user-remove" type="button">Remover</button>
+                            </div>
+                        </article>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

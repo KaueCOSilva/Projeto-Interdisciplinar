@@ -1,0 +1,164 @@
+@{
+    ViewData["Title"] = "Movimento de Compras";
+}
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Sistema ERP</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
+    <link rel="stylesheet" href="/css/erp.css?v=2" />
+</head>
+<body class="purchase-page">
+    <div class="erp-layout">
+        <partial name="Sidebar" />
+
+        <main class="purchase-main-content">
+            <header class="purchase-topbar">
+                <div class="purchase-page-title">
+                    <h1>Movimento de Compras</h1>
+                    <p>Bem-vindo ao sistema de gestão</p>
+                </div>
+
+                <div class="purchase-topbar-actions">
+                    <button type="button" class="purchase-notification" aria-label="Notificações">
+                        <i class="bi bi-bell"></i>
+                        <span></span>
+                    </button>
+                    <div class="purchase-top-avatar">JD</div>
+                </div>
+            </header>
+
+            <section class="purchase-content">
+                <div class="purchase-layout">
+                    <div class="purchase-left-column">
+                        <form asp-controller="Administrador" asp-action="MovimentoCompras" method="post">
+                            <section class="purchase-panel purchase-data-panel">
+                                <div class="purchase-panel-header">
+                                    <h2>Nova Compra</h2>
+                                </div>
+                                <div class="purchase-fields-grid">
+                                    <div class="purchase-field">
+                                        <label for="dataRecebimento">Data de recebimento de compra*</label>
+                                        <input id="dataRecebimento" name="DataRecebimento" type="text" placeholder="26/03/2026" />
+                                    </div>
+                                    <div class="purchase-field">
+                                        <label for="fornecedor">Fornecedor*</label>
+                                        <input id="fornecedor" name="Fornecedor" type="text" placeholder="Fábrica..." />
+                                    </div>
+                                    <div class="purchase-field">
+                                        <label for="notaFiscal">NF-e*</label>
+                                        <input id="notaFiscal" name="NotaFiscal" type="text" placeholder="NF-000000" />
+                                    </div>
+                                    <div class="purchase-field">
+                                        <label for="codigoCompra">Código/Número*</label>
+                                        <input id="codigoCompra" name="CodigoCompra" type="text" placeholder="CP-001" />
+                                    </div>
+                                </div>
+                            </section>
+
+                            <section class="purchase-panel purchase-items-panel">
+                                <div class="purchase-panel-header purchase-items-header">
+                                    <h2>Itens da Compra</h2>
+                                    <button type="button" class="purchase-add-item">
+                                        <i class="bi bi-plus-lg"></i>
+                                        <span>Adicionar Item</span>
+                                    </button>
+                                </div>
+                                <div class="purchase-items-table-wrapper">
+                                    <table class="purchase-items-table">
+                                        <thead>
+                                            <tr>
+                                                <th>SKU</th>
+                                                <th>Produto</th>
+                                                <th>Cor</th>
+                                                <th>Qtd</th>
+                                                <th>Preço un.</th>
+                                                <th>Total</th>
+                                                <th>Ações</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td><input name="Sku" type="text" value="PR001" /></td>
+                                                <td><input name="Produto" type="text" placeholder="Nome do produto" /></td>
+                                                <td><input name="Cor" type="text" placeholder="Cor" /></td>
+                                                <td><input name="Quantidade" type="number" value="0" min="0" /></td>
+                                                <td><input name="PrecoUnitario" type="text" placeholder="0,00" /></td>
+                                                <td class="purchase-item-total">R$<br />0,00</td>
+                                                <td class="purchase-item-action">
+                                                    <button type="button" aria-label="Remover item"><i class="bi bi-trash3"></i></button>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </section>
+
+                            <section class="purchase-summary-panel">
+                                <div class="purchase-summary-line">
+                                    <span>Subtotal</span>
+                                    <strong>R$ 0,00</strong>
+                                </div>
+                                <div class="purchase-summary-line">
+                                    <span>Impostos (15%)</span>
+                                    <strong>R$ 0,00</strong>
+                                </div>
+                                <div class="purchase-summary-line purchase-discount">
+                                    <span>Descontos (5%)</span>
+                                    <strong>- R$ 0,00</strong>
+                                </div>
+                                <div class="purchase-summary-total">
+                                    <span>Total Final</span>
+                                    <strong>R$ 0,00</strong>
+                                </div>
+                            </section>
+
+                            <div class="purchase-footer-actions">
+                                <button type="button" class="purchase-cancel-button">Cancelar Compra</button>
+                                <button type="submit" class="purchase-finish-button">Finalizar Compra</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <aside class="purchase-recent-panel">
+                        <div class="purchase-panel-header">
+                            <h2>Compras Recentes</h2>
+                        </div>
+                        <div class="purchase-recent-list">
+                            <article class="recent-purchase">
+                                <div class="recent-purchase-top"><strong>Blunt</strong><span class="purchase-status status-paid">Pago</span></div>
+                                <small>CP001</small>
+                                <b>R$ 15.400,00</b>
+                                <div class="recent-purchase-bottom"><time>2026-05-20</time><i class="bi bi-eye"></i></div>
+                            </article>
+                            <article class="recent-purchase">
+                                <div class="recent-purchase-top"><strong>Blunt</strong><span class="purchase-status status-pending">Pendente</span></div>
+                                <small>CP002</small>
+                                <b>R$ 8.230,00</b>
+                                <div class="recent-purchase-bottom"><time>2026-05-19</time><i class="bi bi-eye"></i></div>
+                            </article>
+                            <article class="recent-purchase">
+                                <div class="recent-purchase-top"><strong>Blunt</strong><span class="purchase-status status-paid">Pago</span></div>
+                                <small>CP003</small>
+                                <b>R$ 3.450,00</b>
+                                <div class="recent-purchase-bottom"><time>2026-05-18</time><i class="bi bi-eye"></i></div>
+                            </article>
+                            <article class="recent-purchase">
+                                <div class="recent-purchase-top"><strong>Blunt</strong><span class="purchase-status status-canceled">Cancelado</span></div>
+                                <small>CP004</small>
+                                <b>R$ 12.800,00</b>
+                                <div class="recent-purchase-bottom"><time>2026-05-17</time><i class="bi bi-eye"></i></div>
+                            </article>
+                        </div>
+                    </aside>
+                </div>
+            </section>
+        </main>
+    </div>
+</body>
+</html>

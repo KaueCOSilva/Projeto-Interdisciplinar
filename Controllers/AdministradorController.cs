@@ -15,7 +15,6 @@ namespace SIVAD.Controllers
             return View();
         }
 
-
         // =====================================================
         // INDEX
         // =====================================================
@@ -24,35 +23,6 @@ namespace SIVAD.Controllers
         {
             return RedirectToAction("Dashboard");
         }
-
-
-        // =====================================================
-        // LOGIN
-        // =====================================================
-
-        [HttpGet]
-        public IActionResult Login()
-        {
-            return View();
-        }
-
-        [HttpPost]
-        public IActionResult Login(string email, string senha)
-        {
-            // A autenticação será implementada posteriormente.
-
-            if (string.IsNullOrEmpty(email) ||
-                string.IsNullOrEmpty(senha))
-            {
-                ViewBag.Mensagem =
-                    "Informe o e-mail e a senha.";
-
-                return View();
-            }
-
-            return RedirectToAction("Dashboard");
-        }
-
 
         // =====================================================
         // CADASTRO DE USUÁRIO
@@ -116,6 +86,30 @@ namespace SIVAD.Controllers
 
         [HttpGet]
         public IActionResult Relatorios()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        public IActionResult Estoque()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        public IActionResult MovimentoCompras()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        public IActionResult GerenciarUsuarios()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        public IActionResult Notificacoes()
         {
             return View();
         }
