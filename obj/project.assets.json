@@ -1729,19 +1729,19 @@
     ]
   },
   "packageFolders": {
-    "/home/saintsbossilo/.nuget/packages/": {}
+    "/home/kakesty/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/home/saintsbossilo/Documentos/GitHub/Projeto-Interdisciplinar/SIVAD.csproj",
+      "projectUniqueName": "/home/kakesty/Documentos/GitHub/Projeto-Interdisciplinar/SIVAD.csproj",
       "projectName": "SIVAD",
-      "projectPath": "/home/saintsbossilo/Documentos/GitHub/Projeto-Interdisciplinar/SIVAD.csproj",
-      "packagesPath": "/home/saintsbossilo/.nuget/packages/",
-      "outputPath": "/home/saintsbossilo/Documentos/GitHub/Projeto-Interdisciplinar/obj/",
+      "projectPath": "/home/kakesty/Documentos/GitHub/Projeto-Interdisciplinar/SIVAD.csproj",
+      "packagesPath": "/home/kakesty/.nuget/packages/",
+      "outputPath": "/home/kakesty/Documentos/GitHub/Projeto-Interdisciplinar/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "/home/saintsbossilo/.nuget/NuGet/NuGet.Config"
+        "/home/kakesty/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net10.0"

@@ -1,0 +1,39 @@
+<aside class="employee-sidebar" aria-label="Navegação do funcionário">
+    <div class="employee-sidebar-brand">
+        <span class="employee-sidebar-logo" aria-hidden="true"><i class="bi bi-shop"></i></span>
+        <span class="employee-sidebar-brand-copy">
+            <strong>Sistema ERP</strong>
+            <small>Sistema Funcionário</small>
+        </span>
+    </div>
+
+    <nav class="employee-sidebar-menu" aria-label="Menu principal">
+        <a asp-controller="Funcionario" asp-action="RegistrarPedido"
+           class="employee-sidebar-link @(ViewContext.RouteData.Values["action"]?.ToString() == "RegistrarPedido" ? "is-active" : "")"
+           aria-current="@(ViewContext.RouteData.Values["action"]?.ToString() == "RegistrarPedido" ? "page" : null)">
+            <i class="bi bi-receipt-cutoff" aria-hidden="true"></i>
+            <span>Registro de Compras</span>
+        </a>
+
+        <a asp-controller="Funcionario" asp-action="ResumoCompra"
+           class="employee-sidebar-link @(ViewContext.RouteData.Values["action"]?.ToString() == "ResumoCompra" ? "is-active" : "")"
+           aria-current="@(ViewContext.RouteData.Values["action"]?.ToString() == "ResumoCompra" ? "page" : null)">
+            <i class="bi bi-clipboard-data" aria-hidden="true"></i>
+            <span>Resumo de Compra</span>
+        </a>
+    </nav>
+
+    <div class="employee-sidebar-bottom">
+        <div class="employee-sidebar-user">
+            <span class="employee-sidebar-user-avatar" aria-hidden="true">JD</span>
+            <span class="employee-sidebar-user-copy">
+                <strong>João Silva</strong>
+                <small>Funcionário</small>
+            </span>
+        </div>
+        <span class="employee-sidebar-logout" aria-disabled="true" title="A saída ainda não está conectada">
+            <i class="bi bi-box-arrow-right" aria-hidden="true"></i>
+            <span>Sair</span>
+        </span>
+    </div>
+</aside>

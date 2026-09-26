@@ -36,5 +36,12 @@ namespace SIVAD.Controllers
 
             return RedirectToAction("Index");
         }
+
+        [HttpGet]
+        public IActionResult ResumoCompra()
+        {
+            return View();
+        }
+
     }
 }
