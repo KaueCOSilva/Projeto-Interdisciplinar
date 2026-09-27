@@ -1,3 +1,7 @@
+@{
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+}
+
 <aside class="employee-sidebar" aria-label="Navegação do funcionário">
     <div class="employee-sidebar-brand">
         <span class="employee-sidebar-logo" aria-hidden="true"><i class="bi bi-shop"></i></span>
@@ -9,15 +13,15 @@
 
     <nav class="employee-sidebar-menu" aria-label="Menu principal">
         <a asp-controller="Funcionario" asp-action="RegistrarPedido"
-           class="employee-sidebar-link @(ViewContext.RouteData.Values["action"]?.ToString() == "RegistrarPedido" ? "is-active" : "")"
-           aria-current="@(ViewContext.RouteData.Values["action"]?.ToString() == "RegistrarPedido" ? "page" : null)">
+           class="employee-sidebar-link @(currentAction == "RegistrarPedido" ? "is-active" : "")"
+           aria-current="@(currentAction == "RegistrarPedido" ? "page" : null)">
             <i class="bi bi-receipt-cutoff" aria-hidden="true"></i>
             <span>Registro de Compras</span>
         </a>
 
         <a asp-controller="Funcionario" asp-action="ResumoCompra"
-           class="employee-sidebar-link @(ViewContext.RouteData.Values["action"]?.ToString() == "ResumoCompra" ? "is-active" : "")"
-           aria-current="@(ViewContext.RouteData.Values["action"]?.ToString() == "ResumoCompra" ? "page" : null)">
+           class="employee-sidebar-link @(currentAction == "ResumoCompra" ? "is-active" : "")"
+           aria-current="@(currentAction == "ResumoCompra" ? "page" : null)">
             <i class="bi bi-clipboard-data" aria-hidden="true"></i>
             <span>Resumo de Compra</span>
         </a>

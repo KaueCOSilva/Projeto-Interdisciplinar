@@ -4520,3 +4520,206 @@ body.employee-purchase-summary-page .employee-summary-confirm-button {
     body.employee-purchase-summary-page .employee-summary-count { min-height: 120px; }
     body.employee-purchase-summary-page .employee-summary-confirm-button { width: 100%; }
 }
+
+/* =========================================================
+   SIDEBAR COMPARTILHADA — REGISTRO E RESUMO
+   Dimensões e apresentação iguais; o partial determina a seção ativa.
+   ========================================================= */
+/* Sidebar própria do funcionário (_SidebarFuncionario.cshtml). */
+body.employee-purchase-registration-page .employee-sidebar,
+body.employee-purchase-summary-page .employee-sidebar {
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: 1000;
+    display: flex;
+    width: 200px;
+    flex-direction: column;
+    border-right: 1px solid #263149;
+    background: #101a2d;
+    color: #fff;
+}
+body.employee-purchase-registration-page .employee-sidebar-brand,
+body.employee-purchase-summary-page .employee-sidebar-brand {
+    display: flex;
+    height: 72px;
+    flex: 0 0 72px;
+    align-items: center;
+    padding: 0 12px;
+    border-bottom: 1px solid #263149;
+}
+body.employee-purchase-registration-page .employee-sidebar-logo,
+body.employee-purchase-summary-page .employee-sidebar-logo {
+    display: flex;
+    width: 40px;
+    height: 36px;
+    flex: 0 0 40px;
+    align-items: center;
+    justify-content: center;
+    margin-right: 8px;
+    border-radius: 6px;
+    background: #070d18;
+    color: #2864dc;
+    font-size: 19px;
+}
+body.employee-purchase-registration-page .employee-sidebar-brand-copy,
+body.employee-purchase-summary-page .employee-sidebar-brand-copy,
+body.employee-purchase-registration-page .employee-sidebar-user-copy,
+body.employee-purchase-summary-page .employee-sidebar-user-copy {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+}
+body.employee-purchase-registration-page .employee-sidebar-brand-copy strong,
+body.employee-purchase-summary-page .employee-sidebar-brand-copy strong {
+    color: #f4f6fa;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.25;
+    white-space: nowrap;
+}
+body.employee-purchase-registration-page .employee-sidebar-brand-copy small,
+body.employee-purchase-summary-page .employee-sidebar-brand-copy small {
+    margin-top: 3px;
+    color: #8994a8;
+    font-size: 9px;
+    line-height: 1.2;
+    white-space: nowrap;
+}
+body.employee-purchase-registration-page .employee-sidebar-menu,
+body.employee-purchase-summary-page .employee-sidebar-menu {
+    padding: 14px 8px;
+}
+body.employee-purchase-registration-page .employee-sidebar-link,
+body.employee-purchase-summary-page .employee-sidebar-link {
+    display: flex;
+    min-height: 38px;
+    align-items: center;
+    margin-bottom: 5px;
+    padding: 0 10px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: #c8cfdb;
+    font-size: 11px;
+    line-height: 1.2;
+    text-align: left;
+    text-decoration: none;
+}
+body.employee-purchase-registration-page .employee-sidebar-link > i,
+body.employee-purchase-summary-page .employee-sidebar-link > i {
+    width: 22px;
+    flex: 0 0 22px;
+    margin-right: 4px;
+    font-size: 14px;
+    text-align: center;
+}
+body.employee-purchase-registration-page a.employee-sidebar-link:hover,
+body.employee-purchase-summary-page a.employee-sidebar-link:hover {
+    background: #1a2843;
+    color: #fff;
+}
+body.employee-purchase-registration-page .employee-sidebar-link.is-active,
+body.employee-purchase-summary-page .employee-sidebar-link.is-active {
+    background: #2160dc;
+    color: #fff;
+    box-shadow: 0 2px 6px rgba(33, 96, 220, .28);
+}
+body.employee-purchase-registration-page .employee-sidebar-link-disabled,
+body.employee-purchase-summary-page .employee-sidebar-link-disabled {
+    cursor: default;
+    opacity: .9;
+}
+body.employee-purchase-registration-page .employee-sidebar-bottom,
+body.employee-purchase-summary-page .employee-sidebar-bottom {
+    margin-top: auto;
+    padding: 12px 10px 14px;
+    border-top: 1px solid #263149;
+}
+body.employee-purchase-registration-page .employee-sidebar-user,
+body.employee-purchase-summary-page .employee-sidebar-user {
+    display: flex;
+    align-items: center;
+    margin-bottom: 11px;
+}
+body.employee-purchase-registration-page .employee-sidebar-user-avatar,
+body.employee-purchase-summary-page .employee-sidebar-user-avatar {
+    display: flex;
+    width: 31px;
+    height: 31px;
+    flex: 0 0 31px;
+    align-items: center;
+    justify-content: center;
+    margin-right: 8px;
+    border-radius: 50%;
+    background: #344258;
+    color: #f1f3f7;
+    font-size: 10px;
+}
+body.employee-purchase-registration-page .employee-sidebar-user-copy strong,
+body.employee-purchase-summary-page .employee-sidebar-user-copy strong {
+    color: #f2f4f8;
+    font-size: 10px;
+    font-weight: 600;
+    line-height: 1.25;
+}
+body.employee-purchase-registration-page .employee-sidebar-user-copy small,
+body.employee-purchase-summary-page .employee-sidebar-user-copy small {
+    margin-top: 2px;
+    color: #8d97a9;
+    font-size: 8px;
+    line-height: 1.2;
+}
+body.employee-purchase-registration-page .employee-sidebar-logout,
+body.employee-purchase-summary-page .employee-sidebar-logout {
+    display: flex;
+    align-items: center;
+    padding-left: 4px;
+    color: #b9c1ce;
+    font-size: 10px;
+}
+body.employee-purchase-registration-page .employee-sidebar-logout > i,
+body.employee-purchase-summary-page .employee-sidebar-logout > i {
+    margin-right: 6px;
+}
+
+@media (max-width: 720px) {
+    body.employee-purchase-registration-page .employee-sidebar,
+    body.employee-purchase-summary-page .employee-sidebar { width: 65px; }
+    body.employee-purchase-registration-page .employee-sidebar-brand,
+    body.employee-purchase-summary-page .employee-sidebar-brand { justify-content: center; padding: 0; }
+    body.employee-purchase-registration-page .employee-sidebar-logo,
+    body.employee-purchase-summary-page .employee-sidebar-logo { margin: 0; }
+    body.employee-purchase-registration-page .employee-sidebar-brand-copy,
+    body.employee-purchase-summary-page .employee-sidebar-brand-copy,
+    body.employee-purchase-registration-page .employee-sidebar-link > span,
+    body.employee-purchase-summary-page .employee-sidebar-link > span,
+    body.employee-purchase-registration-page .employee-sidebar-user-copy,
+    body.employee-purchase-summary-page .employee-sidebar-user-copy,
+    body.employee-purchase-registration-page .employee-sidebar-logout > span,
+    body.employee-purchase-summary-page .employee-sidebar-logout > span { display: none; }
+    body.employee-purchase-registration-page .employee-sidebar-menu,
+    body.employee-purchase-summary-page .employee-sidebar-menu { padding: 12px 6px; }
+    body.employee-purchase-registration-page .employee-sidebar-link,
+    body.employee-purchase-summary-page .employee-sidebar-link { justify-content: center; padding: 0; }
+    body.employee-purchase-registration-page .employee-sidebar-link > i,
+    body.employee-purchase-summary-page .employee-sidebar-link > i { margin: 0; }
+    body.employee-purchase-registration-page .employee-sidebar-bottom,
+    body.employee-purchase-summary-page .employee-sidebar-bottom { padding: 10px 7px; }
+    body.employee-purchase-registration-page .employee-sidebar-user,
+    body.employee-purchase-summary-page .employee-sidebar-user,
+    body.employee-purchase-registration-page .employee-sidebar-logout,
+    body.employee-purchase-summary-page .employee-sidebar-logout { justify-content: center; padding: 0; }
+    body.employee-purchase-registration-page .employee-sidebar-user-avatar,
+    body.employee-purchase-summary-page .employee-sidebar-user-avatar { margin: 0; }
+    body.employee-purchase-registration-page .employee-sidebar-logout > i,
+    body.employee-purchase-summary-page .employee-sidebar-logout > i { margin: 0; }
+}
+
+body.employee-purchase-registration-page .employee-purchase-registration-main {
+    margin-left: 200px;
+}
+@media (max-width: 720px) {
+    body.employee-purchase-registration-page .employee-purchase-registration-main {
+        margin-left: 65px;
+    }
+}
