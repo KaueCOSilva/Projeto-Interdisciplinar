@@ -58,14 +58,6 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQXV0ZW50aWNhY2FvL1JlY3VwZXJhY2FvU2VuaGEuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[/home/kakesty/Documentos/GitHub/Projeto-Interdisciplinar/Views/CalculoTotal/CalcularCompraEstoque.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQ2FsY3Vsb1RvdGFsL0NhbGN1bGFyQ29tcHJhRXN0b3F1ZS5jc2h0bWw=
-build_metadata.AdditionalFiles.CssScope = 
-
-[/home/kakesty/Documentos/GitHub/Projeto-Interdisciplinar/Views/CalculoTotal/CalcularPedido.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQ2FsY3Vsb1RvdGFsL0NhbGN1bGFyUGVkaWRvLmNzaHRtbA==
-build_metadata.AdditionalFiles.CssScope = 
-
 [/home/kakesty/Documentos/GitHub/Projeto-Interdisciplinar/Views/Funcionario/RegistrarPedido.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvRnVuY2lvbmFyaW8vUmVnaXN0cmFyUGVkaWRvLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
@@ -78,8 +70,8 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL1NpZGViYXIuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[/home/kakesty/Documentos/GitHub/Projeto-Interdisciplinar/Views/Shared/_SidebarFuncionario.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL19TaWRlYmFyRnVuY2lvbmFyaW8uY3NodG1s
+[/home/kakesty/Documentos/GitHub/Projeto-Interdisciplinar/Views/Shared/SidebarFuncionario.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL1NpZGViYXJGdW5jaW9uYXJpby5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
 [/home/kakesty/Documentos/GitHub/Projeto-Interdisciplinar/Views/_ViewImports.cshtml]
