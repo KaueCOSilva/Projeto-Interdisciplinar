@@ -35,9 +35,16 @@
                 <small>Funcionário</small>
             </span>
         </div>
-        <span class="employee-sidebar-logout" aria-disabled="true" title="A saída ainda não está conectada">
-            <i class="bi bi-box-arrow-right" aria-hidden="true"></i>
+
+        <a asp-controller="Autenticacao"
+            asp-action="Login"
+           class="logout">
+
+            <i class="bi bi-box-arrow-right"></i>
+
             <span>Sair</span>
-        </span>
+
+        </a>
+
     </div>
 </aside>

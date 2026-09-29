@@ -23,8 +23,11 @@
                 </div>
                 <div class="user-management-topbar-actions" aria-label="Ações do usuário">
                     <button class="user-management-notification" type="button" aria-label="Notificações">
-                        <i class="bi bi-bell" aria-hidden="true"></i>
-                        <span aria-hidden="true"></span>
+                        <a asp-controller="Administrador"
+                         asp-action="Notificacoes">
+                            <i class="bi bi-bell" aria-hidden="true"></i>
+                            <span aria-hidden="true"></span>
+                        </a>
                     </button>
                     <div class="user-management-topbar-avatar" aria-label="João Dias">JD</div>
                 </div>

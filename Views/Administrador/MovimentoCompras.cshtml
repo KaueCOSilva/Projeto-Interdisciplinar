@@ -26,8 +26,11 @@
 
                 <div class="purchase-topbar-actions">
                     <button type="button" class="purchase-notification" aria-label="Notificações">
-                        <i class="bi bi-bell"></i>
-                        <span></span>
+                        <a asp-controller="Administrador"
+                         asp-action="Notificacoes">
+                            <i class="bi bi-bell"></i>
+                            <span></span>
+                        </a>
                     </button>
                     <div class="purchase-top-avatar">JD</div>
                 </div>
@@ -84,7 +87,7 @@
                                         </thead>
                                         <tbody>
                                             <tr>
-                                                <td><input name="Sku" type="text" value="PR001" /></td>
+                                                <td><input name="Sku" type="text" placeholder="PR001" /></td>
                                                 <td><input name="Produto" type="text" placeholder="Nome do produto" /></td>
                                                 <td><input name="Cor" type="text" placeholder="Cor" /></td>
                                                 <td><input name="Quantidade" type="number" value="0" min="0" /></td>
