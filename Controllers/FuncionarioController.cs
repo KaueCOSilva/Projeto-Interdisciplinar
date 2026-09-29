@@ -19,7 +19,7 @@ namespace SIVAD.Controllers
             _context = context;
         }
 
-        // Não existe Views/Funcionario/Index.cshtml: a tela inicial do funcionário é o registro de compra.
+        // A tela inicial do funcionário é o registro de compra.
         [HttpGet]
         public IActionResult Index()
         {

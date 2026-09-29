@@ -6,10 +6,7 @@ namespace SIVAD.Controllers
     // Telas do administrador (documento 2.4.3):
     // Dashboard, Relatórios, Estoque, Movimento de Compras,
     // Funcionários > Cadastro de Funcionário / Gerenciamento de Usuários, Notificações.
-    //
-    // As views ficam em Views/Administrador. Cadastro de produto e registro de compra
-    // NÃO ficam aqui: são tratados por ProdutoController e CompraEstoqueController
-    // (os formulários das telas Estoque e Movimento de Compras enviam para eles).
+ 
     public class AdministradorController : Controller
     {
         // =====================================================
@@ -26,7 +23,6 @@ namespace SIVAD.Controllers
         // INDEX
         // =====================================================
 
-        // Verificar com o professor sobre o uso do Index. Manter assim?
         [HttpGet]
         public IActionResult Index()
         {
