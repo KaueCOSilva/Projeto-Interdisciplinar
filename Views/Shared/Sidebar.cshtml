@@ -38,7 +38,7 @@
            asp-action="Relatorios"
            class="menu-item @(ViewContext.RouteData.Values["action"]?.ToString() == "Relatorios" ? "active" : "")">
 
-            <i class="bi bi-file-earmark-text"></i>
+            <i class="bi bi-bar-chart-line"></i>
 
             <span>Relatórios</span>
 
@@ -50,7 +50,7 @@
            asp-action="Estoque"
            class="menu-item @(ViewContext.RouteData.Values["action"]?.ToString() == "Estoque" ? "active" : "")">
 
-            <i class="bi bi-file-earmark-text"></i>
+            <i class="bi bi-box-seam"></i>
 
             <span>Estoque</span>
 
@@ -62,7 +62,7 @@
            asp-action="MovimentoCompras"
            class="menu-item @(ViewContext.RouteData.Values["action"]?.ToString() == "MovimentoCompras" ? "active" : "")">
 
-            <i class="bi bi-file-earmark-text"></i>
+            <i class="bi bi-cart3"></i>
 
             <span>Movimento de Compras</span>
 
@@ -70,10 +70,12 @@
 
         <!-- FUNCIONÁRIOS -->
 
-        <div>
+        <div class="employees-menu">
 
             <a href="#"
-               class="menu-item">
+               class="menu-item employees-menu-toggle"
+               aria-expanded="true"
+               aria-controls="employees-submenu">
 
                 <i class="bi bi-people"></i>
 
@@ -83,13 +85,13 @@
 
             </a>
 
-            <div class="submenu">
+            <div id="employees-submenu" class="submenu">
 
                 <a asp-controller="Administrador"
                    asp-action="CadastrarUsuario"
                    class="menu-item @(ViewContext.RouteData.Values["action"]?.ToString() == "CadastrarUsuario" ? "active" : "")">
 
-                    <i class="bi bi-file-earmark-text"></i>
+                    <i class="bi bi-person-plus"></i>
 
                     <span>Cadastro de Funcionário</span>
 
@@ -99,7 +101,7 @@
                    asp-action="GerenciarUsuarios"
                    class="menu-item @(ViewContext.RouteData.Values["action"]?.ToString() == "GerenciarUsuarios" ? "active" : "")">
 
-                    <i class="bi bi-file-earmark-text"></i>
+                    <i class="bi bi-people"></i>
 
                     <span>Gerenciamento de Funcionários</span>
 
@@ -115,7 +117,7 @@
            asp-action="Notificacoes"
            class="menu-item @(ViewContext.RouteData.Values["action"]?.ToString() == "Notificacoes" ? "active" : "")">
 
-                <i class="bi bi-file-earmark-text"></i>
+                <i class="bi bi-bell"></i>
 
                 <span>Notificações</span>
         </a>
@@ -159,3 +161,4 @@
     </div>
 
 </aside>
+<script src="/js/sidebar-admin.js"></script>

@@ -81,6 +81,7 @@ body.employee-purchase-summary-page .employee-sidebar-link {
     line-height: 1.2;
     text-align: left;
     text-decoration: none;
+    cursor: pointer;
 }
 body.employee-purchase-registration-page .employee-sidebar-link > i,
 body.employee-purchase-summary-page .employee-sidebar-link > i {

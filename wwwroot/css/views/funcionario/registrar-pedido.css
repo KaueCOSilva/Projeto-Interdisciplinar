@@ -195,17 +195,6 @@ body.employee-purchase-registration-page .employee-purchase-topbar-title p {
     line-height: 1.2;
 }
 
-body.employee-purchase-registration-page .employee-purchase-avatar {
-    display: flex;
-    width: var(--profile-avatar-size);
-    height: var(--profile-avatar-size);
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    background: #2160dc;
-    color: #fff;
-    font-size: 8px;
-}
 
 body.employee-purchase-registration-page .employee-purchase-content {
     width: 80%;
@@ -410,7 +399,7 @@ body.employee-purchase-registration-page .employee-purchase-finish-button {
     background: #2160dc;
     box-shadow: 0 2px 4px rgba(33, 96, 220, 0.19);
     color: #fff;
-    cursor: default;
+    cursor: pointer;
     font-family: inherit;
     font-size: 10px;
 }
@@ -491,4 +480,3 @@ body.employee-purchase-registration-page .employee-purchase-finish-button {
         font-size: 9px;
     }
 }
-

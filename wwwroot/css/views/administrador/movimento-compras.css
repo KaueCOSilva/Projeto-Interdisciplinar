@@ -73,18 +73,6 @@ body.purchase-page .purchase-notification span {
     background: #ef4444;
 }
 
-body.purchase-page .purchase-top-avatar {
-    display: flex;
-    width: var(--profile-avatar-size);
-    height: var(--profile-avatar-size);
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    background: #2160dc;
-    color: #fff;
-    font-size: 9px;
-    font-weight: 600;
-}
 
 body.purchase-page .purchase-content {
     padding: 18px 25px 20px;

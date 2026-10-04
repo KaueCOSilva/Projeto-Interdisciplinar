@@ -174,17 +174,6 @@ body.employee-purchase-summary-page .employee-summary-topbar-title p {
     font-size: 8px;
     line-height: 1.2;
 }
-body.employee-purchase-summary-page .employee-summary-topbar-avatar {
-    display: flex;
-    width: var(--profile-avatar-size);
-    height: var(--profile-avatar-size);
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    background: #2160dc;
-    color: #fff;
-    font-size: 9px;
-}
 body.employee-purchase-summary-page .employee-summary-content {
     width: 90%;
     max-width: 1120px;
@@ -328,9 +317,10 @@ body.employee-purchase-summary-page .employee-summary-confirm-button {
     background: #08c76c;
     box-shadow: 0 2px 4px rgba(4, 189, 98, 0.2);
     color: #fff;
-    cursor: default;
+    cursor: pointer;
     font-family: inherit;
     font-size: 14px;
+    text-decoration: none;
 }
 
 @media (max-width: 720px) {
@@ -402,4 +392,3 @@ body.employee-purchase-summary-page .employee-summary-confirm-button {
         width: 100%;
     }
 }
-

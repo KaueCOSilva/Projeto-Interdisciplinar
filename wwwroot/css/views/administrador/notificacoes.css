@@ -72,18 +72,6 @@ body.notifications-page .notifications-bell-button span {
     background: #ef4444;
 }
 
-body.notifications-page .notifications-user-avatar {
-    display: flex;
-    width: var(--profile-avatar-size);
-    height: var(--profile-avatar-size);
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    background: #2160dc;
-    color: #fff;
-    font-size: 8px;
-    font-weight: 600;
-}
 
 body.notifications-page .notifications-list {
     width: 100%;
