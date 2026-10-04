@@ -94,22 +94,6 @@ body.reports-page .notification-dot {
     right: 3px;
 }
 
-body.reports-page .top-avatar {
-    width: var(--profile-avatar-size);
-    height: var(--profile-avatar-size);
-
-    background: #2160dc;
-
-    border-radius: 50%;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    color: #fff;
-
-    font-size: 10px;
-}
 
 /* =========================================================
            CONTEÚDO

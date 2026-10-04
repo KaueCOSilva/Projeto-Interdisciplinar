@@ -9,15 +9,6 @@
     }
 }
 
-body.employee-registration-page .employee-topbar-avatar,
-body.dashboard-page .topbar-avatar,
-body.reports-page .top-avatar,
-body.stock-page .stock-top-avatar,
-body.purchase-page .purchase-top-avatar,
-body.user-management-page .user-management-topbar-avatar,
-body.notifications-page .notifications-user-avatar,
-body.employee-purchase-registration-page .employee-purchase-avatar,
-body.employee-purchase-summary-page .employee-summary-topbar-avatar,
 body.user-management-page .registered-user-avatar,
 body.employee-purchase-registration-page .employee-sidebar-user-avatar,
 body.employee-purchase-summary-page .employee-sidebar-user-avatar,

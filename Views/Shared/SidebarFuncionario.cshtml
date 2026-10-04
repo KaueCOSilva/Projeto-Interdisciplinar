@@ -15,14 +15,14 @@
         <a asp-controller="Funcionario" asp-action="RegistrarPedido"
            class="employee-sidebar-link @(currentAction == "RegistrarPedido" ? "is-active" : "")"
            aria-current="@(currentAction == "RegistrarPedido" ? "page" : null)">
-            <i class="bi bi-receipt-cutoff" aria-hidden="true"></i>
+            <i class="bi bi-cart-plus" aria-hidden="true"></i>
             <span>Registro de Compras</span>
         </a>
 
         <a asp-controller="Funcionario" asp-action="ResumoCompra"
            class="employee-sidebar-link @(currentAction == "ResumoCompra" ? "is-active" : "")"
            aria-current="@(currentAction == "ResumoCompra" ? "page" : null)">
-            <i class="bi bi-clipboard-data" aria-hidden="true"></i>
+            <i class="bi bi-clipboard-check" aria-hidden="true"></i>
             <span>Resumo de Compra</span>
         </a>
     </nav>

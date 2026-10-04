@@ -74,18 +74,6 @@ body.stock-page .stock-notification-dot {
     background: #ef4444;
 }
 
-body.stock-page .stock-top-avatar {
-    display: flex;
-    width: var(--profile-avatar-size);
-    height: var(--profile-avatar-size);
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    background: #2160dc;
-    color: #ffffff;
-    font-size: 9px;
-    font-weight: 600;
-}
 
 body.stock-page .stock-content {
     padding: 26px 25px 20px;

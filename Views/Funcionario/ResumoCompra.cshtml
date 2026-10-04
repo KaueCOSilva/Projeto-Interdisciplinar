@@ -29,7 +29,6 @@
                 <h1>Resumo de Compra</h1>
                 <p>Bem-vindo ao sistema</p>
             </div>
-            <span class="employee-summary-topbar-avatar" aria-label="Usuário JD">JD</span>
         </header>
 
         <main class="employee-summary-content">
@@ -94,11 +93,12 @@
             </section>
 
             <div class="employee-summary-actions">
-                <button type="button" class="employee-summary-confirm-button" aria-disabled="true"
-                        title="A contabilização ainda não está conectada ao backend">
+                <a asp-controller="Funcionario"
+                   asp-action="RegistrarPedido"
+                   class="employee-summary-confirm-button">
                     <i class="bi bi-check-circle" aria-hidden="true"></i>
                     <span>Contabilizar Compra</span>
-                </button>
+                </a>
             </div>
         </main>
     </div>

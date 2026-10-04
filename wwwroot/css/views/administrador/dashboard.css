@@ -85,23 +85,6 @@
     border: 1px solid #ffffff;
 }
 
-.topbar-avatar {
-    width: var(--profile-avatar-size);
-    height: var(--profile-avatar-size);
-
-    border-radius: 50%;
-
-    background: #2160dc;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    color: #ffffff;
-
-    font-size: 8px;
-    font-weight: 600;
-}
 
 /* =========================================================
            DASHBOARD
