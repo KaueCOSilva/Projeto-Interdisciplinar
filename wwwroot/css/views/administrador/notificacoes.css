@@ -74,8 +74,8 @@ body.notifications-page .notifications-bell-button span {
 
 body.notifications-page .notifications-user-avatar {
     display: flex;
-    width: 27px;
-    height: 27px;
+    width: var(--profile-avatar-size);
+    height: var(--profile-avatar-size);
     align-items: center;
     justify-content: center;
     border-radius: 50%;

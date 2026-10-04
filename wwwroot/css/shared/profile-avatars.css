@@ -1,0 +1,38 @@
+/* Tamanho comum dos avatares de perfil usados nas views. */
+:root {
+    --profile-avatar-size: 32px;
+}
+
+@media (max-width: 480px) {
+    :root {
+        --profile-avatar-size: 28px;
+    }
+}
+
+body.employee-registration-page .employee-topbar-avatar,
+body.dashboard-page .topbar-avatar,
+body.reports-page .top-avatar,
+body.stock-page .stock-top-avatar,
+body.purchase-page .purchase-top-avatar,
+body.user-management-page .user-management-topbar-avatar,
+body.notifications-page .notifications-user-avatar,
+body.employee-purchase-registration-page .employee-purchase-avatar,
+body.employee-purchase-summary-page .employee-summary-topbar-avatar,
+body.user-management-page .registered-user-avatar,
+body.employee-purchase-registration-page .employee-sidebar-user-avatar,
+body.employee-purchase-summary-page .employee-sidebar-user-avatar,
+body.employee-registration-page .user-avatar,
+body.dashboard-page .user-avatar,
+body.reports-page .user-avatar,
+body.stock-page .user-avatar,
+body.purchase-page .user-avatar,
+body.user-management-page .user-avatar,
+body.notifications-page .user-avatar {
+    box-sizing: border-box;
+    width: var(--profile-avatar-size);
+    height: var(--profile-avatar-size);
+    min-width: var(--profile-avatar-size);
+    min-height: var(--profile-avatar-size);
+    flex: 0 0 var(--profile-avatar-size);
+    border-radius: 50%;
+}

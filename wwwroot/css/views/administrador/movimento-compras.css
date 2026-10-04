@@ -75,8 +75,8 @@ body.purchase-page .purchase-notification span {
 
 body.purchase-page .purchase-top-avatar {
     display: flex;
-    width: 32px;
-    height: 32px;
+    width: var(--profile-avatar-size);
+    height: var(--profile-avatar-size);
     align-items: center;
     justify-content: center;
     border-radius: 50%;

@@ -74,8 +74,8 @@ body.user-management-page .user-management-notification span {
 
 body.user-management-page .user-management-topbar-avatar {
     display: flex;
-    width: 32px;
-    height: 32px;
+    width: var(--profile-avatar-size);
+    height: var(--profile-avatar-size);
     align-items: center;
     justify-content: center;
     border-radius: 50%;
@@ -255,9 +255,9 @@ body.user-management-page .registered-user-identity {
 
 body.user-management-page .registered-user-avatar {
     display: flex;
-    width: 32px;
-    height: 32px;
-    flex: 0 0 32px;
+    width: var(--profile-avatar-size);
+    height: var(--profile-avatar-size);
+    flex: 0 0 var(--profile-avatar-size);
     align-items: center;
     justify-content: center;
     border-radius: 50%;

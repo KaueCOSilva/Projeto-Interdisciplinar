@@ -95,8 +95,8 @@ body.reports-page .notification-dot {
 }
 
 body.reports-page .top-avatar {
-    width: 32px;
-    height: 32px;
+    width: var(--profile-avatar-size);
+    height: var(--profile-avatar-size);
 
     background: #2160dc;
 

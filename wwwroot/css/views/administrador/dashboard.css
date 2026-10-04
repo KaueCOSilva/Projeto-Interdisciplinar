@@ -86,8 +86,8 @@
 }
 
 .topbar-avatar {
-    width: 28px;
-    height: 28px;
+    width: var(--profile-avatar-size);
+    height: var(--profile-avatar-size);
 
     border-radius: 50%;
 

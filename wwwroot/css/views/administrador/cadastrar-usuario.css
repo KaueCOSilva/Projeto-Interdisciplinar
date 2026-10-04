@@ -78,8 +78,8 @@ body.employee-registration-page .employee-notification-dot {
 
 body.employee-registration-page .employee-topbar-avatar {
     display: flex;
-    width: 32px;
-    height: 32px;
+    width: var(--profile-avatar-size);
+    height: var(--profile-avatar-size);
     align-items: center;
     justify-content: center;
     border-radius: 50%;

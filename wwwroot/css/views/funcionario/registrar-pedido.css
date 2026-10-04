@@ -126,9 +126,9 @@ body.employee-purchase-registration-page .employee-sidebar-user {
 
 body.employee-purchase-registration-page .employee-sidebar-user-avatar {
     display: flex;
-    width: 24px;
-    height: 24px;
-    flex: 0 0 24px;
+    width: var(--profile-avatar-size);
+    height: var(--profile-avatar-size);
+    flex: 0 0 var(--profile-avatar-size);
     align-items: center;
     justify-content: center;
     margin-right: 6px;
@@ -197,8 +197,8 @@ body.employee-purchase-registration-page .employee-purchase-topbar-title p {
 
 body.employee-purchase-registration-page .employee-purchase-avatar {
     display: flex;
-    width: 24px;
-    height: 24px;
+    width: var(--profile-avatar-size);
+    height: var(--profile-avatar-size);
     align-items: center;
     justify-content: center;
     border-radius: 50%;

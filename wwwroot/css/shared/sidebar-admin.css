@@ -189,8 +189,8 @@
 }
 
 .user-avatar {
-    width: 30px;
-    height: 30px;
+    width: var(--profile-avatar-size);
+    height: var(--profile-avatar-size);
 
     border-radius: 50%;
 

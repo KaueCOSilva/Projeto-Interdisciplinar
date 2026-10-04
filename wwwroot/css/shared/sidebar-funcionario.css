@@ -121,9 +121,9 @@ body.employee-purchase-summary-page .employee-sidebar-user {
 body.employee-purchase-registration-page .employee-sidebar-user-avatar,
 body.employee-purchase-summary-page .employee-sidebar-user-avatar {
     display: flex;
-    width: 31px;
-    height: 31px;
-    flex: 0 0 31px;
+    width: var(--profile-avatar-size);
+    height: var(--profile-avatar-size);
+    flex: 0 0 var(--profile-avatar-size);
     align-items: center;
     justify-content: center;
     margin-right: 8px;

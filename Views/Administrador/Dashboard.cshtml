@@ -21,10 +21,9 @@
     <link rel="stylesheet" href="/css/shared/logout-link.css?v=1" />
     <link rel="stylesheet" href="/css/views/administrador/dashboard.css?v=1" />
     <link rel="stylesheet" href="/css/views/administrador/relatorios.css?v=1" />
+    <link rel="stylesheet" href="/css/shared/profile-avatars.css?v=1" />
 
 </head>
-
-
 
 <body class="dashboard-page">
     <div class="erp-layout">
@@ -32,14 +31,11 @@
 
         <main class="main-content">
 
-
-
         <!-- =====================================================
              TOPBAR
         ====================================================== -->
 
         <header class="topbar">
-
 
             <div class="page-title">
 
@@ -53,12 +49,11 @@
 
             </div>
 
-
             <div class="topbar-right">
 
                 <div class="notification-button">
                     <a asp-controller="Administrador"
-                         asp-action="Notificacoes">
+                           asp-action="Notificacoes">
                     <i class="bi bi-bell"></i>
 
                     <span class="notification-badge"></span>
@@ -71,9 +66,7 @@
 
             </div>
 
-
         </header>
-
 
         <!-- =====================================================
              DASHBOARD
@@ -81,13 +74,11 @@
 
         <section class="dashboard">
 
-
             <!-- =================================================
                  CARDS
             ================================================== -->
 
             <div class="stats">
-
 
                 <!-- TOTAL VENDAS -->
 
@@ -117,7 +108,6 @@
 
                 </div>
 
-
                 <!-- RECEITA -->
 
                 <div class="stat-card">
@@ -145,7 +135,6 @@
                     </div>
 
                 </div>
-
 
                 <!-- PRODUTOS -->
 
@@ -175,7 +164,6 @@
 
                 </div>
 
-
                 <!-- DEVOLUÇÕES -->
 
                 <div class="stat-card">
@@ -204,16 +192,13 @@
 
                 </div>
 
-
             </div>
-
 
             <!-- =================================================
                  VENDAS + ATIVIDADES
             ================================================== -->
 
             <div class="top-panels">
-
 
                 <!-- VENDAS E RECEITA -->
 
@@ -231,7 +216,6 @@
 
                 </div>
 
-
                 <!-- ATIVIDADES -->
 
                 <div class="panel">
@@ -244,9 +228,7 @@
 
                     </div>
 
-
                     <div class="activities">
-
 
                         <div class="activity">
 
@@ -268,7 +250,6 @@
 
                         </div>
 
-
                         <div class="activity">
 
                             <span class="activity-dot"
@@ -288,7 +269,6 @@
                             </div>
 
                         </div>
-
 
                         <div class="activity">
 
@@ -310,7 +290,6 @@
 
                         </div>
 
-
                         <div class="activity">
 
                             <span class="activity-dot"
@@ -330,7 +309,6 @@
                             </div>
 
                         </div>
-
 
                         <div class="activity">
 
@@ -352,21 +330,17 @@
 
                         </div>
 
-
                     </div>
 
                 </div>
 
-
             </div>
-
 
             <!-- =================================================
                  CATEGORIAS + NOTIFICAÇÕES
             ================================================== -->
 
             <div class="bottom-panels">
-
 
                 <!-- VENDAS POR CATEGORIA -->
 
@@ -384,7 +358,6 @@
 
                 </div>
 
-
                 <!-- NOTIFICAÇÕES IMPORTANTES -->
 
                 <div class="panel">
@@ -397,9 +370,7 @@
 
                     </div>
 
-
                     <div class="notifications">
-
 
                         <div class="important-notification warning">
 
@@ -419,7 +390,6 @@
 
                         </div>
 
-
                         <div class="important-notification info">
 
                             <i class="bi bi-info-circle"></i>
@@ -438,24 +408,17 @@
 
                         </div>
 
-
                     </div>
 
                 </div>
 
-
             </div>
-
 
         </section>
 
-
     </main>
 
-
 </div>
-
-
 
 <!-- =============================================================
      GOOGLE CHARTS
@@ -478,8 +441,6 @@
 
     });
 
-
-
     /* ============================================================
        VENDAS E RECEITA
     ============================================================= */
@@ -499,7 +460,6 @@
                 ["Jun", 67000, 59000]
 
             ]);
-
 
         const opcoes = {
 
@@ -576,18 +536,14 @@
 
         };
 
-
         const grafico =
             new google.visualization.LineChart(
                 document.getElementById("salesChart")
             );
 
-
         grafico.draw(dados, opcoes);
 
     }
-
-
 
     /* ============================================================
        VENDAS POR CATEGORIA
@@ -607,7 +563,6 @@
                 ["Óculos", 15]
 
             ]);
-
 
         const opcoes = {
 
@@ -697,18 +652,14 @@
 
         };
 
-
         const grafico =
             new google.visualization.ColumnChart(
                 document.getElementById("categoryChart")
             );
 
-
         grafico.draw(dados, opcoes);
 
     }
-
-
 
     /* ============================================================
        REDIMENSIONAMENTO
@@ -728,7 +679,6 @@
     });
 
 </script>
-
 
 </body>
 
