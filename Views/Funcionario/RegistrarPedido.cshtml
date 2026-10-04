@@ -30,10 +30,17 @@
                 <p>Finalize o registro da compra</p>
             </div>
 
-            <section class="employee-purchase-card employee-purchase-automatic" aria-labelledby="employee-purchase-auto-heading">
+            <section
+                class="employee-purchase-card employee-purchase-automatic"
+                aria-labelledby="employee-purchase-auto-heading">
                 <div class="employee-purchase-card-heading">
                     <h3 id="employee-purchase-auto-heading">Registrar Compra Automaticamente</h3>
-                    <button class="employee-purchase-read-button" type="button" disabled aria-disabled="true" title="Leitura de NF-e ainda não integrada">
+                    <button
+                        class="employee-purchase-read-button"
+                        type="button"
+                        disabled
+                        aria-disabled="true"
+                        title="Leitura de NF-e ainda não integrada">
                         Ler Código de NF-e
                     </button>
                 </div>
@@ -73,30 +80,46 @@
                 <p class="employee-purchase-demo-note">Itens demonstrativos — leitura e importação de NF-e ainda não estão conectadas.</p>
             </section>
 
-            <section class="employee-purchase-card employee-purchase-manual" aria-labelledby="employee-purchase-manual-heading">
+            <section
+                class="employee-purchase-card employee-purchase-manual"
+                aria-labelledby="employee-purchase-manual-heading">
                 <div class="employee-purchase-card-heading employee-purchase-manual-heading">
                     <h3 id="employee-purchase-manual-heading">Registrar Compra Manualmente</h3>
                 </div>
                 <div class="employee-purchase-fields">
                     <div class="employee-purchase-field">
                         <label for="employee-purchase-nfe">Código de NF-e<span aria-hidden="true">*</span></label>
-                        <input id="employee-purchase-nfe" class="employee-purchase-input" type="text" placeholder="000-000-000" />
+                        <input
+                            id="employee-purchase-nfe"
+                            class="employee-purchase-input"
+                            type="text"
+                            placeholder="000-000-000" />
                     </div>
                     <div class="employee-purchase-field">
                         <label for="employee-purchase-cpf">CPF do Cliente</label>
-                        <input id="employee-purchase-cpf" class="employee-purchase-input" type="text" placeholder="000.000.000-00" />
+                        <input
+                            id="employee-purchase-cpf"
+                            class="employee-purchase-input"
+                            type="text"
+                            placeholder="000.000.000-00" />
                     </div>
                     <div class="employee-purchase-field employee-purchase-field-wide">
                         <label for="employee-purchase-name">Nome</label>
-                        <input id="employee-purchase-name" class="employee-purchase-input" type="text" placeholder="Nome completo do cliente" />
+                        <input
+                            id="employee-purchase-name"
+                            class="employee-purchase-input"
+                            type="text"
+                            placeholder="Nome completo do cliente" />
                     </div>
                 </div>
                 <p class="employee-purchase-demo-note">Campos ilustrativos — cadastro manual ainda não está conectado ao controller.</p>
             </section>
 
-            <button class="employee-purchase-finish-button" type="button" disabled aria-disabled="true">
-                Finalizar Compra
-            </button>
+            <form asp-controller="Funcionario" asp-action="ResumoCompra" method="get">
+                <button class="employee-purchase-finish-button" type="submit">
+                    Visualizar Resumo da Compra
+                </button>
+            </form>
         </section>
     </main>
 </body>
