@@ -1,0 +1,252 @@
+/* ==========================================
+   CADASTRO DE FUNCIONÁRIO
+   Estilos isolados desta interface.
+   ========================================== */
+
+body.employee-registration-page {
+    min-height: 100vh;
+    background: #f7f8fa;
+    color: #29313d;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+body.employee-registration-page .employee-page-shell {
+    min-height: 100vh;
+}
+
+body.employee-registration-page .employee-main-content {
+    width: calc(100% - 168px);
+    min-height: 100vh;
+    margin-left: 168px;
+    background: #f7f8fa;
+}
+
+body.employee-registration-page .employee-topbar {
+    display: flex;
+    height: 61px;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 15px 0 21px;
+    border-bottom: 1px solid #e7e9ed;
+    background: #fff;
+}
+
+body.employee-registration-page .employee-page-heading h1 {
+    margin: 0;
+    color: #29313d;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+body.employee-registration-page .employee-page-heading p {
+    margin: 3px 0 0;
+    color: #a0a5ad;
+    font-size: 10px;
+}
+
+body.employee-registration-page .employee-topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+body.employee-registration-page .employee-notification-button {
+    position: relative;
+    display: inline-flex;
+    width: 22px;
+    height: 28px;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #697180;
+    cursor: pointer;
+    font-size: 17px;
+}
+
+body.employee-registration-page .employee-notification-dot {
+    position: absolute;
+    top: 4px;
+    right: 1px;
+    width: 6px;
+    height: 6px;
+    border: 1px solid #fff;
+    border-radius: 50%;
+    background: #ef4444;
+}
+
+body.employee-registration-page .employee-topbar-avatar {
+    display: flex;
+    width: 32px;
+    height: 32px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #2160dc;
+    color: #fff;
+    font-size: 9px;
+    font-weight: 600;
+}
+
+body.employee-registration-page .employee-content {
+    display: flex;
+    min-height: calc(100vh - 61px);
+    align-items: center;
+    justify-content: center;
+    padding: 32px 24px;
+}
+
+body.employee-registration-page .employee-form-card {
+    width: min(100%, 612px);
+    min-height: 334px;
+    padding: 37px 19px 24px;
+    border: 1px solid #e6e8eb;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 2px 5px rgba(28, 39, 55, 0.08);
+}
+
+body.employee-registration-page .employee-form-heading {
+    display: flex;
+    min-height: 57px;
+    align-items: center;
+    gap: 10px;
+    padding-bottom: 17px;
+    border-bottom: 1px solid #eceef1;
+}
+
+body.employee-registration-page .employee-form-icon {
+    display: flex;
+    width: 39px;
+    height: 39px;
+    flex: 0 0 39px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9px;
+    background: #2160dc;
+    color: #fff;
+    font-size: 18px;
+}
+
+body.employee-registration-page .employee-form-heading h2 {
+    margin: 0;
+    color: #252c36;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+body.employee-registration-page .employee-form-heading p {
+    margin: 4px 0 0;
+    color: #9299a2;
+    font-size: 10px;
+}
+
+body.employee-registration-page .employee-registration-form {
+    padding-top: 54px;
+}
+
+body.employee-registration-page .employee-fields-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 13px;
+}
+
+body.employee-registration-page .employee-field label {
+    display: block;
+    margin-bottom: 6px;
+    color: #606975;
+    font-size: 10px;
+}
+
+body.employee-registration-page .employee-field label span {
+    margin-left: 2px;
+}
+
+body.employee-registration-page .employee-field .employee-input {
+    width: 100%;
+    height: 38px;
+    padding: 7px 11px;
+    border: 1px solid #dfe3e7;
+    border-radius: 8px;
+    background: #fff;
+    color: #404955;
+    font-family: inherit;
+    font-size: 12px;
+}
+
+body.employee-registration-page .employee-field .employee-input::placeholder {
+    color: #aeb5be;
+    opacity: 1;
+}
+
+body.employee-registration-page .employee-field .employee-input:focus {
+    border-color: #2160dc;
+    box-shadow: 0 0 0 3px rgba(33, 96, 220, 0.13);
+}
+
+body.employee-registration-page .employee-submit-button {
+    display: block;
+    width: 100%;
+    height: 42px;
+    margin-top: 59px;
+    border: 0;
+    border-radius: 8px;
+    background: #2160dc;
+    color: #fff;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    transition:
+        background-color 0.15s ease,
+        transform 0.05s ease;
+}
+
+body.employee-registration-page .employee-submit-button:hover {
+    background: #1b52ba;
+}
+
+body.employee-registration-page .employee-submit-button:active {
+    transform: translateY(1px);
+}
+
+body.employee-registration-page .employee-submit-button:focus-visible {
+    outline: 3px solid rgba(33, 96, 220, 0.3);
+    outline-offset: 2px;
+}
+
+@media (max-width: 720px) {
+    body.employee-registration-page .employee-main-content {
+        width: calc(100% - 65px);
+        margin-left: 65px;
+    }
+
+    body.employee-registration-page .employee-topbar {
+        padding-right: 12px;
+        padding-left: 14px;
+    }
+
+    body.employee-registration-page .employee-content {
+        padding: 22px 14px;
+    }
+
+    body.employee-registration-page .employee-form-card {
+        min-height: 0;
+        padding: 25px 17px 20px;
+    }
+
+    body.employee-registration-page .employee-registration-form {
+        padding-top: 30px;
+    }
+
+    body.employee-registration-page .employee-fields-grid {
+        grid-template-columns: 1fr;
+        gap: 17px;
+    }
+
+    body.employee-registration-page .employee-submit-button {
+        margin-top: 30px;
+    }
+}
+

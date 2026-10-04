@@ -1,0 +1,382 @@
+/* ==========================================
+   GERENCIAMENTO DE USUÁRIOS
+   Estilos isolados desta interface.
+   ========================================== */
+
+body.user-management-page {
+    min-height: 100vh;
+    background: #f7f8fa;
+    color: #29313d;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+body.user-management-page .user-management-main-content {
+    width: calc(100% - 168px);
+    min-height: 100vh;
+    margin-left: 168px;
+    background: #f7f8fa;
+}
+
+body.user-management-page .user-management-topbar {
+    display: flex;
+    height: 50px;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 18px 0 23px;
+    border-bottom: 1px solid #e7e9ed;
+    background: #fff;
+}
+
+body.user-management-page .user-management-topbar-title h1 {
+    margin: 0;
+    color: #29313d;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+body.user-management-page .user-management-topbar-title p {
+    margin: 2px 0 0;
+    color: #a0a5ad;
+    font-size: 9px;
+}
+
+body.user-management-page .user-management-topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+body.user-management-page .user-management-notification {
+    position: relative;
+    display: inline-flex;
+    width: 22px;
+    height: 28px;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #697180;
+    cursor: pointer;
+    font-size: 17px;
+}
+
+body.user-management-page .user-management-notification span {
+    position: absolute;
+    top: 4px;
+    right: 1px;
+    width: 6px;
+    height: 6px;
+    border: 1px solid #fff;
+    border-radius: 50%;
+    background: #ef4444;
+}
+
+body.user-management-page .user-management-topbar-avatar {
+    display: flex;
+    width: 32px;
+    height: 32px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #2160dc;
+    color: #fff;
+    font-size: 9px;
+    font-weight: 600;
+}
+
+body.user-management-page .user-management-content {
+    width: min(100% - 48px, 712px);
+    margin: 25px auto 20px;
+}
+
+body.user-management-page .user-management-intro {
+    margin-bottom: 18px;
+}
+
+body.user-management-page .user-management-intro h2 {
+    margin: 0;
+    color: #252c36;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+body.user-management-page .user-management-intro p {
+    margin: 4px 0 0;
+    color: #9299a2;
+    font-size: 11px;
+}
+
+body.user-management-page .user-management-panel {
+    overflow: hidden;
+    border: 1px solid #e4e7eb;
+    border-radius: 11px;
+    background: #fff;
+    box-shadow: 0 2px 5px rgba(28, 39, 55, 0.07);
+}
+
+body.user-management-page .user-password-panel {
+    margin-bottom: 19px;
+}
+
+body.user-management-page .user-management-panel-heading {
+    display: flex;
+    min-height: 55px;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 19px;
+    border-bottom: 1px solid #eceef1;
+}
+
+body.user-management-page .user-management-panel-icon {
+    display: flex;
+    width: 29px;
+    height: 29px;
+    flex: 0 0 29px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    background: #08ad56;
+    color: #fff;
+    font-size: 16px;
+}
+
+body.user-management-page .user-management-panel-heading h3,
+body.user-management-page .registered-users-heading h3 {
+    margin: 0;
+    color: #303743;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+body.user-management-page .user-password-form {
+    padding: 13px 19px 13px;
+}
+
+body.user-management-page .user-password-fields {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 24px;
+    row-gap: 12px;
+}
+
+body.user-management-page .user-management-field label {
+    display: block;
+    margin-bottom: 5px;
+    color: #68717c;
+    font-size: 10px;
+}
+
+body.user-management-page .user-management-field .user-management-input {
+    width: 100%;
+    height: 37px;
+    padding: 7px 11px;
+    border: 1px solid #dfe3e7;
+    border-radius: 8px;
+    background: #fff;
+    color: #404955;
+    font-family: inherit;
+    font-size: 12px;
+}
+
+body.user-management-page
+    .user-management-field
+    .user-management-input::placeholder {
+    color: #aeb5be;
+    opacity: 1;
+}
+
+body.user-management-page .user-management-field .user-management-input:focus {
+    border-color: #08ad56;
+    box-shadow: 0 0 0 3px rgba(8, 173, 86, 0.12);
+}
+
+body.user-management-page .user-password-submit {
+    display: block;
+    width: 100%;
+    height: 33px;
+    margin-top: 12px;
+    border: 0;
+    border-radius: 7px;
+    background: #08bd59;
+    color: #fff;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 500;
+    transition: background-color 0.15s ease;
+}
+
+body.user-management-page .user-password-submit:hover {
+    background: #06a94f;
+}
+
+body.user-management-page .user-password-submit:focus-visible,
+body.user-management-page .registered-user-actions button:focus-visible {
+    outline: 3px solid rgba(8, 173, 86, 0.25);
+    outline-offset: 2px;
+}
+
+body.user-management-page .registered-users-heading {
+    min-height: 47px;
+    padding: 13px 19px 11px;
+    border-bottom: 1px solid #eceef1;
+}
+
+body.user-management-page .registered-users-heading h3 {
+    font-size: 13px;
+}
+
+body.user-management-page .registered-users-list {
+    display: grid;
+    gap: 9px;
+    padding: 13px 19px 14px;
+}
+
+body.user-management-page .registered-user-row {
+    display: flex;
+    min-height: 59px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 8px 12px;
+    border: 1px solid #e8ebef;
+    border-radius: 9px;
+    background: #fff;
+}
+
+body.user-management-page .registered-user-identity {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: 10px;
+}
+
+body.user-management-page .registered-user-avatar {
+    display: flex;
+    width: 32px;
+    height: 32px;
+    flex: 0 0 32px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #2160dc;
+    color: #fff;
+    font-size: 10px;
+}
+
+body.user-management-page .registered-user-details {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 3px;
+}
+
+body.user-management-page .registered-user-details strong {
+    overflow: hidden;
+    color: #4b535e;
+    font-size: 11px;
+    font-weight: 600;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+body.user-management-page .registered-user-details small {
+    color: #969da6;
+    font-size: 9px;
+}
+
+body.user-management-page .registered-user-details small span {
+    padding: 0 2px;
+}
+
+body.user-management-page .registered-user-actions {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 7px;
+}
+
+body.user-management-page .registered-user-actions button {
+    min-height: 27px;
+    padding: 4px 10px;
+    border: 0;
+    border-radius: 7px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 10px;
+}
+
+body.user-management-page .registered-user-edit {
+    background: #f1f3f5;
+    color: #606975;
+}
+
+body.user-management-page .registered-user-edit:hover {
+    background: #e6e9ec;
+}
+
+body.user-management-page .registered-user-remove {
+    background: #f23543;
+    color: #fff;
+}
+
+body.user-management-page .registered-user-remove:hover {
+    background: #d92736;
+}
+
+@media (max-width: 720px) {
+    body.user-management-page .user-management-main-content {
+        width: calc(100% - 65px);
+        margin-left: 65px;
+    }
+
+    body.user-management-page .user-management-content {
+        width: calc(100% - 28px);
+        margin-top: 18px;
+    }
+
+    body.user-management-page .user-password-fields {
+        grid-template-columns: 1fr;
+        row-gap: 10px;
+    }
+
+    body.user-management-page .user-password-form {
+        padding-right: 14px;
+        padding-left: 14px;
+    }
+
+    body.user-management-page .user-management-panel-heading,
+    body.user-management-page .registered-users-heading {
+        padding-right: 14px;
+        padding-left: 14px;
+    }
+
+    body.user-management-page .registered-users-list {
+        padding-right: 12px;
+        padding-left: 12px;
+    }
+
+    body.user-management-page .registered-user-row {
+        padding-right: 8px;
+        padding-left: 8px;
+    }
+}
+
+@media (max-width: 430px) {
+    body.user-management-page .registered-user-row {
+        align-items: flex-start;
+    }
+
+    body.user-management-page .registered-user-actions {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 4px;
+    }
+
+    body.user-management-page .registered-user-actions button {
+        min-width: 61px;
+    }
+}
+
