@@ -1,0 +1,455 @@
+/* ==========================================
+   DASHBOARD
+   Estilos da área administrativa.
+   A sidebar permanece centralizada no ERP.css.
+   ========================================== */
+/* =========================================================
+           CONTEÚDO
+        ========================================================= */
+
+.main-content {
+    margin-left: 168px;
+
+    width: calc(100% - 168px);
+
+    min-height: 100vh;
+
+    background: #f7f8fa;
+}
+
+/* =========================================================
+           TOPBAR
+        ========================================================= */
+
+.topbar {
+    height: 61px;
+
+    background: #ffffff;
+
+    border-bottom: 1px solid #e7e9ed;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 15px 0 21px;
+}
+
+.page-title h1 {
+    margin: 0;
+
+    color: #29313d;
+
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.page-title p {
+    margin: 3px 0 0;
+
+    color: #a0a5ad;
+
+    font-size: 8px;
+}
+
+.topbar-right {
+    display: flex;
+    align-items: center;
+
+    gap: 15px;
+}
+
+.notification-button {
+    position: relative;
+
+    color: #697180;
+
+    font-size: 17px;
+
+    cursor: pointer;
+}
+
+.notification-badge {
+    position: absolute;
+
+    width: 5px;
+    height: 5px;
+
+    border-radius: 50%;
+
+    background: #ef4444;
+
+    right: 0;
+    top: 1px;
+
+    border: 1px solid #ffffff;
+}
+
+.topbar-avatar {
+    width: var(--profile-avatar-size);
+    height: var(--profile-avatar-size);
+
+    border-radius: 50%;
+
+    background: #2160dc;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #ffffff;
+
+    font-size: 8px;
+    font-weight: 600;
+}
+
+/* =========================================================
+           DASHBOARD
+        ========================================================= */
+
+.dashboard {
+    padding: 17px 20px 24px;
+}
+
+/* =========================================================
+           CARDS SUPERIORES
+        ========================================================= */
+
+.stats {
+    display: grid;
+
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+
+    gap: 15px;
+
+    margin-bottom: 16px;
+}
+
+.stat-card {
+    height: 81px;
+
+    background: #ffffff;
+
+    border: 1px solid #e5e7eb;
+
+    border-radius: 9px;
+
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+
+    padding: 12px 13px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+
+    box-shadow: 0 5px 14px rgba(0, 0, 0, 0.07);
+}
+
+.stat-title {
+    display: block;
+
+    color: #8d949e;
+
+    font-size: 8px;
+
+    margin-bottom: 4px;
+}
+
+.stat-value {
+    display: block;
+
+    color: #252c36;
+
+    font-size: 16px;
+    font-weight: 700;
+
+    line-height: 1;
+}
+
+.stat-change {
+    display: block;
+
+    margin-top: 7px;
+
+    font-size: 7px;
+}
+
+.stat-change.positive {
+    color: #25b875;
+}
+
+.stat-change.negative {
+    color: #ef4444;
+}
+
+.stat-icon {
+    width: 33px;
+    height: 33px;
+
+    border-radius: 8px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: white;
+
+    font-size: 15px;
+}
+
+.stat-icon.blue {
+    background: #3985f5;
+}
+
+.stat-icon.green {
+    background: #05c66b;
+}
+
+.stat-icon.purple {
+    background: #a340ed;
+}
+
+.stat-icon.orange {
+    background: #ff720d;
+}
+
+/* =========================================================
+           PRIMEIRA LINHA
+        ========================================================= */
+
+.top-panels {
+    display: grid;
+
+    grid-template-columns: minmax(0, 1.95fr) minmax(250px, 0.86fr);
+
+    gap: 16px;
+}
+
+/* =========================================================
+           SEGUNDA LINHA
+        ========================================================= */
+
+.bottom-panels {
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 1.16fr)
+        minmax(0, 1fr);
+
+    gap: 16px;
+
+    margin-top: 16px;
+}
+
+/* =========================================================
+           PAINEL
+        ========================================================= */
+
+.panel {
+    background: #ffffff;
+
+    border: 1px solid #e5e7eb;
+
+    border-radius: 9px;
+
+    overflow: hidden;
+
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.035);
+}
+
+.panel-title {
+    height: 41px;
+
+    display: flex;
+    align-items: center;
+
+    padding: 0 14px;
+
+    border-bottom: 1px solid #eceef1;
+}
+
+.panel-title h2 {
+    margin: 0;
+
+    color: #2c3541;
+
+    font-size: 11px;
+    font-weight: 700;
+}
+
+/* =========================================================
+           GRÁFICO VENDAS
+        ========================================================= */
+
+#salesChart {
+    width: 100%;
+    height: 269px;
+}
+
+/* =========================================================
+           ATIVIDADES
+        ========================================================= */
+
+.activities {
+    padding: 0 14px;
+}
+
+.activity {
+    height: 53px;
+
+    display: flex;
+    align-items: center;
+
+    border-bottom: 1px solid #eeeeee;
+}
+
+.activity:last-child {
+    border-bottom: none;
+}
+
+.activity-dot {
+    width: 6px;
+    height: 6px;
+
+    border-radius: 50%;
+
+    flex-shrink: 0;
+
+    margin-right: 9px;
+}
+
+.activity-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.activity-title {
+    color: #464e59;
+
+    font-size: 8px;
+    font-weight: 500;
+}
+
+.activity-time {
+    color: #9ba1aa;
+
+    font-size: 7px;
+
+    margin-top: 4px;
+}
+
+/* =========================================================
+           GRÁFICO CATEGORIAS
+        ========================================================= */
+
+#categoryChart {
+    width: 100%;
+    height: 201px;
+}
+
+/* =========================================================
+           NOTIFICAÇÕES
+        ========================================================= */
+
+.notifications {
+    padding: 10px 14px;
+}
+
+.important-notification {
+    min-height: 45px;
+
+    border-radius: 7px;
+
+    display: flex;
+    align-items: center;
+
+    padding: 7px 9px;
+
+    margin-bottom: 8px;
+}
+
+.important-notification:last-child {
+    margin-bottom: 0;
+}
+
+.important-notification i {
+    font-size: 14px;
+
+    margin-right: 8px;
+}
+
+.important-notification.warning {
+    background: #fffbea;
+
+    border: 1px solid #f7e5a1;
+
+    color: #c49b27;
+}
+
+.important-notification.info {
+    background: #eff6ff;
+
+    border: 1px solid #c9defb;
+
+    color: #4b80d5;
+}
+
+.important-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.important-title {
+    font-size: 8px;
+    font-weight: 600;
+}
+
+.important-description {
+    font-size: 7px;
+
+    margin-top: 3px;
+}
+
+/* =========================================================
+           RESPONSIVO
+        ========================================================= */
+
+@media (max-width: 900px) {
+    .stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .top-panels,
+    .bottom-panels {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 600px) {
+    .sidebar {
+        width: 150px;
+    }
+
+    .main-content {
+        margin-left: 150px;
+
+        width: calc(100% - 150px);
+    }
+
+    .dashboard {
+        padding: 12px;
+    }
+
+    .stats {
+        grid-template-columns: 1fr;
+    }
+}
+

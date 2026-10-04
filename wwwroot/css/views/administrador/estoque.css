@@ -1,0 +1,399 @@
+/* ==========================================
+   ESTOQUE
+   Interface de gerenciamento de produtos.
+   Isolada em .stock-page para preservar as demais views.
+   ========================================== */
+
+body.stock-page {
+    min-height: 100vh;
+    margin: 0;
+    overflow-x: hidden;
+    background: #f7f8fa;
+    color: #252b35;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+body.stock-page .stock-main-content {
+    min-height: 100vh;
+    width: calc(100% - 168px);
+    margin-left: 168px;
+    background: #f7f8fa;
+}
+
+body.stock-page .stock-topbar {
+    display: flex;
+    height: 49px;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px 0 25px;
+    border-bottom: 1px solid #e7e9ed;
+    background: #ffffff;
+}
+
+body.stock-page .stock-page-title h1 {
+    margin: 0;
+    color: #29313d;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 18px;
+}
+
+body.stock-page .stock-page-title p {
+    margin: 2px 0 0;
+    color: #a0a5ad;
+    font-size: 8px;
+    line-height: 10px;
+}
+
+body.stock-page .stock-topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+body.stock-page .stock-notification {
+    position: relative;
+    width: 22px;
+    height: 25px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #697180;
+    cursor: pointer;
+    font-size: 17px;
+}
+
+body.stock-page .stock-notification-dot {
+    position: absolute;
+    top: 1px;
+    right: 1px;
+    width: 5px;
+    height: 5px;
+    border: 1px solid #ffffff;
+    border-radius: 50%;
+    background: #ef4444;
+}
+
+body.stock-page .stock-top-avatar {
+    display: flex;
+    width: var(--profile-avatar-size);
+    height: var(--profile-avatar-size);
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #2160dc;
+    color: #ffffff;
+    font-size: 9px;
+    font-weight: 600;
+}
+
+body.stock-page .stock-content {
+    padding: 26px 25px 20px;
+}
+
+body.stock-page .stock-heading-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+body.stock-page .stock-heading-row h2 {
+    margin: 0;
+    color: #252d38;
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 24px;
+}
+
+body.stock-page .stock-heading-row p {
+    margin: 4px 0 0;
+    color: #8f969f;
+    font-size: 10px;
+}
+
+body.stock-page .stock-add-button {
+    display: inline-flex;
+    min-width: 154px;
+    height: 33px;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    margin-top: 4px;
+    border-radius: 8px;
+    background: #2160dc;
+    box-shadow: 0 2px 5px rgba(33, 96, 220, 0.2);
+    color: #ffffff;
+    font-size: 11px;
+    text-decoration: none;
+    transition:
+        background-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+body.stock-page .stock-add-button:hover {
+    background: #1852c2;
+    color: #ffffff;
+    transform: translateY(-1px);
+}
+
+body.stock-page .stock-add-button i {
+    font-size: 12px;
+}
+
+body.stock-page .stock-table-card {
+    overflow: hidden;
+    border: 1px solid #e3e6ea;
+    border-radius: 11px;
+    background: #ffffff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.04);
+}
+
+body.stock-page .stock-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    min-height: 75px;
+    padding: 15px 18px;
+    border-bottom: 1px solid #eceef1;
+}
+
+body.stock-page .stock-search-wrapper {
+    position: relative;
+    flex: 1;
+}
+
+body.stock-page .stock-search-wrapper > i {
+    position: absolute;
+    top: 50%;
+    left: 11px;
+    color: #aeb5be;
+    font-size: 15px;
+    pointer-events: none;
+    transform: translateY(-50%);
+}
+
+body.stock-page .stock-search {
+    width: 100%;
+    height: 38px;
+    padding: 5px 12px 5px 34px;
+    border: 1px solid #e0e3e7;
+    border-radius: 8px;
+    outline: none;
+    color: #45505d;
+    font-size: 11px;
+}
+
+body.stock-page .stock-search::placeholder {
+    color: #b2b8c0;
+}
+
+body.stock-page .stock-search:focus {
+    border-color: #2160dc;
+    box-shadow: 0 0 0 2px rgba(33, 96, 220, 0.12);
+}
+
+body.stock-page .stock-filter-button {
+    display: inline-flex;
+    width: 75px;
+    height: 34px;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    border: 0;
+    border-radius: 7px;
+    background: #f7f8fa;
+    color: #68717c;
+    cursor: pointer;
+    font-size: 11px;
+}
+
+body.stock-page .stock-filter-button:hover {
+    background: #edf0f4;
+}
+
+body.stock-page .stock-filter-button i {
+    font-size: 13px;
+}
+
+body.stock-page .stock-table {
+    width: 100%;
+    min-width: 790px;
+    margin: 0;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+body.stock-page .stock-table thead {
+    background: #fafbfc;
+}
+
+body.stock-page .stock-table th {
+    height: 34px;
+    padding: 0 18px;
+    border-bottom: 1px solid #e9ebee;
+    color: #65707c;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-align: left;
+    text-transform: uppercase;
+}
+
+body.stock-page .stock-table td {
+    height: 51px;
+    padding: 0 18px;
+    border-bottom: 1px solid #edf0f2;
+    color: #555e69;
+    font-size: 10px;
+    vertical-align: middle;
+}
+
+body.stock-page .stock-table tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+body.stock-page .stock-table tbody tr:hover {
+    background: #fbfcfe;
+}
+
+body.stock-page .stock-table th:nth-child(1),
+body.stock-page .stock-table td:nth-child(1) {
+    width: 13%;
+}
+
+body.stock-page .stock-table th:nth-child(2),
+body.stock-page .stock-table td:nth-child(2) {
+    width: 18%;
+}
+
+body.stock-page .stock-table th:nth-child(3),
+body.stock-page .stock-table td:nth-child(3) {
+    width: 14%;
+}
+
+body.stock-page .stock-table th:nth-child(4),
+body.stock-page .stock-table td:nth-child(4) {
+    width: 11%;
+}
+
+body.stock-page .stock-table th:nth-child(5),
+body.stock-page .stock-table td:nth-child(5) {
+    width: 10%;
+}
+
+body.stock-page .stock-table th:nth-child(6),
+body.stock-page .stock-table td:nth-child(6) {
+    width: 17%;
+}
+
+body.stock-page .stock-table th:nth-child(7),
+body.stock-page .stock-table td:nth-child(7) {
+    width: 17%;
+}
+
+body.stock-page .stock-product-name {
+    color: #4b5662 !important;
+    font-weight: 600;
+}
+
+body.stock-page .stock-id {
+    color: #8d96a0 !important;
+    font-size: 9px !important;
+}
+
+body.stock-page .stock-quantity {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 9px;
+    font-size: 9px;
+    line-height: 12px;
+    white-space: nowrap;
+}
+
+body.stock-page .quantity-good {
+    background: #dff8e9;
+    color: #38a96e;
+}
+
+body.stock-page .quantity-warning {
+    background: #fff4ca;
+    color: #c9a72f;
+}
+
+body.stock-page .quantity-low {
+    background: #ffe4e7;
+    color: #db6a73;
+}
+
+body.stock-page .stock-actions-heading {
+    text-align: center !important;
+}
+
+body.stock-page .stock-actions {
+    display: table-cell;
+    padding-right: 18px !important;
+    text-align: center;
+    white-space: nowrap;
+}
+
+body.stock-page .stock-actions a {
+    display: inline-block;
+    margin: 0 7px;
+    color: #8d959d;
+    font-size: 13px;
+    text-decoration: none;
+    transition:
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+body.stock-page .stock-actions a:hover {
+    color: #2160dc;
+    transform: translateY(-1px);
+}
+
+body.stock-page .stock-actions a.stock-delete {
+    color: #e9727b;
+}
+
+body.stock-page .stock-actions a.stock-delete:hover {
+    color: #d6404b;
+}
+
+@media (max-width: 900px) {
+    body.stock-page .stock-content {
+        padding-right: 15px;
+        padding-left: 15px;
+    }
+}
+
+@media (max-width: 720px) {
+    body.stock-page .stock-main-content {
+        width: calc(100% - 65px);
+        margin-left: 65px;
+    }
+
+    body.stock-page .stock-content {
+        padding: 20px 12px;
+    }
+
+    body.stock-page .stock-heading-row {
+        gap: 12px;
+        flex-direction: column;
+    }
+
+    body.stock-page .stock-add-button {
+        margin-top: 0;
+    }
+
+    body.stock-page .stock-toolbar {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    body.stock-page .stock-filter-button {
+        width: 100%;
+    }
+}
+

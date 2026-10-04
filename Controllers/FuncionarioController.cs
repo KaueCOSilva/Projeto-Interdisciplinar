@@ -38,7 +38,8 @@ namespace SIVAD.Controllers
         {
             if (id == null)
             {
-                return RedirectToAction("RegistrarPedido");
+                // A tela contém dados demonstrativos para navegação antes do CRUD/SQL Server.
+                return View();
             }
 
             var pedido = await _context.Pedidos.FindAsync(id.Value);

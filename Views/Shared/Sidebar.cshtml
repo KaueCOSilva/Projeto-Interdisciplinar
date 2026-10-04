@@ -18,7 +18,6 @@
 
     </div>
 
-
     <nav class="menu">
 
         <!-- DASHBOARD -->
@@ -33,7 +32,6 @@
 
         </a>
 
-
         <!-- RELATÓRIOS -->
 
         <a asp-controller="Administrador"
@@ -45,7 +43,6 @@
             <span>Relatórios</span>
 
         </a>
-
 
         <!-- ESTOQUE -->
 
@@ -59,7 +56,6 @@
 
         </a>
 
-
         <!-- MOVIMENTO DE COMPRAS -->
 
         <a asp-controller="Administrador"
@@ -71,7 +67,6 @@
             <span>Movimento de Compras</span>
 
         </a>
-
 
         <!-- FUNCIONÁRIOS -->
 
@@ -88,12 +83,11 @@
 
             </a>
 
-
             <div class="submenu">
 
                 <a asp-controller="Administrador"
-                asp-action="CadastrarUsuario"
-                class="menu-item @(ViewContext.RouteData.Values["action"]?.ToString() == "CadastrarUsuario" ? "active" : "")">
+                   asp-action="CadastrarUsuario"
+                   class="menu-item @(ViewContext.RouteData.Values["action"]?.ToString() == "CadastrarUsuario" ? "active" : "")">
 
                     <i class="bi bi-file-earmark-text"></i>
 
@@ -101,10 +95,9 @@
 
                 </a>
 
-
                 <a asp-controller="Administrador"
-                asp-action="GerenciarUsuarios"
-                class="menu-item @(ViewContext.RouteData.Values["action"]?.ToString() == "GerenciarUsuarios" ? "active" : "")">
+                   asp-action="GerenciarUsuarios"
+                   class="menu-item @(ViewContext.RouteData.Values["action"]?.ToString() == "GerenciarUsuarios" ? "active" : "")">
 
                     <i class="bi bi-file-earmark-text"></i>
 
@@ -116,12 +109,11 @@
 
         </div>
 
-
         <!-- NOTIFICAÇÕES -->
 
         <a asp-controller="Administrador"
-            asp-action="Notificacoes"
-            class="menu-item @(ViewContext.RouteData.Values["action"]?.ToString() == "Notificacoes" ? "active" : "")">
+           asp-action="Notificacoes"
+           class="menu-item @(ViewContext.RouteData.Values["action"]?.ToString() == "Notificacoes" ? "active" : "")">
 
                 <i class="bi bi-file-earmark-text"></i>
 
@@ -129,7 +121,6 @@
         </a>
 
     </nav>
-
 
     <!-- USUÁRIO -->
 
@@ -155,9 +146,8 @@
 
         </div>
 
-
         <a asp-controller="Autenticacao"
-            asp-action="Login"
+           asp-action="Login"
            class="logout">
 
             <i class="bi bi-box-arrow-right"></i>

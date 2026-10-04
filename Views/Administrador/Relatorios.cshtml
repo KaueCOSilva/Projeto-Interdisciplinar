@@ -10,14 +10,15 @@
 
     <title>Relatórios - Sistema ERP</title>
 
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
-    <link rel="stylesheet" href="/css/erp.css?v=1" />
-
-
+    <link rel="stylesheet" href="/css/base.css?v=1" />
+    <link rel="stylesheet" href="/css/shared/sidebar-admin.css?v=1" />
+    <link rel="stylesheet" href="/css/shared/logout-link.css?v=1" />
+    <link rel="stylesheet" href="/css/views/administrador/dashboard.css?v=1" />
+    <link rel="stylesheet" href="/css/views/administrador/relatorios.css?v=1" />
+    <link rel="stylesheet" href="/css/shared/profile-avatars.css?v=1" />
 
 </head>
 
@@ -29,13 +30,11 @@
 
     <partial name="Sidebar" />
 
-
     <!-- =========================================================
          PÁGINA
          ========================================================= -->
 
     <div class="page">
-
 
         <!-- =====================================================
              TOPBAR
@@ -55,19 +54,17 @@
 
             </div>
 
-
             <div class="top-actions">
 
                 <div class="notification">
                     <a asp-controller="Administrador"
-                         asp-action="Notificacoes">
+                           asp-action="Notificacoes">
                         <i class="bi bi-bell"></i>
 
                         <span class="notification-dot"></span>
                     </a>
 
                 </div>
-
 
                 <div class="top-avatar">
                     JD
@@ -77,13 +74,11 @@
 
         </header>
 
-
         <!-- =====================================================
              CONTEÚDO
              ===================================================== -->
 
         <main class="content">
-
 
             <!-- =================================================
                  ABAS
@@ -92,39 +87,45 @@
             <div class="report-tabs">
 
                 <button type="button"
-                        class="report-tab">
+                        class="report-tab"
+                        data-report="diarias"
+                        aria-pressed="false">
 
                     Vendas Diárias
 
                 </button>
 
-
                 <button type="button"
-                        class="report-tab active">
+                        class="report-tab active"
+                        data-report="mensais"
+                        aria-pressed="true">
 
                     Vendas Mensais
 
                 </button>
 
-
                 <button type="button"
-                        class="report-tab">
+                        class="report-tab"
+                        data-report="anuais"
+                        aria-pressed="false">
 
                     Vendas Anuais
 
                 </button>
 
-
                 <button type="button"
-                        class="report-tab">
+                        class="report-tab"
+                        data-report="devolucoes"
+                        aria-pressed="false">
 
                     Devoluções
 
                 </button>
 
-
                 <button type="button"
-                        class="report-tab">
+                        class="report-tab"
+                        data-report="caixa"
+                        aria-pressed="false">
 
                     Fluxo de Caixa
 
@@ -132,13 +133,11 @@
 
             </div>
 
-
             <!-- =================================================
                  CARDS DE INDICADORES
                  ================================================= -->
 
             <section class="stats-grid">
-
 
                 <!-- TOTAL DE VENDAS -->
 
@@ -146,20 +145,19 @@
 
                     <div class="stat-info">
 
-                        <div class="stat-label">
+                        <div class="stat-label" id="primaryMetricLabel">
                             Total de Vendas
                         </div>
 
-                        <div class="stat-value">
+                        <div class="stat-value" id="primaryMetricValue">
                             R$ 549,60
                         </div>
 
-                        <div class="stat-change neutral">
-                            Dados disponíveis no banco
+                        <div class="stat-change neutral" id="primaryMetricDescription">
+                            Valores de demonstração
                         </div>
 
                     </div>
-
 
                     <div class="stat-icon blue">
 
@@ -169,27 +167,25 @@
 
                 </div>
 
-
                 <!-- RECEITA -->
 
                 <div class="stat-card">
 
                     <div class="stat-info">
 
-                        <div class="stat-label">
+                        <div class="stat-label" id="secondMetricLabel">
                             Receita
                         </div>
 
-                        <div class="stat-value">
+                        <div class="stat-value" id="secondMetricValue">
                             R$ 549,60
                         </div>
 
-                        <div class="stat-change neutral">
+                        <div class="stat-change neutral" id="secondMetricDescription">
                             Total dos pedidos
                         </div>
 
                     </div>
-
 
                     <div class="stat-icon green">
 
@@ -199,27 +195,25 @@
 
                 </div>
 
-
                 <!-- PRODUTOS VENDIDOS -->
 
                 <div class="stat-card">
 
                     <div class="stat-info">
 
-                        <div class="stat-label">
+                        <div class="stat-label" id="thirdMetricLabel">
                             Produtos Vendidos
                         </div>
 
-                        <div class="stat-value">
+                        <div class="stat-value" id="thirdMetricValue">
                             4
                         </div>
 
-                        <div class="stat-change neutral">
+                        <div class="stat-change neutral" id="thirdMetricDescription">
                             Unidades vendidas
                         </div>
 
                     </div>
-
 
                     <div class="stat-icon purple">
 
@@ -229,27 +223,25 @@
 
                 </div>
 
-
                 <!-- CRESCIMENTO -->
 
                 <div class="stat-card">
 
                     <div class="stat-info">
 
-                        <div class="stat-label">
+                        <div class="stat-label" id="fourthMetricLabel">
                             Crescimento Mensal
                         </div>
 
-                        <div class="stat-value">
+                        <div class="stat-value" id="fourthMetricValue">
                             —
                         </div>
 
-                        <div class="stat-change neutral">
+                        <div class="stat-change neutral" id="fourthMetricDescription">
                             Sem data de pedido
                         </div>
 
                     </div>
-
 
                     <div class="stat-icon orange">
 
@@ -261,13 +253,11 @@
 
             </section>
 
-
             <!-- =================================================
                  GRÁFICO + FILTROS
                  ================================================= -->
 
             <section class="report-main">
-
 
                 <!-- =================================================
                      GRÁFICO
@@ -275,14 +265,11 @@
 
                 <div class="panel chart-panel">
 
-
-                    <div class="panel-header">
+                    <div class="panel-header" id="salesChartTitle" aria-live="polite">
                         Vendas por mês
                     </div>
 
-
                     <div class="chart-area">
-
 
                         <!-- LINHAS VERTICAIS -->
 
@@ -296,13 +283,11 @@
 
                         </div>
 
-
                         <!-- BARRAS -->
 
-                        <div class="bars">
+                        <div class="bars" id="reportBars">
 
-
-                            <div class="bar-row">
+                            <div class="bar-row" data-month="janeiro">
 
                                 <span class="month-label">
                                     Janeiro
@@ -318,8 +303,7 @@
 
                             </div>
 
-
-                            <div class="bar-row">
+                            <div class="bar-row" data-month="fevereiro">
 
                                 <span class="month-label">
                                     Fevereiro
@@ -335,8 +319,7 @@
 
                             </div>
 
-
-                            <div class="bar-row">
+                            <div class="bar-row" data-month="marco">
 
                                 <span class="month-label">
                                     Março
@@ -352,8 +335,7 @@
 
                             </div>
 
-
-                            <div class="bar-row">
+                            <div class="bar-row" data-month="abril">
 
                                 <span class="month-label">
                                     Abril
@@ -369,8 +351,7 @@
 
                             </div>
 
-
-                            <div class="bar-row">
+                            <div class="bar-row" data-month="maio">
 
                                 <span class="month-label">
                                     Maio
@@ -386,8 +367,7 @@
 
                             </div>
 
-
-                            <div class="bar-row">
+                            <div class="bar-row" data-month="junho">
 
                                 <span class="month-label">
                                     Junho
@@ -403,8 +383,7 @@
 
                             </div>
 
-
-                            <div class="bar-row">
+                            <div class="bar-row" data-month="julho">
 
                                 <span class="month-label">
                                     Julho
@@ -422,10 +401,9 @@
 
                         </div>
 
-
                         <!-- EIXO X -->
 
-                        <div class="x-axis">
+                        <div class="x-axis" id="reportXAxis">
 
                             <span>0</span>
 
@@ -443,63 +421,57 @@
 
                 </div>
 
-
                 <!-- =================================================
                      FILTROS
                      ================================================= -->
 
                 <div class="panel filter-panel">
 
-
                     <div class="panel-header">
                         Filtros
                     </div>
 
-
                     <div class="filter-content">
 
-
-                        <label class="filter-label">
+                        <label class="filter-label" for="monthFilter">
                             Selecione o Mês
                         </label>
 
+                        <select class="month-select" id="monthFilter">
 
-                        <select class="month-select">
-
-                            <option selected>
+                            <option value="todos" selected>
                                 Todos os meses
                             </option>
 
-                            <option>
+                            <option value="janeiro">
                                 Janeiro
                             </option>
 
-                            <option>
+                            <option value="fevereiro">
                                 Fevereiro
                             </option>
 
-                            <option>
+                            <option value="marco">
                                 Março
                             </option>
 
-                            <option>
+                            <option value="abril">
                                 Abril
                             </option>
 
-                            <option>
+                            <option value="maio">
                                 Maio
                             </option>
 
-                            <option>
+                            <option value="junho">
                                 Junho
                             </option>
 
-                            <option>
+                            <option value="julho">
                                 Julho
                             </option>
 
                         </select>
-
 
                         <!-- PERÍODO -->
 
@@ -509,12 +481,11 @@
                                 Período
                             </div>
 
-                            <div class="filter-box-value">
-                                Dados atuais
+                            <div class="filter-box-value" id="selectedPeriod">
+                                Todos os meses
                             </div>
 
                         </div>
-
 
                         <!-- TRANSAÇÕES -->
 
@@ -524,22 +495,21 @@
                                 Total de Transações
                             </div>
 
-                            <div class="filter-box-value">
+                            <div class="filter-box-value" id="transactionCount">
                                 2 pedidos
                             </div>
 
                         </div>
 
-
                         <!-- TICKET MÉDIO -->
 
                         <div class="filter-box purple-box">
 
-                            <div class="filter-box-title">
+                            <div class="filter-box-title" id="averageTicketLabel">
                                 Ticket Médio
                             </div>
 
-                            <div class="filter-box-value">
+                            <div class="filter-box-value" id="averageTicket">
                                 R$ 274,80
                             </div>
 
@@ -551,65 +521,61 @@
 
             </section>
 
-
             <!-- =================================================
                  CARDS INFERIORES
                  ================================================= -->
 
             <section class="bottom-grid">
 
-
                 <!-- MAIOR RENDIMENTO -->
 
                 <div class="bottom-card">
 
-                    <div class="bottom-title">
+                    <div class="bottom-title" id="bestGroupLabel">
                         Mês com maior rendimento Bruto
                     </div>
 
-                    <div class="bottom-value">
+                    <div class="bottom-value" id="bestGroupValue">
                         Atual
                     </div>
 
-                    <div class="bottom-description description-green">
+                    <div class="bottom-description description-green" id="bestGroupDescription">
                         R$ 549,60 em vendas
                     </div>
 
                 </div>
 
-
                 <!-- CATEGORIA MAIS VENDIDA -->
 
                 <div class="bottom-card">
 
-                    <div class="bottom-title">
+                    <div class="bottom-title" id="reportTypeLabel">
                         Categoria Mais Vendida
                     </div>
 
-                    <div class="bottom-value">
+                    <div class="bottom-value" id="reportTypeValue">
                         Masculino
                     </div>
 
-                    <div class="bottom-description description-blue">
+                    <div class="bottom-description description-blue" id="reportTypeDescription">
                         R$ 359,70 em vendas
                     </div>
 
                 </div>
 
-
                 <!-- TAXA DE CONVERSÃO -->
 
                 <div class="bottom-card">
 
-                    <div class="bottom-title">
+                    <div class="bottom-title" id="recordsLabel">
                         Taxa de Conversão
                     </div>
 
-                    <div class="bottom-value">
+                    <div class="bottom-value" id="recordsValue">
                         —
                     </div>
 
-                    <div class="bottom-description description-purple">
+                    <div class="bottom-description description-purple" id="recordsDescription">
                         Sem dados para cálculo
                     </div>
 
@@ -621,5 +587,6 @@
 
     </div>
 
+    <script src="/js/relatorios.js"></script>
 </body>
 </html>

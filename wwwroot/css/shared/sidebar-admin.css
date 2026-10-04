@@ -1,0 +1,294 @@
+/* ==========================================
+   SIDEBAR
+   ========================================== */
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+
+    width: 168px;
+
+    background: #111a2b;
+    color: #fff;
+
+    display: flex;
+    flex-direction: column;
+
+    z-index: 1000;
+
+    border-right: 1px solid #253149;
+}
+
+.logo-area {
+    height: 70px;
+
+    display: flex;
+    align-items: center;
+
+    padding: 0 14px;
+
+    border-bottom: 1px solid #253149;
+}
+
+.logo-icon {
+    width: 36px;
+    height: 36px;
+
+    border-radius: 8px;
+
+    background: #080d18;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin-right: 8px;
+
+    flex-shrink: 0;
+}
+
+.logo-icon i {
+    font-size: 20px;
+    color: #2160dc;
+}
+
+.logo-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.logo-title {
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 17px;
+}
+
+.logo-subtitle {
+    font-size: 8px;
+    color: #8993a7;
+    margin-top: 2px;
+}
+
+.menu {
+    padding: 13px 7px;
+}
+
+.menu-item {
+    height: 38px;
+
+    display: flex;
+    align-items: center;
+
+    padding: 0 9px;
+
+    margin-bottom: 4px;
+
+    color: #c8cfdb;
+
+    text-decoration: none;
+
+    border-radius: 8px;
+
+    font-size: 11px;
+
+    transition:
+        background-color 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.menu-item i {
+    width: 24px;
+
+    font-size: 14px;
+
+    margin-right: 2px;
+
+    text-align: center;
+
+    flex-shrink: 0;
+}
+
+.menu-item:hover {
+    background: #192642;
+    color: #fff;
+
+    transform: translateX(2px);
+}
+
+.menu-item.active {
+    background: #2160dc;
+    color: #fff;
+
+    box-shadow: 0 2px 6px rgba(33, 96, 220, 0.3);
+}
+
+.menu-item.active:hover {
+    background: #2160dc;
+    transform: translateX(0);
+}
+
+.menu-arrow {
+    margin-left: auto;
+    font-size: 9px !important;
+}
+
+.submenu {
+    padding-left: 20px;
+    margin-bottom: 4px;
+}
+
+.submenu-item {
+    min-height: 36px;
+
+    display: flex;
+    align-items: center;
+
+    color: #b8c1d0;
+
+    text-decoration: none;
+
+    font-size: 10px;
+
+    padding: 5px 7px;
+
+    border-radius: 6px;
+
+    transition: 0.2s ease;
+}
+
+.submenu-item i {
+    width: 21px;
+    font-size: 11px;
+}
+
+.submenu-item:hover {
+    color: #fff;
+    background: #192642;
+}
+
+/* ==========================================
+   USUÁRIO
+   ========================================== */
+
+.sidebar-bottom {
+    margin-top: auto;
+
+    border-top: 1px solid #253149;
+
+    padding: 11px 10px 13px;
+}
+
+.user-area {
+    display: flex;
+    align-items: center;
+
+    margin-bottom: 12px;
+}
+
+.user-avatar {
+    width: var(--profile-avatar-size);
+    height: var(--profile-avatar-size);
+
+    border-radius: 50%;
+
+    background: #344258;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 10px;
+
+    margin-right: 7px;
+
+    flex-shrink: 0;
+}
+
+.user-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.user-name {
+    font-size: 10px;
+    font-weight: 600;
+}
+
+.user-role {
+    font-size: 8px;
+    color: #8d97a9;
+
+    margin-top: 2px;
+}
+
+/* ==========================================
+   ÁREA DA PÁGINA
+   ========================================== */
+
+.page {
+    margin-left: 168px;
+
+    min-height: 100vh;
+}
+
+@media (max-width: 720px) {
+    .sidebar {
+        width: 65px;
+    }
+
+    .logo-text,
+    .menu-item span,
+    .submenu,
+    .menu-arrow,
+    .sidebar-bottom .user-info {
+        display: none;
+    }
+
+    .logo-area {
+        justify-content: center;
+        padding: 0;
+    }
+
+    .logo-icon {
+        margin: 0;
+    }
+
+    .menu {
+        padding: 13px 7px;
+    }
+
+    .menu-item {
+        justify-content: center;
+        padding: 0;
+    }
+
+    .menu-item i {
+        margin: 0;
+    }
+
+    .sidebar-bottom {
+        padding: 12px 7px;
+    }
+
+    .user-area {
+        justify-content: center;
+    }
+
+    .user-avatar {
+        margin: 0;
+    }
+
+
+    .page {
+        margin-left: 65px;
+    }
+}
+
+@media (max-width: 600px) {
+    .sidebar {
+        width: 150px;
+    }
+}

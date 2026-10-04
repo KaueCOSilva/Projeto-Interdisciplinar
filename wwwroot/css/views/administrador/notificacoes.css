@@ -1,0 +1,244 @@
+/* ==========================================
+   CENTRAL DE NOTIFICAÇÕES
+   Estilos isolados desta interface.
+   ========================================== */
+
+body.notifications-page {
+    min-height: 100vh;
+    background: #fff;
+    color: #303743;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+body.notifications-page .notifications-main-content {
+    width: calc(100% - 168px);
+    min-height: 100vh;
+    margin-left: 168px;
+    background: #fff;
+}
+
+body.notifications-page .notifications-topbar {
+    display: flex;
+    height: 43px;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 15px 0 18px;
+    border-bottom: 1px solid #e7e9ed;
+    background: #fff;
+}
+
+body.notifications-page .notifications-page-heading h1 {
+    margin: 0;
+    color: #29313d;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+body.notifications-page .notifications-page-heading p {
+    margin: 1px 0 0;
+    color: #a0a5ad;
+    font-size: 8px;
+}
+
+body.notifications-page .notifications-topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+}
+
+body.notifications-page .notifications-bell-button {
+    position: relative;
+    display: inline-flex;
+    width: 21px;
+    height: 27px;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #697180;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+body.notifications-page .notifications-bell-button span {
+    position: absolute;
+    top: 4px;
+    right: 1px;
+    width: 6px;
+    height: 6px;
+    border: 1px solid #fff;
+    border-radius: 50%;
+    background: #ef4444;
+}
+
+body.notifications-page .notifications-user-avatar {
+    display: flex;
+    width: var(--profile-avatar-size);
+    height: var(--profile-avatar-size);
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #2160dc;
+    color: #fff;
+    font-size: 8px;
+    font-weight: 600;
+}
+
+body.notifications-page .notifications-list {
+    width: 100%;
+}
+
+body.notifications-page .notification-entry {
+    position: relative;
+    display: flex;
+    min-height: 99px;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 15px 62px 13px 13px;
+    border-bottom: 1px solid #f0f1f3;
+    background: #fff;
+}
+
+body.notifications-page .notification-stock-warning {
+    background: #fffdec;
+}
+
+body.notifications-page .notification-type-icon {
+    display: flex;
+    width: 28px;
+    height: 28px;
+    flex: 0 0 28px;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1px;
+    border: 1px solid #e5efff;
+    border-radius: 8px;
+    background: #edf4ff;
+    color: #3273dc;
+    font-size: 14px;
+}
+
+body.notifications-page .notification-stock-warning .notification-type-icon {
+    border-color: #ffefbd;
+    background: #fff8dc;
+    color: #d4a300;
+}
+
+body.notifications-page .notification-user-created .notification-type-icon {
+    border-color: #d8f6e5;
+    background: #e9fff1;
+    color: #37b56a;
+}
+
+body.notifications-page .notification-purchase-success .notification-type-icon {
+    border-color: #d5f4e4;
+    background: #e6fbef;
+    color: #38b878;
+}
+
+body.notifications-page .notification-system-update .notification-type-icon {
+    border-color: #dce7ff;
+    background: #edf3ff;
+    color: #5485ea;
+}
+
+body.notifications-page .notification-sync-failure .notification-type-icon {
+    border-color: #ffdfe2;
+    background: #fff0f1;
+    color: #df6470;
+}
+
+body.notifications-page .notification-copy {
+    min-width: 0;
+    padding-top: 1px;
+}
+
+body.notifications-page .notification-copy h2 {
+    margin: 0 0 3px;
+    color: #343b45;
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1.35;
+}
+
+body.notifications-page .notification-category {
+    display: block;
+    margin-bottom: 4px;
+    color: #9ba2aa;
+    font-size: 8px;
+    line-height: 1.2;
+}
+
+body.notifications-page .notification-copy p {
+    margin: 0 0 7px;
+    color: #626b75;
+    font-size: 9px;
+    line-height: 1.4;
+}
+
+body.notifications-page .notification-copy time {
+    display: block;
+    color: #a4aab2;
+    font-size: 8px;
+}
+
+body.notifications-page .notification-priority {
+    position: absolute;
+    top: 14px;
+    right: 61px;
+    padding: 2px 7px;
+    border-radius: 10px;
+    font-size: 8px;
+    line-height: 1.25;
+}
+
+body.notifications-page .priority-high {
+    background: #ffe6e8;
+    color: #d85d69;
+}
+
+body.notifications-page .priority-medium {
+    background: #fff4cc;
+    color: #c69d20;
+}
+
+body.notifications-page .priority-low {
+    background: #e4f8eb;
+    color: #42a96c;
+}
+
+@media (max-width: 720px) {
+    body.notifications-page .notifications-main-content {
+        width: calc(100% - 65px);
+        margin-left: 65px;
+    }
+
+    body.notifications-page .notifications-topbar {
+        padding-right: 10px;
+        padding-left: 12px;
+    }
+
+    body.notifications-page .notification-entry {
+        min-height: 108px;
+        padding-right: 62px;
+        padding-left: 11px;
+    }
+
+    body.notifications-page .notification-priority {
+        right: 10px;
+    }
+}
+
+@media (max-width: 430px) {
+    body.notifications-page .notification-entry {
+        gap: 8px;
+        padding-top: 13px;
+        padding-right: 52px;
+    }
+
+    body.notifications-page .notification-copy p {
+        font-size: 8px;
+    }
+}
+

@@ -1,0 +1,728 @@
+/* ==========================================
+   RELATÓRIOS
+   Estilos escopados em .reports-page para preservar
+   as demais interfaces do sistema.
+   ========================================== */
+/* =========================================================
+           PÁGINA
+           ========================================================= */
+
+.page {
+    margin-left: 168px;
+
+    min-height: 100vh;
+
+    background: #f7f8fa;
+}
+
+/* =========================================================
+           TOPBAR
+           ========================================================= */
+
+.topbar {
+    height: 61px;
+
+    background: #fff;
+
+    border-bottom: 1px solid #e8ebef;
+
+    display: flex;
+    align-items: center;
+
+    justify-content: space-between;
+
+    padding: 0 22px 0 27px;
+}
+
+body.reports-page .page-title {
+    display: flex;
+    flex-direction: column;
+}
+
+body.reports-page .page-title h1 {
+    margin: 0;
+
+    font-size: 17px;
+    line-height: 20px;
+
+    font-weight: 700;
+
+    color: #222a37;
+}
+
+body.reports-page .page-title span {
+    margin-top: 1px;
+
+    font-size: 9px;
+
+    color: #89909b;
+}
+
+body.reports-page .top-actions {
+    display: flex;
+    align-items: center;
+
+    gap: 17px;
+}
+
+body.reports-page .notification {
+    position: relative;
+
+    width: 24px;
+    height: 24px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #566170;
+
+    font-size: 17px;
+}
+
+body.reports-page .notification-dot {
+    position: absolute;
+
+    width: 5px;
+    height: 5px;
+
+    background: #f45151;
+
+    border-radius: 50%;
+
+    top: 3px;
+    right: 3px;
+}
+
+body.reports-page .top-avatar {
+    width: var(--profile-avatar-size);
+    height: var(--profile-avatar-size);
+
+    background: #2160dc;
+
+    border-radius: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #fff;
+
+    font-size: 10px;
+}
+
+/* =========================================================
+           CONTEÚDO
+           ========================================================= */
+
+.content {
+    padding: 12px 30px 22px;
+}
+
+/* =========================================================
+           ABAS
+           ========================================================= */
+
+.report-tabs {
+    display: flex;
+    align-items: center;
+
+    gap: 7px;
+
+    margin-bottom: 25px;
+}
+
+body.reports-page .report-tab {
+    height: 31px;
+
+    padding: 0 14px;
+
+    border-radius: 8px;
+
+    background: #fff;
+
+    border: 1px solid #e8ebef;
+
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+
+    color: #667080;
+
+    font-size: 10px;
+    font-weight: 600;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    cursor: pointer;
+
+    transition:
+        background-color 0.2s ease,
+        color 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+body.reports-page .report-tab:hover {
+    border-color: #cfd7e3;
+
+    transform: translateY(-1px);
+}
+
+body.reports-page .report-tab.active {
+    background: #2160dc;
+
+    color: #fff;
+
+    border-color: #2160dc;
+
+    box-shadow: 0 2px 5px rgba(33, 96, 220, 0.25);
+}
+
+/* =========================================================
+           CARDS SUPERIORES
+           ========================================================= */
+
+.stats-grid {
+    display: grid;
+
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+
+    gap: 18px;
+
+    margin-bottom: 18px;
+}
+
+body.reports-page .stat-card {
+    height: 96px;
+
+    background: #fff;
+
+    border: 1px solid #e7eaee;
+
+    border-radius: 11px;
+
+    padding: 16px 17px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+body.reports-page .stat-card:hover {
+    transform: translateY(-2px);
+
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07);
+}
+
+body.reports-page .stat-info {
+    min-width: 0;
+}
+
+body.reports-page .stat-label {
+    font-size: 10px;
+
+    color: #78818e;
+
+    margin-bottom: 5px;
+}
+
+body.reports-page .stat-value {
+    font-size: 18px;
+
+    font-weight: 700;
+
+    color: #222a37;
+
+    line-height: 20px;
+}
+
+body.reports-page .stat-change {
+    margin-top: 6px;
+
+    font-size: 9px;
+
+    color: #34a86c;
+
+    font-weight: 600;
+}
+
+body.reports-page .stat-change.neutral {
+    color: #9098a4;
+}
+
+body.reports-page .stat-icon {
+    width: 38px;
+    height: 38px;
+
+    border-radius: 8px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #fff;
+
+    font-size: 19px;
+
+    flex-shrink: 0;
+}
+
+body.reports-page .blue {
+    background: #3180f5;
+}
+
+body.reports-page .green {
+    background: #09bd5b;
+}
+
+body.reports-page .purple {
+    background: #a63cf0;
+}
+
+body.reports-page .orange {
+    background: #ff7200;
+}
+
+/* =========================================================
+           GRÁFICO + FILTROS
+           ========================================================= */
+
+.report-main {
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 3.35fr)
+        minmax(220px, 1fr);
+
+    gap: 18px;
+
+    margin-bottom: 18px;
+}
+
+body.reports-page .panel {
+    background: #fff;
+
+    border: 1px solid #e6e9ed;
+
+    border-radius: 11px;
+
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+
+    overflow: hidden;
+}
+
+body.reports-page .panel-header {
+    height: 48px;
+
+    border-bottom: 1px solid #eceff2;
+
+    display: flex;
+    align-items: center;
+
+    padding: 0 18px;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+    color: #384151;
+}
+
+/* =========================================================
+           GRÁFICO DE VENDAS POR MÊS
+           ========================================================= */
+
+.chart-panel {
+    height: 393px;
+}
+
+body.reports-page .chart-area {
+    height: 345px;
+
+    padding: 22px 22px 18px 79px;
+
+    position: relative;
+}
+
+body.reports-page .chart-grid {
+    position: absolute;
+
+    left: 79px;
+    right: 22px;
+
+    top: 22px;
+    bottom: 40px;
+
+    display: flex;
+
+    justify-content: space-between;
+}
+
+body.reports-page .grid-line {
+    width: 1px;
+
+    border-left: 1px dashed #e4e8ed;
+}
+
+body.reports-page .bars {
+    height: 275px;
+
+    display: flex;
+    flex-direction: column;
+
+    justify-content: space-between;
+
+    position: relative;
+
+    z-index: 2;
+    overflow-y: auto;
+
+    /* Mantém os rótulos (61px + 8px de espaço) dentro da área rolável. */
+    width: calc(100% + 69px);
+    margin-left: -69px;
+    padding-left: 69px;
+}
+
+body.reports-page .bar-row {
+    height: 31px;
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+
+    position: relative;
+}
+
+body.reports-page .report-empty-message {
+    margin: auto;
+    color: #8c95a1;
+    font-size: 11px;
+    text-align: center;
+}
+
+body.reports-page .month-label {
+    position: absolute;
+
+    right: calc(100% + 8px);
+
+    width: 61px;
+
+    text-align: right;
+
+    font-size: 9px;
+
+    color: #4b5563;
+}
+
+body.reports-page .bar-container {
+    width: 100%;
+
+    height: 25px;
+
+    display: flex;
+    align-items: center;
+}
+
+body.reports-page .bar {
+    height: 24px;
+
+    background: #2860d8;
+
+    border-radius: 0 7px 7px 0;
+
+    transition:
+        width 0.6s ease,
+        filter 0.2s ease;
+}
+
+body.reports-page .bar:hover {
+    filter: brightness(1.08);
+}
+
+body.reports-page .x-axis {
+    position: absolute;
+
+    left: 79px;
+    right: 22px;
+
+    bottom: 18px;
+
+    height: 16px;
+
+    display: flex;
+
+    justify-content: space-between;
+}
+
+body.reports-page .x-axis span {
+    font-size: 8px;
+
+    color: #9aa1aa;
+}
+
+/* =========================================================
+           FILTROS
+           ========================================================= */
+
+.filter-panel {
+    height: 393px;
+}
+
+body.reports-page .filter-content {
+    padding: 14px 18px;
+}
+
+body.reports-page .filter-label {
+    display: block;
+
+    font-size: 9px;
+
+    color: #707987;
+
+    margin-bottom: 5px;
+}
+
+body.reports-page .month-select {
+    height: 37px;
+
+    width: 100%;
+
+    border: 1px solid #e2e6eb;
+
+    border-radius: 8px;
+
+    background: #fff;
+
+    color: #9ca4af;
+
+    padding: 0 11px;
+
+    font-size: 10px;
+
+    appearance: none;
+
+    background-image: linear-gradient(45deg, transparent 50%, #adb5bf 50%),
+        linear-gradient(135deg, #adb5bf 50%, transparent 50%);
+
+    background-position:
+        calc(100% - 14px) 15px,
+        calc(100% - 10px) 15px;
+
+    background-size:
+        5px 5px,
+        5px 5px;
+
+    background-repeat: no-repeat;
+}
+
+body.reports-page .filter-box {
+    border-radius: 9px;
+
+    padding: 12px;
+
+    margin-top: 11px;
+
+    min-height: 59px;
+}
+
+body.reports-page .filter-box.blue-box {
+    background: #edf5ff;
+
+    border: 1px solid #d9eaff;
+}
+
+body.reports-page .filter-box.green-box {
+    background: #edfff4;
+
+    border: 1px solid #d6f5e3;
+}
+
+body.reports-page .filter-box.purple-box {
+    background: #faf1ff;
+
+    border: 1px solid #ecd8fa;
+}
+
+body.reports-page .filter-box-title {
+    font-size: 9px;
+
+    margin-bottom: 3px;
+
+    color: #6b7583;
+}
+
+body.reports-page .filter-box.blue-box .filter-box-title {
+    color: #4382df;
+}
+
+body.reports-page .filter-box.green-box .filter-box-title {
+    color: #42aa72;
+}
+
+body.reports-page .filter-box.purple-box .filter-box-title {
+    color: #a05fd0;
+}
+
+body.reports-page .filter-box-value {
+    font-size: 10px;
+
+    font-weight: 700;
+
+    color: #4e5866;
+}
+
+/* =========================================================
+           CARDS INFERIORES
+           ========================================================= */
+
+.bottom-grid {
+    display: grid;
+
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+
+    gap: 18px;
+}
+
+body.reports-page .bottom-card {
+    min-height: 96px;
+
+    background: #fff;
+
+    border: 1px solid #e6e9ed;
+
+    border-radius: 11px;
+
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    text-align: center;
+
+    padding: 12px;
+
+    transition: 0.2s ease;
+}
+
+body.reports-page .bottom-card:hover {
+    transform: translateY(-2px);
+
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07);
+}
+
+body.reports-page .bottom-title {
+    font-size: 10px;
+
+    color: #737c88;
+
+    margin-bottom: 7px;
+}
+
+body.reports-page .bottom-value {
+    font-size: 20px;
+
+    font-weight: 500;
+
+    color: #354050;
+
+    line-height: 20px;
+}
+
+body.reports-page .bottom-description {
+    margin-top: 7px;
+
+    font-size: 9px;
+
+    font-weight: 600;
+}
+
+body.reports-page .description-green {
+    color: #38ad72;
+}
+
+body.reports-page .description-blue {
+    color: #3981e6;
+}
+
+body.reports-page .description-purple {
+    color: #b14be8;
+}
+
+/* =========================================================
+           RESPONSIVIDADE
+           ========================================================= */
+
+@media (max-width: 1050px) {
+    body.reports-page .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    body.reports-page .report-main {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 720px) {
+    body.reports-page .page {
+        margin-left: 65px;
+    }
+
+    body.reports-page .topbar {
+        padding-left: 18px;
+        padding-right: 18px;
+    }
+
+    body.reports-page .stats-grid,
+    body.reports-page .bottom-grid {
+        grid-template-columns: 1fr;
+    }
+
+    body.reports-page .report-tabs {
+        overflow-x: auto;
+
+        padding-bottom: 4px;
+    }
+
+    body.reports-page .report-tab {
+        flex-shrink: 0;
+    }
+
+    body.reports-page .chart-panel {
+        height: 350px;
+    }
+
+    body.reports-page .chart-area {
+        padding-left: 65px;
+    }
+
+    body.reports-page .bars {
+        width: calc(100% + 65px);
+        margin-left: -65px;
+        padding-left: 65px;
+    }
+
+    body.reports-page .month-label {
+        width: 57px;
+    }
+
+    body.reports-page .chart-grid {
+        left: 65px;
+    }
+
+    body.reports-page .x-axis {
+        left: 65px;
+    }
+}
