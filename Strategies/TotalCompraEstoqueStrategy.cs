@@ -2,19 +2,15 @@ using SIVAD.Models;
 
 namespace SIVAD.Strategies
 {
-    public class TotalCompraEstoqueStrategy : ICalculoTotalStrategy
+    public class TotalCompraEstoqueStrategy : ICalculoTotalStrategy<CompraEstoque>
     {
-        public float CalcularTotal(object entidade)
+        // ItemCompraEstoque.Valor já é o valor total da linha (quantidade x custo unitário,
+        // conforme Banco.sql), então o total da compra é a soma direta.
+        public decimal CalcularTotal(CompraEstoque compra)
         {
-            var compra = (CompraEstoque)entidade;
-            if (compra?.Itens == null) return 0f;
+            if (compra?.Itens == null) return 0m;
 
-            float total = 0f;
-            foreach (var item in compra.Itens)
-            {
-                total += (float)item.Valor * item.Quantidade;
-            }
-            return total;
+            return compra.Itens.Sum(item => item.Valor);
         }
     }
 }

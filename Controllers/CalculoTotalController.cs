@@ -37,7 +37,7 @@ namespace SIVAD.Controllers
                 return NotFound("Nenhum pedido encontrado no banco de dados.");
             }
 
-            float total = _totalPedidoStrategy.CalcularTotal(pedido);
+            decimal total = _totalPedidoStrategy.CalcularTotal(pedido);
 
             return View(total);
         }
@@ -57,7 +57,7 @@ namespace SIVAD.Controllers
                 return NotFound("Nenhuma compra de estoque encontrada no banco de dados.");
             }
 
-            float total = _totalCompraEstoqueStrategy.CalcularTotal(compra);
+            decimal total = _totalCompraEstoqueStrategy.CalcularTotal(compra);
 
             return View(total);
         }

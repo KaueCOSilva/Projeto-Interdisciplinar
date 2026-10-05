@@ -45,7 +45,7 @@ namespace SIVAD.Controllers
             // - Ler a NF-e pelo conector de código de barras (botão "Ler Código de NF-e").
             // - Associar cliente (CPF/nome) e funcionário logado.
 
-            pedido.ValorTotal = (decimal)_totalPedidoStrategy.CalcularTotal(pedido);
+            pedido.ValorTotal = _totalPedidoStrategy.CalcularTotal(pedido);
             pedido.Status = StatusPendente;
 
             _context.Pedidos.Add(pedido);
