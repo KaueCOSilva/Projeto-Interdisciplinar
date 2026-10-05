@@ -2,19 +2,15 @@ using SIVAD.Models;
 
 namespace SIVAD.Strategies
 {
-    public class TotalPedidoStrategy : ICalculoTotalStrategy
+    public class TotalPedidoStrategy : ICalculoTotalStrategy<Pedido>
     {
-        public float CalcularTotal(object entidade)
+        // ItemPedido.PrecoTotal já é o total da linha (preco_unit x qtd, conforme Banco.sql),
+        // então o total do pedido é a soma direta, sem multiplicar pela quantidade de novo.
+        public decimal CalcularTotal(Pedido pedido)
         {
-            var pedido = (Pedido)entidade;
-            if (pedido?.Itens == null) return 0f;
+            if (pedido?.Itens == null) return 0m;
 
-            float total = 0f;
-            foreach (var item in pedido.Itens)
-            {
-                total += (float)item.PrecoTotal * item.Qtd;
-            }
-            return total;
+            return pedido.Itens.Sum(item => item.PrecoTotal);
         }
     }
 }

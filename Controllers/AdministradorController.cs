@@ -70,11 +70,13 @@ namespace SIVAD.Controllers
         }
 
         [HttpPost]
-        public IActionResult CadastrarUsuario(Pessoa pessoa)
+        public IActionResult CadastrarUsuario(string nomeUsuario, string senha)
         {
-            if (!ModelState.IsValid)
+            // Os nomes dos parâmetros correspondem aos campos do formulário (NomeUsuario, Senha).
+            if (string.IsNullOrWhiteSpace(nomeUsuario) || string.IsNullOrWhiteSpace(senha))
             {
-                return View(pessoa); // permanece na tela de cadastro para corrigir os campos
+                TempData["Erro"] = "Preencha o nome de usuário e a senha.";
+                return View(); // permanece na tela de cadastro para corrigir os campos
             }
 
             // Posteriormente:

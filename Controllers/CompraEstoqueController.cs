@@ -44,7 +44,7 @@ namespace SIVAD.Controllers
             // - Associar o administrador logado e o fornecedor.
             // - Atualizar o estoque com os itens comprados.
 
-            compraEstoque.Total = (decimal)_totalCompraEstoqueStrategy.CalcularTotal(compraEstoque);
+            compraEstoque.Total = _totalCompraEstoqueStrategy.CalcularTotal(compraEstoque);
             compraEstoque.Status = StatusPendente;
 
             _context.CompraEstoque.Add(compraEstoque);
