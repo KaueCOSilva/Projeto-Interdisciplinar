@@ -11,7 +11,7 @@ namespace SIVAD.Controllers
     // e o formulário "Nova Compra" deve enviar para CompraEstoque/Registrar.
     public class CompraEstoqueController : Controller
     {
-        // Ajuste se o seu projeto usar outros valores para CompraEstoque.Status.
+        
         private const int StatusPendente = 0;
 
         private readonly AppDbContext _context;
