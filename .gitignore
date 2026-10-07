@@ -1,3 +1,10 @@
-# Ignorar arquivos de script SQL e a pasta DataBase
+# Regras existentes do projeto
 DataBase/
 *.sql
+
+# Artefatos gerados pelo .NET
+bin/
+obj/
+.vs/
+*.user
+*.suo

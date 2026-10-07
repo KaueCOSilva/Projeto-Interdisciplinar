@@ -1,64 +1,48 @@
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using SIVAD.Data;
+using SIVAD.Repositories;
 using SIVAD.Strategies;
 
 namespace SIVAD.Controllers
 {
     public class CalculoTotalController : Controller
     {
-        private readonly AppDbContext _context;
+        private readonly SqlServerRepository _repository;
         private readonly TotalPedidoStrategy _totalPedidoStrategy;
         private readonly TotalCompraEstoqueStrategy _totalCompraEstoqueStrategy;
 
         public CalculoTotalController(
-            AppDbContext context,
+            SqlServerRepository repository,
             TotalPedidoStrategy totalPedidoStrategy,
             TotalCompraEstoqueStrategy totalCompraEstoqueStrategy)
         {
-            _context = context;
+            _repository = repository;
             _totalPedidoStrategy = totalPedidoStrategy;
             _totalCompraEstoqueStrategy = totalCompraEstoqueStrategy;
         }
 
-        // Acessível em: /CalculoTotal/CalcularPedido
         [HttpGet]
         public async Task<IActionResult> CalcularPedido()
         {
-            // Busca o primeiro pedido cadastrado no SQL Server, trazendo seus itens
-            var pedido = await _context.Pedidos
-                .Include(p => p.Itens)
-                .FirstOrDefaultAsync();
-
+            var pedido = await _repository.ObterPrimeiroPedidoAsync();
             if (pedido == null)
             {
                 return NotFound("Nenhum pedido encontrado no banco de dados.");
             }
 
-            decimal total = _totalPedidoStrategy.CalcularTotal(pedido);
-
+            var total = _totalPedidoStrategy.CalcularTotal(pedido);
             return View(total);
         }
 
-
-        // Acessível em: /CalculoTotal/CalcularCompraEstoque
         [HttpGet]
         public async Task<IActionResult> CalcularCompraEstoque()
         {
-            // Busca a primeira compra de estoque cadastrada no SQL Server, trazendo seus itens
-            var compra = await _context.CompraEstoque
-                .Include(c => c.Itens)
-                .FirstOrDefaultAsync();
-
+            var compra = await _repository.ObterPrimeiraCompraEstoqueAsync();
             if (compra == null)
             {
                 return NotFound("Nenhuma compra de estoque encontrada no banco de dados.");
             }
 
-            decimal total = _totalCompraEstoqueStrategy.CalcularTotal(compra);
-
+            var total = _totalCompraEstoqueStrategy.CalcularTotal(compra);
             return View(total);
         }
     }

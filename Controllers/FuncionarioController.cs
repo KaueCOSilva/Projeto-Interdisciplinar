@@ -1,25 +1,18 @@
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using SIVAD.Data;
+using SIVAD.Repositories;
 
 namespace SIVAD.Controllers
 {
-    // Telas do funcionário (documento 2.4.4):
-    // "Registro de Compras" (RegistrarPedido) e "Resumo de Compra" (ResumoCompra).
-    //
-    // Este controller só entrega as páginas. Os formulários enviam para o PedidoController:
-    //   - Finalizar Compra      -> POST Pedido/Registrar  (calcula o total e vai para o resumo)
-    //   - Contabilizar Compra   -> POST Pedido/Finalizar  (conclui e volta para o registro)
+    // Telas do funcionário: registro e resumo de compra.
     public class FuncionarioController : Controller
     {
-        private readonly AppDbContext _context;
+        private readonly SqlServerRepository _repository;
 
-        public FuncionarioController(AppDbContext context)
+        public FuncionarioController(SqlServerRepository repository)
         {
-            _context = context;
+            _repository = repository;
         }
 
-        // A tela inicial do funcionário é o registro de compra.
         [HttpGet]
         public IActionResult Index()
         {
@@ -32,24 +25,20 @@ namespace SIVAD.Controllers
             return View();
         }
 
-        // Sem id (clique direto no menu "Resumo de Compra") não há pedido para resumir.
         [HttpGet]
         public async Task<IActionResult> ResumoCompra(int? id)
         {
             if (id == null)
             {
-                // A tela contém dados demonstrativos para navegação antes do CRUD/SQL Server.
+                // A tela contém dados demonstrativos enquanto o fluxo completo é desenvolvido.
                 return View();
             }
 
-            var pedido = await _context.Pedidos.FindAsync(id.Value);
-
+            var pedido = await _repository.ObterPedidoAsync(id.Value);
             if (pedido == null)
             {
                 return NotFound();
             }
-
-            await _context.Entry(pedido).Collection(p => p.Itens).LoadAsync();
 
             return View(pedido);
         }
