@@ -336,6 +336,20 @@ body.stock-page .stock-actions a {
         transform 0.2s ease;
 }
 
+body.stock-page .stock-actions button {
+    display: inline-block;
+    margin: 0 7px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #8d959d;
+    font-size: 13px;
+    cursor: pointer;
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+body.stock-page .stock-actions button:hover { color: #2160dc; }
+body.stock-page .stock-actions .stock-delete-button:hover { color: #dc3545; }
+body.stock-page .stock-actions button:focus-visible { outline: 2px solid #2160dc; outline-offset: 2px; }
 body.stock-page .stock-actions a:hover {
     color: #2160dc;
     transform: translateY(-1px);

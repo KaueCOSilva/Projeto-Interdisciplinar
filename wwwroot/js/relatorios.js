@@ -1,32 +1,4 @@
-// Dados de exemplo: o banco ainda não armazena data do pedido, devoluções ou despesas.
-const dadosDemo = [
-    { data: "2025-01-05", tipo: "venda", valor: 180 },
-    { data: "2025-02-10", tipo: "venda", valor: 220 },
-    { data: "2025-03-15", tipo: "venda", valor: 300 },
-    { data: "2025-04-20", tipo: "venda", valor: 260 },
-    { data: "2025-05-25", tipo: "venda", valor: 330 },
-    { data: "2025-06-08", tipo: "venda", valor: 400 },
-    { data: "2025-07-12", tipo: "venda", valor: 450 },
-    { data: "2026-01-08", tipo: "venda", valor: 210 },
-    { data: "2026-02-13", tipo: "venda", valor: 280 },
-    { data: "2026-03-18", tipo: "venda", valor: 350 },
-    { data: "2026-04-09", tipo: "venda", valor: 320 },
-    { data: "2026-05-15", tipo: "venda", valor: 380 },
-    { data: "2026-06-21", tipo: "venda", valor: 420 },
-    { data: "2026-07-24", tipo: "venda", valor: 500 },
-    { data: "2025-02-18", tipo: "devolucao", valor: 20 },
-    { data: "2025-05-28", tipo: "devolucao", valor: 35 },
-    { data: "2026-03-22", tipo: "devolucao", valor: 45 },
-    { data: "2026-07-28", tipo: "devolucao", valor: 60 },
-    { data: "2025-01-03", tipo: "despesa", valor: 50 },
-    { data: "2025-03-07", tipo: "despesa", valor: 80 },
-    { data: "2025-05-10", tipo: "despesa", valor: 100 },
-    { data: "2025-07-10", tipo: "despesa", valor: 120 },
-    { data: "2026-02-06", tipo: "despesa", valor: 70 },
-    { data: "2026-04-12", tipo: "despesa", valor: 90 },
-    { data: "2026-06-15", tipo: "despesa", valor: 130 },
-    { data: "2026-07-03", tipo: "despesa", valor: 150 }
-];
+const dadosBanco = JSON.parse(document.getElementById("report-data").textContent);
 
 const meses = [
     { chave: "janeiro", nome: "Janeiro" },
@@ -35,7 +7,12 @@ const meses = [
     { chave: "abril", nome: "Abril" },
     { chave: "maio", nome: "Maio" },
     { chave: "junho", nome: "Junho" },
-    { chave: "julho", nome: "Julho" }
+    { chave: "julho", nome: "Julho" },
+    { chave: "agosto", nome: "Agosto" },
+    { chave: "setembro", nome: "Setembro" },
+    { chave: "outubro", nome: "Outubro" },
+    { chave: "novembro", nome: "Novembro" },
+    { chave: "dezembro", nome: "Dezembro" }
 ];
 
 const tiposDeRelatorio = {
@@ -67,7 +44,7 @@ function obterMes(data) {
 }
 
 function obterLancamentosFiltrados(relatorio) {
-    return dadosDemo.filter(function (lancamento) {
+    return dadosBanco.filter(function (lancamento) {
         const mesCorresponde = filtroMes.value === "todos"
             || obterMes(lancamento.data).chave === filtroMes.value;
         const tipoCorresponde = relatorio.tipoDeMovimento === "todos"
@@ -104,9 +81,9 @@ function agruparLancamentos(lancamentos, relatorio) {
             rotulo = ano;
             ordem = Number(ano);
         } else {
-            chave = mes.chave;
-            rotulo = mes.nome;
-            ordem = Number(lancamento.data.substring(5, 7));
+            chave = ano + "-" + mes.chave;
+            rotulo = mes.nome + " " + ano;
+            ordem = ano + lancamento.data.substring(5, 7);
         }
 
         if (!grupos[chave]) {
@@ -132,7 +109,7 @@ function desenharGrafico(grupos) {
     if (grupos.length === 0) {
         const mensagem = document.createElement("div");
         mensagem.className = "report-empty-message";
-        mensagem.textContent = "Não há lançamentos demonstrativos para este filtro.";
+        mensagem.textContent = "Não há lançamentos do banco para este filtro.";
         barras.appendChild(mensagem);
         desenharEixo(0);
         return;
@@ -209,7 +186,7 @@ function atualizarIndicadores(lancamentos, grupos, relatorio) {
 
     document.getElementById("primaryMetricLabel").textContent = relatorio.titulo;
     document.getElementById("primaryMetricValue").textContent = formatarMoeda(total);
-    document.getElementById("primaryMetricDescription").textContent = "Valores demonstrativos; sem consulta ao banco";
+    document.getElementById("primaryMetricDescription").textContent = "Dados consultados no SQL Server";
 
     const rotuloSecundario = relatorio.tipoDeMovimento === "devolucao"
         ? "Valor devolvido"
@@ -222,11 +199,11 @@ function atualizarIndicadores(lancamentos, grupos, relatorio) {
     if (relatorioAtual === "caixa") {
         document.getElementById("thirdMetricLabel").textContent = "Saídas no período";
         document.getElementById("thirdMetricValue").textContent = formatarMoeda(saidas);
-        document.getElementById("thirdMetricDescription").textContent = "Devoluções e despesas";
+        document.getElementById("thirdMetricDescription").textContent = "Compras de estoque registradas";
     } else {
         document.getElementById("thirdMetricLabel").textContent = "Registros no filtro";
         document.getElementById("thirdMetricValue").textContent = quantidade.toString();
-        document.getElementById("thirdMetricDescription").textContent = "Lançamentos demonstrativos";
+        document.getElementById("thirdMetricDescription").textContent = "Lançamentos no SQL Server";
     }
 
     document.getElementById("fourthMetricLabel").textContent = "Mês selecionado";
@@ -260,8 +237,10 @@ function atualizarIndicadores(lancamentos, grupos, relatorio) {
     document.getElementById("reportTypeDescription").textContent = "Período: " + nomeMes;
 
     document.getElementById("recordsLabel").textContent = "Origem dos dados";
-    document.getElementById("recordsValue").textContent = "Demonstração";
-    document.getElementById("recordsDescription").textContent = "Amostra local; não vem do SQL Server";
+    document.getElementById("recordsValue").textContent = "SQL Server";
+    document.getElementById("recordsDescription").textContent = relatorioAtual === "devolucoes"
+        ? "Não há tabela de devoluções no schema atual"
+        : "Movimentos carregados do banco de dados";
 }
 
 function aplicarFiltros() {

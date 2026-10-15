@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "VRew2Q8iEyo=",
+  "dgSpecHash": "7A3YTg1rdSk=",
   "success": true,
   "projectFilePath": "/home/kakesty/Documentos/GitHub/Projeto-Interdisciplinar/SIVAD.csproj",
   "expectedPackageFiles": [
@@ -25,7 +25,7 @@
     "/home/kakesty/.nuget/packages/system.configuration.configurationmanager/9.0.18/system.configuration.configurationmanager.9.0.18.nupkg.sha512",
     "/home/kakesty/.nuget/packages/system.diagnostics.eventlog/9.0.18/system.diagnostics.eventlog.9.0.18.nupkg.sha512",
     "/home/kakesty/.nuget/packages/system.identitymodel.tokens.jwt/8.16.0/system.identitymodel.tokens.jwt.8.16.0.nupkg.sha512",
-    "/home/kakesty/.nuget/packages/system.security.cryptography.pkcs/9.0.18/system.security.cryptography.pkcs.9.0.18.nupkg.sha512",
+    "/home/kakesty/.nuget/packages/system.security.cryptography.pkcs/9.0.21/system.security.cryptography.pkcs.9.0.21.nupkg.sha512",
     "/home/kakesty/.nuget/packages/system.security.cryptography.protecteddata/9.0.18/system.security.cryptography.protecteddata.9.0.18.nupkg.sha512",
     "/home/kakesty/.nuget/packages/system.threading.ratelimiting/9.0.18/system.threading.ratelimiting.9.0.18.nupkg.sha512",
     "/home/kakesty/.nuget/packages/microsoft.aspnetcore.app.ref/10.0.12/microsoft.aspnetcore.app.ref.10.0.12.nupkg.sha512"

@@ -1,3 +1,4 @@
+@model List<SIVAD.Models.Produto>
 @{
     ViewData["Title"] = "Central de Notificações";
 }
@@ -12,7 +13,7 @@
     <link rel="stylesheet" href="/css/base.css?v=1" />
     <link rel="stylesheet" href="/css/shared/sidebar-admin.css?v=1" />
     <link rel="stylesheet" href="/css/shared/logout-link.css?v=1" />
-    <link rel="stylesheet" href="/css/views/administrador/notificacoes.css?v=1" />
+    <link rel="stylesheet" href="/css/views/administrador/notificacoes.css?v=2" />
     <link rel="stylesheet" href="/css/shared/profile-avatars.css?v=1" />
 </head>
 <body class="notifications-page">
@@ -30,78 +31,32 @@
                         <a asp-controller="Administrador"
                            asp-action="Notificacoes">
                             <i class="bi bi-bell" aria-hidden="true"></i>
-                            <span aria-hidden="true"></span>
+                            @if (Model.Count > 0) { <span aria-label="@Model.Count alertas">@Model.Count</span> }
                         </a>
                     </button>
                 </div>
             </header>
 
             <section class="notifications-list" aria-label="Notificações recentes">
-                <article class="notification-entry notification-stock-warning">
-                    <div class="notification-type-icon" aria-hidden="true"><i class="bi bi-exclamation-triangle"></i></div>
-                    <div class="notification-copy">
-                        <h2>Produto abaixo do estoque mínimo</h2>
-                        <span class="notification-category">Estoque</span>
-                        <p>O produto “Camisa Polo” está com apenas 5 unidades em estoque.</p>
-                        <time>há 5 minutos</time>
-                    </div>
-                    <span class="notification-priority priority-high">Alta</span>
-                </article>
-
-                <article class="notification-entry notification-user-created">
-                    <div class="notification-type-icon" aria-hidden="true"><i class="bi bi-people"></i></div>
-                    <div class="notification-copy">
-                        <h2>Novo Usuário cadastrado</h2>
-                        <span class="notification-category">Cadastro</span>
-                        <p>Maria Santos foi cadastrada no sistema.</p>
-                        <time>há 1 hora</time>
-                    </div>
-                    <span class="notification-priority priority-low">Baixa</span>
-                </article>
-
-                <article class="notification-entry notification-stock-warning">
-                    <div class="notification-type-icon" aria-hidden="true"><i class="bi bi-box-seam"></i></div>
-                    <div class="notification-copy">
-                        <h2>Produto abaixo do estoque mínimo</h2>
-                        <span class="notification-category">Estoque</span>
-                        <p>O produto “Camisa Polo” está com apenas 12 unidades.</p>
-                        <time>há 2 horas</time>
-                    </div>
-                    <span class="notification-priority priority-medium">Média</span>
-                </article>
-
-                <article class="notification-entry notification-purchase-success">
-                    <div class="notification-type-icon" aria-hidden="true"><i class="bi bi-cart-check"></i></div>
-                    <div class="notification-copy">
-                        <h2>Compra #4520 finalizada</h2>
-                        <span class="notification-category">Pedido</span>
-                        <p>Compra no valor de R$ 8.450,00 foi processada com sucesso.</p>
-                        <time>há 3 horas</time>
-                    </div>
-                    <span class="notification-priority priority-low">Baixa</span>
-                </article>
-
-                <article class="notification-entry notification-system-update">
-                    <div class="notification-type-icon" aria-hidden="true"><i class="bi bi-gear"></i></div>
-                    <div class="notification-copy">
-                        <h2>Atualização do sistema</h2>
-                        <span class="notification-category">Sistema</span>
-                        <p>Nova versão 2.1.0 disponível para instalação.</p>
-                        <time>há 5 horas</time>
-                    </div>
-                    <span class="notification-priority priority-medium">Média</span>
-                </article>
-
-                <article class="notification-entry notification-sync-failure">
-                    <div class="notification-type-icon" aria-hidden="true"><i class="bi bi-exclamation-circle"></i></div>
-                    <div class="notification-copy">
-                        <h2>Falha na sincronização</h2>
-                        <span class="notification-category">Estoque</span>
-                        <p>Erro ao sincronizar dados de estoque com fornecedor.</p>
-                        <time>há 9 horas</time>
-                    </div>
-                    <span class="notification-priority priority-high">Alta</span>
-                </article>
+                @if (Model.Count == 0)
+                {
+                    <article class="notification-entry"><div class="notification-copy"><h2>Sem alertas de estoque</h2><p>Não há produtos com estoque igual ou inferior a 10 unidades.</p></div></article>
+                }
+                @foreach (var produto in Model)
+                {
+                    var prioridade = produto.Estoque <= 5 ? "Alta" : produto.Estoque <= 10 ? "Média" : "Baixa";
+                    var classe = produto.Estoque <= 5 ? "priority-high" : produto.Estoque <= 10 ? "priority-medium" : "priority-low";
+                    <article class="notification-entry notification-stock-warning">
+                        <div class="notification-type-icon" aria-hidden="true"><i class="bi bi-exclamation-triangle"></i></div>
+                        <div class="notification-copy">
+                            <h2>Produto abaixo do estoque mínimo</h2>
+                            <span class="notification-category">@produto.Categoria.Nome</span>
+                            <p>O produto “@produto.Nome” está com @produto.Estoque unidades em estoque.</p>
+                            <time>Código @produto.CodigoBarras</time>
+                        </div>
+                        <span class="notification-priority @classe">@prioridade</span>
+                    </article>
+                }
             </section>
         </main>
     </div>

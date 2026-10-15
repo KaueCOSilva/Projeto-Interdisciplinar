@@ -1,136 +1,125 @@
 using Microsoft.AspNetCore.Mvc;
-using SIVAD.Models;
+using SIVAD.Models.ViewModels;
+using SIVAD.Repositories;
 
-namespace SIVAD.Controllers
+namespace SIVAD.Controllers;
+
+public class AdministradorController : Controller
 {
-    // Telas do administrador (documento 2.4.3):
-    // Dashboard, Relatórios, Estoque, Movimento de Compras,
-    // Funcionários > Cadastro de Funcionário / Gerenciamento de Usuários, Notificações.
- 
-    public class AdministradorController : Controller
+    private readonly ISIVADRepository _repository;
+
+    private async Task DefinirContagemAlertasAsync()
     {
-        // =====================================================
-        // DASHBOARD
-        // =====================================================
+        ViewBag.AlertasEstoque = (await _repository.ListarProdutosEstoqueBaixoAsync()).Count;
+    }
 
-        [HttpGet]
-        public IActionResult Dashboard()
+    public AdministradorController(ISIVADRepository repository) => _repository = repository;
+
+    [HttpGet]
+    public async Task<IActionResult> Dashboard() => View(await _repository.ObterDashboardAsync());
+
+    [HttpGet]
+    public IActionResult Index() => RedirectToAction(nameof(Dashboard));
+
+    [HttpGet]
+    public async Task<IActionResult> Relatorios(string periodo = "mensais")
+    {
+        ViewBag.Periodo = periodo;
+        await DefinirContagemAlertasAsync();
+        return View(new ReportViewModel { Movimentos = await _repository.ListarMovimentosRelatorioAsync() });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Estoque()
+    {
+        await DefinirContagemAlertasAsync();
+        return View(new SIVAD.Models.ViewModels.StockViewModel
         {
-            return View();
-        }
+            Produtos = await _repository.ListarProdutosAsync(),
+            Categorias = await _repository.ListarCategoriasAsync()
+        });
+    }
 
-        // =====================================================
-        // INDEX
-        // =====================================================
-
-        [HttpGet]
-        public IActionResult Index()
+    [HttpGet]
+    public async Task<IActionResult> MovimentoCompras()
+    {
+        await DefinirContagemAlertasAsync();
+        var model = new StockPurchaseViewModel
         {
-            return RedirectToAction("Dashboard");
-        }
+            Produtos = await _repository.ListarProdutosAsync(),
+            Administradores = await _repository.ListarAdministradoresAsync(),
+            ComprasRecentes = await _repository.ListarComprasRecentesAsync()
+        };
+        return View(model);
+    }
 
-        // =====================================================
-        // TELAS DE CONSULTA (menu lateral)
-        // =====================================================
+    [HttpGet]
+    public async Task<IActionResult> Notificacoes()
+    {
+        var produtos = await _repository.ListarProdutosEstoqueBaixoAsync();
+        ViewBag.AlertasEstoque = produtos.Count;
+        return View(produtos);
+    }
+    [HttpGet]
+    public async Task<IActionResult> CadastrarUsuario()
+    {
+        await DefinirContagemAlertasAsync();
+        return View();
+    }
 
-        // Abas da tela: diarios, mensal, anuais, devolucoes, fluxo-caixa
-        [HttpGet]
-        public IActionResult Relatorios(string periodo = "mensal")
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> CadastrarUsuario(string nome)
+    {
+        try
         {
-            ViewBag.Periodo = periodo;
-            return View();
+            var id = await _repository.CadastrarFuncionarioAsync(nome);
+            TempData["Sucesso"] = $"Funcionário cadastrado no banco (ID {id}).";
+            return RedirectToAction(nameof(GerenciarUsuarios));
         }
-
-        [HttpGet]
-        public IActionResult Estoque()
+        catch (InvalidOperationException ex)
         {
-            return View();
+            TempData["Erro"] = ex.Message;
+            return RedirectToAction(nameof(CadastrarUsuario));
         }
+    }
 
-        [HttpGet]
-        public IActionResult MovimentoCompras()
+    [HttpGet]
+    public async Task<IActionResult> GerenciarUsuarios()
+    {
+        await DefinirContagemAlertasAsync();
+        return View(new EmployeeManagementViewModel { Funcionarios = await _repository.ListarFuncionariosAsync() });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> EditarFuncionario(int id, string nome)
+    {
+        try
         {
-            return View();
+            if (await _repository.AtualizarFuncionarioAsync(id, nome)) TempData["Sucesso"] = "Nome do funcionário atualizado.";
+            else TempData["Erro"] = "Funcionário não encontrado ou já removido.";
         }
+        catch (InvalidOperationException ex) { TempData["Erro"] = ex.Message; }
+        return RedirectToAction(nameof(GerenciarUsuarios));
+    }
 
-        [HttpGet]
-        public IActionResult Notificacoes()
-        {
-            return View();
-        }
+    [HttpPost]
+    public IActionResult AlterarSenha(string uid, string nomeUsuario, string novaSenha, string confirmarSenha)
+    {
+        TempData["Erro"] = "O schema atual ainda não possui tabela de contas/autenticação.";
+        return RedirectToAction(nameof(GerenciarUsuarios));
+    }
 
-        // =====================================================
-        // FUNCIONÁRIOS > CADASTRO DE FUNCIONÁRIO
-        // =====================================================
-
-        [HttpGet]
-        public IActionResult CadastrarUsuario()
-        {
-            return View();
-        }
-
-        [HttpPost]
-        public IActionResult CadastrarUsuario(string nomeUsuario, string senha)
-        {
-            // Os nomes dos parâmetros correspondem aos campos do formulário (NomeUsuario, Senha).
-            if (string.IsNullOrWhiteSpace(nomeUsuario) || string.IsNullOrWhiteSpace(senha))
-            {
-                TempData["Erro"] = "Preencha o nome de usuário e a senha.";
-                return View(); // permanece na tela de cadastro para corrigir os campos
-            }
-
-            // Posteriormente:
-            // 1. Criar o funcionário via FuncionarioFactory.
-            // 2. Gerar o UID e salvar a senha com hash.
-            // 3. Salvar no banco.
-
-            TempData["Sucesso"] = "Funcionário cadastrado com sucesso.";
-            return RedirectToAction("GerenciarUsuarios");
-        }
-
-        // =====================================================
-        // FUNCIONÁRIOS > GERENCIAMENTO DE USUÁRIOS
-        // =====================================================
-
-        [HttpGet]
-        public IActionResult GerenciarUsuarios()
-        {
-            // Posteriormente: enviar a lista de usuários cadastrados para a view.
-            return View();
-        }
-
-        // Formulário "Alteração de Senha" (também atende o caso de uso "Recuperar Acesso")
-        [HttpPost]
-        public IActionResult AlterarSenha(string uid, string nomeUsuario, string novaSenha, string confirmarSenha)
-        {
-            if (string.IsNullOrWhiteSpace(uid) ||
-                string.IsNullOrWhiteSpace(nomeUsuario) ||
-                string.IsNullOrWhiteSpace(novaSenha))
-            {
-                TempData["Erro"] = "Preencha todos os campos.";
-                return RedirectToAction("GerenciarUsuarios");
-            }
-
-            if (novaSenha != confirmarSenha)
-            {
-                TempData["Erro"] = "A confirmação da senha não confere.";
-                return RedirectToAction("GerenciarUsuarios");
-            }
-
-            // Posteriormente: localizar o usuário pelo UID + nome e salvar o novo hash.
-
-            TempData["Sucesso"] = "Senha alterada com sucesso.";
-            return RedirectToAction("GerenciarUsuarios");
-        }
-
-        // Botão "Remover" da lista de usuários cadastrados
-        [HttpPost]
-        public IActionResult ExcluirUsuario(int id)
-        {
-            // Posteriormente: excluir do banco (impedir que o administrador exclua a si mesmo).
-
-            TempData["Sucesso"] = "Usuário removido.";
-            return RedirectToAction("GerenciarUsuarios");
-        }
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ExcluirUsuario(int id)
+    {
+        if (id <= 0) return BadRequest();
+        if (await _repository.DesativarFuncionarioAsync(id))
+            TempData["Sucesso"] = "Funcionário removido da lista; pedidos históricos foram preservados.";
+        else
+            TempData["Erro"] = "Funcionário não encontrado ou já removido.";
+        return RedirectToAction(nameof(GerenciarUsuarios));
     }
 }

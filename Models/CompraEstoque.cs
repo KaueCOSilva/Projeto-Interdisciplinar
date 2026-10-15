@@ -13,8 +13,9 @@ namespace SIVAD.Models
         public int AdministradorId { get; set; }
         public Administrador Administrador { get; set; } = null!;
 
-        public int FornecedorId { get; set; }
-        public Fornecedor Fornecedor { get; set; } = null!;
+        public int? FornecedorId { get; set; }
+        public string FornecedorNome { get; set; } = string.Empty;
+        public Fornecedor? Fornecedor { get; set; }
 
         public ICollection<ItemCompraEstoque> Itens { get; set; } = new List<ItemCompraEstoque>();
     }

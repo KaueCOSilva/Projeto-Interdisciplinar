@@ -1,3 +1,4 @@
+@model SIVAD.Models.ViewModels.DashboardViewModel
 @{
     ViewData["Title"] = "Dashboard";
 }
@@ -19,7 +20,7 @@
     <link rel="stylesheet" href="/css/base.css?v=1" />
     <link rel="stylesheet" href="/css/shared/sidebar-admin.css?v=1" />
     <link rel="stylesheet" href="/css/shared/logout-link.css?v=1" />
-    <link rel="stylesheet" href="/css/views/administrador/dashboard.css?v=1" />
+    <link rel="stylesheet" href="/css/views/administrador/dashboard.css?v=2" />
     <link rel="stylesheet" href="/css/views/administrador/relatorios.css?v=1" />
     <link rel="stylesheet" href="/css/shared/profile-avatars.css?v=1" />
 
@@ -56,7 +57,10 @@
                            asp-action="Notificacoes">
                     <i class="bi bi-bell"></i>
 
-                    <span class="notification-badge"></span>
+                    @if (Model.AlertasEstoque > 0)
+                    {
+                        <span class="notification-badge" aria-label="@Model.AlertasEstoque alertas de estoque">@Model.AlertasEstoque</span>
+                    }
                     </a>
                 </div>
 
@@ -87,11 +91,11 @@
                         </span>
 
                         <span class="stat-value">
-                            R$ 245.890
+                            @Model.VendasTotais.ToString("C0", System.Globalization.CultureInfo.GetCultureInfo("pt-BR"))
                         </span>
 
                         <span class="stat-change positive">
-                            ↑ 12.5% do que o ano anterior
+                            Vendas finalizadas no banco
                         </span>
 
                     </div>
@@ -115,11 +119,11 @@
                         </span>
 
                         <span class="stat-value">
-                            R$ 89.230
+                            @Model.VendasDoMes.ToString("C0", System.Globalization.CultureInfo.GetCultureInfo("pt-BR"))
                         </span>
 
                         <span class="stat-change positive">
-                            ↑ 8.2% do que o mês anterior
+                            Vendas finalizadas neste mês
                         </span>
 
                     </div>
@@ -143,11 +147,11 @@
                         </span>
 
                         <span class="stat-value">
-                            1.248
+                            @Model.UnidadesVendidas
                         </span>
 
                         <span class="stat-change positive">
-                            ↑ 18.7% do que o mês anterior
+                            Unidades em pedidos finalizados
                         </span>
 
                     </div>
@@ -167,15 +171,15 @@
                     <div>
 
                         <span class="stat-title">
-                            Devoluções
+                            Pedidos Cancelados
                         </span>
 
                         <span class="stat-value">
-                            8
+                            @Model.PedidosCancelados
                         </span>
 
                         <span class="stat-change negative">
-                            ↓ 25.0% do que o mês anterior
+                            Pedidos com status cancelado
                         </span>
 
                     </div>
@@ -203,7 +207,7 @@
                     <div class="panel-title">
 
                         <h2>
-                            Vendas e Receita
+                            Vendas e Compras
                         </h2>
 
                     </div>
@@ -225,107 +229,21 @@
                     </div>
 
                     <div class="activities">
-
-                        <div class="activity">
-
-                            <span class="activity-dot"
-                                  style="background:#20bf6b;">
-                            </span>
-
-                            <div class="activity-info">
-
-                                <span class="activity-title">
-                                    Nova compra registrada #4521
-                                </span>
-
-                                <span class="activity-time">
-                                    Há 5 minutos
-                                </span>
-
+                        @if (Model.Atividades.Count == 0)
+                        {
+                            <div class="activity"><span class="activity-title">Nenhum pedido ou compra encontrado no banco.</span></div>
+                        }
+                        @foreach (var item in Model.Atividades)
+                        {
+                            var color = item.Tipo == "cancelado" ? "#ef4444" : item.Tipo == "pendente" ? "#f1b90b" : item.Tipo == "compra" ? "#2160dc" : "#20bf6b";
+                            <div class="activity">
+                                <span class="activity-dot" style="background:@color;"></span>
+                                <div class="activity-info">
+                                    <span class="activity-title">@item.Descricao</span>
+                                    <span class="activity-time">@item.Data.ToString("dd/MM/yyyy HH:mm")</span>
+                                </div>
                             </div>
-
-                        </div>
-
-                        <div class="activity">
-
-                            <span class="activity-dot"
-                                  style="background:#f1b90b;">
-                            </span>
-
-                            <div class="activity-info">
-
-                                <span class="activity-title">
-                                    Estoque baixo: Produto XYZ
-                                </span>
-
-                                <span class="activity-time">
-                                    Há 15 minutos
-                                </span>
-
-                            </div>
-
-                        </div>
-
-                        <div class="activity">
-
-                            <span class="activity-dot"
-                                  style="background:#3985f5;">
-                            </span>
-
-                            <div class="activity-info">
-
-                                <span class="activity-title">
-                                    Usuário cadastrado: Maria Silva
-                                </span>
-
-                                <span class="activity-time">
-                                    Há 1 hora
-                                </span>
-
-                            </div>
-
-                        </div>
-
-                        <div class="activity">
-
-                            <span class="activity-dot"
-                                  style="background:#20bf6b;">
-                            </span>
-
-                            <div class="activity-info">
-
-                                <span class="activity-title">
-                                    Relatório mensal gerado
-                                </span>
-
-                                <span class="activity-time">
-                                    Há 2 horas
-                                </span>
-
-                            </div>
-
-                        </div>
-
-                        <div class="activity">
-
-                            <span class="activity-dot"
-                                  style="background:#ef4444;">
-                            </span>
-
-                            <div class="activity-info">
-
-                                <span class="activity-title">
-                                    Pedido #3421 cancelado
-                                </span>
-
-                                <span class="activity-time">
-                                    Há 3 horas
-                                </span>
-
-                            </div>
-
-                        </div>
-
+                        }
                     </div>
 
                 </div>
@@ -367,43 +285,17 @@
                     </div>
 
                     <div class="notifications">
-
-                        <div class="important-notification warning">
-
-                            <i class="bi bi-exclamation-circle"></i>
-
-                            <div class="important-text">
-
-                                <span class="important-title">
-                                    Estoque Baixo
-                                </span>
-
-                                <span class="important-description">
-                                    5 produtos abaixo do nível mínimo
-                                </span>
-
+                        @if (Model.EstoqueBaixo.Count == 0)
+                        {
+                            <div class="important-notification info"><i class="bi bi-check-circle"></i><div class="important-text"><span class="important-title">Estoque</span><span class="important-description">Nenhum produto com estoque baixo.</span></div></div>
+                        }
+                        @foreach (var produto in Model.EstoqueBaixo)
+                        {
+                            <div class="important-notification warning">
+                                <i class="bi bi-exclamation-circle"></i>
+                                <div class="important-text"><span class="important-title">@produto.Nome</span><span class="important-description">@produto.Estoque unidades — @produto.Categoria.Nome</span></div>
                             </div>
-
-                        </div>
-
-                        <div class="important-notification info">
-
-                            <i class="bi bi-info-circle"></i>
-
-                            <div class="important-text">
-
-                                <span class="important-title">
-                                    Relatório Disponível
-                                </span>
-
-                                <span class="important-description">
-                                    Relatório mensal de maio já pode ser acessado
-                                </span>
-
-                            </div>
-
-                        </div>
-
+                        }
                     </div>
 
                 </div>
@@ -446,14 +338,9 @@
         const dados =
             google.visualization.arrayToDataTable([
 
-                ["Mês", "Vendas", "Receita"],
+                ["Mês", "Vendas", "Compras de estoque"],
 
-                ["Jan", 45000, 39000],
-                ["Fev", 52000, 44000],
-                ["Mar", 48000, 42000],
-                ["Abr", 61000, 53000],
-                ["Mai", 55000, 48000],
-                ["Jun", 67000, 59000]
+                ...@Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.VendasPorMes.Select(item => new object[] { item.Label, item.Total, item.Compras })))
 
             ]);
 
@@ -462,7 +349,8 @@
             backgroundColor: "transparent",
 
             legend: {
-                position: "none"
+                position: "bottom",
+                textStyle: { color: "#6b7280", fontSize: 9 }
             },
 
             colors: [
@@ -496,7 +384,7 @@
 
                 minValue: 0,
 
-                maxValue: 80000,
+                
 
                 format: "short",
 
@@ -552,11 +440,7 @@
 
                 ["Categoria", "Quantidade"],
 
-                ["Equipamentos esportivos", 45],
-                ["Vestuário", 32],
-                ["Acessórios", 28],
-                ["Chapéu", 20],
-                ["Óculos", 15]
+                ...@Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.VendasPorCategoria.Select(item => new object[] { item.Categoria, item.Quantidade })))
 
             ]);
 
@@ -608,14 +492,10 @@
 
                 minValue: 0,
 
-                maxValue: 60,
+                
 
                 ticks: [
-                    0,
-                    15,
-                    30,
-                    45,
-                    60
+
                 ],
 
                 textStyle: {

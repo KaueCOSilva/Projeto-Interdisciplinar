@@ -72,15 +72,21 @@
 .notification-badge {
     position: absolute;
 
-    width: 5px;
-    height: 5px;
-
-    border-radius: 50%;
+    min-width: 15px;
+    height: 15px;
+    padding: 0 3px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    color: #fff;
+    font-size: 8px;
+    line-height: 1;
 
     background: #ef4444;
 
-    right: 0;
-    top: 1px;
+    right: -6px;
+    top: -5px;
 
     border: 1px solid #ffffff;
 }

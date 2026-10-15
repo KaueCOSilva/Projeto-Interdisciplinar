@@ -1,78 +1,83 @@
 using Microsoft.AspNetCore.Mvc;
-using SIVAD.Repositories;
 using SIVAD.Models;
-using SIVAD.Strategies;
+using SIVAD.Repositories;
 
-namespace SIVAD.Controllers
+namespace SIVAD.Controllers;
+
+public class PedidoController : Controller
 {
-    // Controlador de Vendas (Nível 3): cria o pedido e calcula o total usando a Strategy.
-    // Não possui views próprias: as telas são as de Views/Funcionario.
-    public class PedidoController : Controller
+    private const int StatusPendente = 0;
+    private const int StatusFinalizado = 1;
+    private const int StatusCancelado = 2;
+    private readonly ISIVADRepository _repository;
+
+    public PedidoController(ISIVADRepository repository) => _repository = repository;
+
+    [HttpGet]
+    public IActionResult Index() => RedirectToAction("RegistrarPedido", "Funcionario");
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Registrar(Pedido pedido, string cpfCliente)
     {
-        private const int StatusPendente = 0;
-        private const int StatusFinalizado = 1;
-        private const int StatusCancelado = 2;
-
-        private readonly SqlServerRepository _repository;
-        private readonly TotalPedidoStrategy _totalPedidoStrategy;
-
-        public PedidoController(
-            SqlServerRepository repository,
-            TotalPedidoStrategy totalPedidoStrategy)
+        var cpf = new string((cpfCliente ?? string.Empty).Where(char.IsDigit).ToArray());
+        if (cpf.Length != 11)
         {
-            _repository = repository;
-            _totalPedidoStrategy = totalPedidoStrategy;
-        }
-
-        [HttpGet]
-        public IActionResult Index()
-        {
+            TempData["Erro"] = "Digite um CPF válido com 11 números.";
             return RedirectToAction("RegistrarPedido", "Funcionario");
         }
-
-        [HttpPost]
-        public async Task<IActionResult> Registrar(Pedido pedido)
+        var clienteId = await _repository.BuscarClienteIdPorCpfAsync(cpf);
+        if (clienteId is null)
         {
-            if (!ModelState.IsValid)
-            {
-                return View("~/Views/Funcionario/RegistrarPedido.cshtml", pedido);
-            }
-
-            // A associação do cliente e do funcionário logado ainda faz parte do protótipo.
-            pedido.ValorTotal = _totalPedidoStrategy.CalcularTotal(pedido);
+            TempData["Erro"] = "Esse CPF não foi encontrado na tabela de clientes do banco.";
+            return RedirectToAction("RegistrarPedido", "Funcionario");
+        }
+        pedido.ClienteId = clienteId.Value;
+        pedido.Itens = pedido.Itens.Where(item => item.Qtd > 0).ToList();
+        if (pedido.FuncionarioId <= 0 || pedido.Itens.Count == 0)
+        {
+            TempData["Erro"] = "Selecione o funcionário e informe pelo menos um produto com quantidade positiva.";
+            return RedirectToAction("RegistrarPedido", "Funcionario");
+        }
+        try
+        {
             pedido.Status = StatusPendente;
-
+            // O Repository lê os preços vigentes no SQL Server e calcula o valor sem confiar no navegador.
             await _repository.RegistrarPedidoAsync(pedido);
-
             return RedirectToAction("ResumoCompra", "Funcionario", new { id = pedido.Codigo });
         }
-
-        [HttpPost]
-        public async Task<IActionResult> Finalizar(int id)
+        catch (InvalidOperationException ex)
         {
-            var atualizado = await _repository.AtualizarStatusPedidoAsync(id, StatusFinalizado);
-            if (!atualizado)
-            {
-                return NotFound();
-            }
-
-            // A baixa de estoque ainda não faz parte deste protótipo.
-            TempData["Sucesso"] = "Compra contabilizada.";
+            TempData["Erro"] = ex.Message;
             return RedirectToAction("RegistrarPedido", "Funcionario");
         }
+    }
 
-        [HttpPost]
-        public async Task<IActionResult> Cancelar(int id)
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Finalizar(int id)
+    {
+        try
         {
-            var atualizado = await _repository.AtualizarStatusPedidoAsync(id, StatusCancelado);
-            if (!atualizado)
-            {
-                return NotFound();
-            }
-
-            // A devolução dos itens ao estoque ainda não faz parte deste protótipo.
-            TempData["Sucesso"] = "Venda cancelada.";
-            return RedirectToAction("Relatorios", "Administrador");
+            var atualizado = await _repository.AtualizarStatusPedidoAsync(id, StatusFinalizado);
+            if (!atualizado) return NotFound();
+            TempData["Sucesso"] = "Pedido contabilizado e estoque atualizado.";
+            return RedirectToAction("RegistrarPedido", "Funcionario");
         }
+        catch (InvalidOperationException ex)
+        {
+            TempData["Erro"] = ex.Message;
+            return RedirectToAction("ResumoCompra", "Funcionario", new { id });
+        }
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Cancelar(int id)
+    {
+        var atualizado = await _repository.AtualizarStatusPedidoAsync(id, StatusCancelado);
+        if (!atualizado) return NotFound();
+        TempData["Sucesso"] = "Pedido cancelado; estoque restaurado quando necessário.";
+        return RedirectToAction("Relatorios", "Administrador");
     }
 }

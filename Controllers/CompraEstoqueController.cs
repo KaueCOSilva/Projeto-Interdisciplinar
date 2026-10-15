@@ -1,50 +1,54 @@
 using Microsoft.AspNetCore.Mvc;
-using SIVAD.Repositories;
 using SIVAD.Models;
+using SIVAD.Repositories;
 using SIVAD.Strategies;
 
-namespace SIVAD.Controllers
+namespace SIVAD.Controllers;
+
+public class CompraEstoqueController : Controller
 {
-    // Controlador de Gestão de Estoque (Nível 3): registra compras junto ao fornecedor.
-    // Não possui views próprias: a tela é Views/Administrador/MovimentoCompras.cshtml.
-    public class CompraEstoqueController : Controller
+    private readonly ISIVADRepository _repository;
+    private readonly TotalCompraEstoqueStrategy _totalStrategy;
+
+    public CompraEstoqueController(ISIVADRepository repository, TotalCompraEstoqueStrategy totalStrategy)
     {
-        private const int StatusPendente = 0;
+        _repository = repository;
+        _totalStrategy = totalStrategy;
+    }
 
-        private readonly SqlServerRepository _repository;
-        private readonly TotalCompraEstoqueStrategy _totalCompraEstoqueStrategy;
+    [HttpGet]
+    public IActionResult Index() => RedirectToAction("MovimentoCompras", "Administrador");
 
-        public CompraEstoqueController(
-            SqlServerRepository repository,
-            TotalCompraEstoqueStrategy totalCompraEstoqueStrategy)
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Registrar(CompraEstoque compraEstoque)
+    {
+        compraEstoque.Itens = compraEstoque.Itens.Where(item => item.Quantidade > 0).ToList();
+        if (compraEstoque.AdministradorId <= 0 || string.IsNullOrWhiteSpace(compraEstoque.FornecedorNome) || compraEstoque.Itens.Count == 0)
         {
-            _repository = repository;
-            _totalCompraEstoqueStrategy = totalCompraEstoqueStrategy;
-        }
-
-        [HttpGet]
-        public IActionResult Index()
-        {
+            TempData["Erro"] = "Informe o nome do fornecedor, o administrador e ao menos um produto com quantidade positiva.";
             return RedirectToAction("MovimentoCompras", "Administrador");
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Registrar(CompraEstoque compraEstoque)
+        compraEstoque.FornecedorNome = compraEstoque.FornecedorNome.Trim();
+        if (compraEstoque.FornecedorNome.Length > 150)
         {
-            if (!ModelState.IsValid)
-            {
-                TempData["Erro"] = "Verifique os dados da compra.";
-                return RedirectToAction("MovimentoCompras", "Administrador");
-            }
+            TempData["Erro"] = "O nome do fornecedor deve ter até 150 caracteres.";
+            return RedirectToAction("MovimentoCompras", "Administrador");
+        }
 
-            // A associação do administrador e do fornecedor ainda precisa ser ligada à interface.
-            compraEstoque.Total = _totalCompraEstoqueStrategy.CalcularTotal(compraEstoque);
-            compraEstoque.Status = StatusPendente;
-
+        foreach (var item in compraEstoque.Itens)
+            item.Valor = item.PrecoUnitario * item.Quantidade;
+        compraEstoque.Total = _totalStrategy.CalcularTotal(compraEstoque);
+        try
+        {
             await _repository.RegistrarCompraEstoqueAsync(compraEstoque);
-
-            TempData["Sucesso"] = "Compra registrada.";
-            return RedirectToAction("MovimentoCompras", "Administrador");
+            TempData["Sucesso"] = $"Compra #{compraEstoque.Numero} registrada; quantidades do estoque atualizadas.";
         }
+        catch (InvalidOperationException ex)
+        {
+            TempData["Erro"] = ex.Message;
+        }
+        return RedirectToAction("MovimentoCompras", "Administrador");
     }
 }

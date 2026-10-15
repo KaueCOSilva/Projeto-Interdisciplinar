@@ -6,12 +6,12 @@ namespace SIVAD.Controllers
 {
     public class CalculoTotalController : Controller
     {
-        private readonly SqlServerRepository _repository;
+        private readonly ISIVADRepository _repository;
         private readonly TotalPedidoStrategy _totalPedidoStrategy;
         private readonly TotalCompraEstoqueStrategy _totalCompraEstoqueStrategy;
 
         public CalculoTotalController(
-            SqlServerRepository repository,
+            ISIVADRepository repository,
             TotalPedidoStrategy totalPedidoStrategy,
             TotalCompraEstoqueStrategy totalCompraEstoqueStrategy)
         {

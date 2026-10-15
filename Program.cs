@@ -5,8 +5,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 
-// Acesso direto ao SQL Server usando ADO.NET.
-builder.Services.AddScoped<SqlServerRepository>();
+// Acesso ao SQL Server pelo Microsoft.Data.SqlClient, concentrado no Repository.
+builder.Services.AddScoped<ISIVADRepository, SqlServerRepository>();
 
 // Estratégias de cálculo usadas pelos fluxos de pedidos e compras.
 builder.Services.AddScoped<TotalPedidoStrategy>();
@@ -18,9 +18,9 @@ if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
+    app.UseHttpsRedirection();
 }
 
-app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthorization();

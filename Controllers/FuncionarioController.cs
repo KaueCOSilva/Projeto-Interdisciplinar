@@ -1,46 +1,34 @@
 using Microsoft.AspNetCore.Mvc;
+using SIVAD.Models.ViewModels;
 using SIVAD.Repositories;
 
-namespace SIVAD.Controllers
+namespace SIVAD.Controllers;
+
+public class FuncionarioController : Controller
 {
-    // Telas do funcionário: registro e resumo de compra.
-    public class FuncionarioController : Controller
+    private readonly ISIVADRepository _repository;
+    public FuncionarioController(ISIVADRepository repository) => _repository = repository;
+
+    [HttpGet]
+    public IActionResult Index() => RedirectToAction(nameof(RegistrarPedido));
+
+    [HttpGet]
+    public async Task<IActionResult> RegistrarPedido()
     {
-        private readonly SqlServerRepository _repository;
-
-        public FuncionarioController(SqlServerRepository repository)
+        var model = new EmployeeOrderViewModel
         {
-            _repository = repository;
-        }
+            Produtos = await _repository.ListarProdutosAsync(somenteComEstoque: true),
+            Funcionarios = await _repository.ListarFuncionariosAsync()
+        };
+        return View(model);
+    }
 
-        [HttpGet]
-        public IActionResult Index()
-        {
-            return RedirectToAction("RegistrarPedido");
-        }
-
-        [HttpGet]
-        public IActionResult RegistrarPedido()
-        {
-            return View();
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> ResumoCompra(int? id)
-        {
-            if (id == null)
-            {
-                // A tela contém dados demonstrativos enquanto o fluxo completo é desenvolvido.
-                return View();
-            }
-
-            var pedido = await _repository.ObterPedidoAsync(id.Value);
-            if (pedido == null)
-            {
-                return NotFound();
-            }
-
-            return View(pedido);
-        }
+    [HttpGet]
+    public async Task<IActionResult> ResumoCompra(int? id)
+    {
+        if (id is null) return RedirectToAction(nameof(RegistrarPedido));
+        var pedido = await _repository.ObterPedidoAsync(id.Value);
+        if (pedido is null) return NotFound();
+        return View(pedido);
     }
 }
