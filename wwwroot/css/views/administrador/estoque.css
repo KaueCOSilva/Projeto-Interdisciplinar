@@ -53,8 +53,11 @@ body.stock-page .stock-topbar-actions {
 
 body.stock-page .stock-notification {
     position: relative;
+    display: inline-flex;
     width: 22px;
     height: 25px;
+    align-items: center;
+    justify-content: center;
     padding: 0;
     border: 0;
     background: transparent;
@@ -398,4 +401,3 @@ body.stock-page .stock-actions a.stock-delete:hover {
         width: 100%;
     }
 }
-

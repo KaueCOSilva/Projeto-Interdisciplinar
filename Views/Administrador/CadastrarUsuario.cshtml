@@ -27,13 +27,11 @@
                 </div>
 
                 <div class="employee-topbar-actions" aria-label="Ações do usuário">
-                    <button class="employee-notification-button" type="button" aria-label="Notificações">
-                        <a asp-controller="Administrador"
-                           asp-action="Notificacoes">
-                            <i class="bi bi-bell" aria-hidden="true"></i>
-                            @if (ViewBag.AlertasEstoque is int alertas && alertas > 0) { <span class="employee-notification-dot" title="@alertas alertas de estoque" aria-label="@alertas alertas de estoque"></span> }
-                        </a>
-                    </button>
+                    <a class="employee-notification-button" asp-controller="Administrador"
+                        asp-action="Notificacoes" aria-label="Notificações">
+                        <i class="bi bi-bell" aria-hidden="true"></i>
+                        @if (ViewBag.AlertasEstoque is int alertas && alertas > 0) { <span class="employee-notification-dot" title="@alertas alertas de estoque" aria-label="@alertas alertas de estoque"></span> }
+                    </a>
                 </div>
             </header>
 

@@ -344,6 +344,23 @@
     height: 201px;
 }
 
+.history-panels {
+    margin-top: 16px;
+}
+
+#stockPurchaseHistoryChart {
+    width: 100%;
+    height: 250px;
+}
+
+.chart-empty-message {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #9ca3af;
+    font-size: 11px;
+}
+
 /* =========================================================
            NOTIFICAÇÕES
         ========================================================= */
@@ -441,4 +458,3 @@
         grid-template-columns: 1fr;
     }
 }
-

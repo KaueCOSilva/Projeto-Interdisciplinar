@@ -2,6 +2,9 @@ using Microsoft.Data.SqlClient;
 
 namespace SIVAD.Repositories;
 
+/// <summary>
+/// Classe-base dos repositories SQL. Cada operação cria e descarta sua própria conexão.
+/// </summary>
 public abstract class DataConnection
 {
     private readonly string _connectionString;

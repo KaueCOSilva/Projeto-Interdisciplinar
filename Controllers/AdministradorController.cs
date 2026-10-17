@@ -48,7 +48,7 @@ public class AdministradorController : Controller
         {
             Produtos = await _repository.ListarProdutosAsync(),
             Administradores = await _repository.ListarAdministradoresAsync(),
-            ComprasRecentes = await _repository.ListarComprasRecentesAsync()
+            HistoricoCompras = await _repository.ListarComprasAsync()
         };
         return View(model);
     }

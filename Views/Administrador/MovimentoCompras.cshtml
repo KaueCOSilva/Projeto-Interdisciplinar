@@ -1,6 +1,7 @@
 @model SIVAD.Models.ViewModels.StockPurchaseViewModel
 @{
     ViewData["Title"] = "Movimento de Compras";
+    var editando = Model.CompraEmEdicao is not null;
 }
 
 <!DOCTYPE html>
@@ -30,49 +31,63 @@
                 </div>
 
                 <div class="purchase-topbar-actions">
-                    <button type="button" class="purchase-notification" aria-label="Notificações">
-                        <a asp-controller="Administrador"
-                           asp-action="Notificacoes">
-                            <i class="bi bi-bell"></i>
-                            @if (ViewBag.AlertasEstoque is int alertas && alertas > 0) { <span title="@alertas alertas de estoque" aria-label="@alertas alertas de estoque"></span> }
-                        </a>
-                    </button>
+                    <a class="purchase-notification" asp-controller="Administrador"
+                        asp-action="Notificacoes" aria-label="Notificações">
+                        <i class="bi bi-bell" aria-hidden="true"></i>
+                        @if (ViewBag.AlertasEstoque is int alertas && alertas > 0) { <span title="@alertas alertas de estoque" aria-label="@alertas alertas de estoque"></span> }
+                    </a>
                 </div>
             </header>
 
             <section class="purchase-content">
                 <div class="purchase-layout">
                     <div class="purchase-left-column">
-                        <form asp-controller="CompraEstoque" asp-action="Registrar" method="post" class="purchase-form">
+                        <form asp-controller="CompraEstoque" asp-action="@(editando ? "Editar" : "Registrar")" method="post" class="purchase-form">
                             @Html.AntiForgeryToken()
+                            @if (editando)
+                            {
+                                <input type="hidden" name="Numero" value="@Model.CompraEmEdicao!.Numero" />
+                            }
                             @if (TempData["Erro"] is string erro) { <div class="alert alert-danger" role="alert">@erro</div> }
                             @if (TempData["Sucesso"] is string sucesso) { <div class="alert alert-success" role="status">@sucesso</div> }
                             <section class="purchase-panel purchase-data-panel">
                                 <div class="purchase-panel-header">
-                                    <h2>Nova Compra</h2>
+                                    <h2>@(editando ? $"Editar Compra #{Model.CompraEmEdicao!.Numero}" : "Nova Compra")</h2>
                                 </div>
                                 <div class="purchase-fields-grid">
                                     <div class="purchase-field">
                                         <label for="dataRecebimento">Data de recebimento de compra*</label>
-                                        <input
-                                            id="dataRecebimento"
-                                            name="DataCompra"
-                                            type="date" />
+                                        @if (editando)
+                                        {
+                                            <input id="dataRecebimento" name="DataCompra" type="datetime-local" step="1" value="@Model.CompraEmEdicao!.DataCompra.ToString("yyyy-MM-ddTHH:mm:ss", System.Globalization.CultureInfo.InvariantCulture)" required />
+                                        }
+                                        else
+                                        {
+                                            <input id="dataRecebimento" name="DataCompra" type="date" />
+                                        }
                                     </div>
                                     <div class="purchase-field">
                                         <label for="fornecedor">Fornecedor*</label>
-                                        <input id="fornecedor" name="FornecedorNome" type="text" placeholder="Digite o nome do fornecedor" maxlength="150" required />
+                                        <input id="fornecedor" name="FornecedorNome" type="text" value="@(editando ? Model.CompraEmEdicao!.FornecedorNome : "")" placeholder="Digite o nome do fornecedor" maxlength="150" required />
                                     </div>
                                     <div class="purchase-field">
                                         <label for="administrador">Administrador responsável*</label>
-                                        <select id="administrador" name="AdministradorId" required>
-                                            <option value="">Administrador responsável...</option>
-                                            @foreach (var administrador in Model.Administradores) { <option value="@administrador.Id">@administrador.Nome</option> }
-                                        </select>
+                                        @if (editando)
+                                        {
+                                            <input type="hidden" name="AdministradorId" value="@Model.CompraEmEdicao!.AdministradorId" />
+                                            <input id="administrador" type="text" value="Administrador #@Model.CompraEmEdicao!.AdministradorId" readonly />
+                                        }
+                                        else
+                                        {
+                                            <select id="administrador" name="AdministradorId" required>
+                                                <option value="">Administrador responsável...</option>
+                                                @foreach (var administrador in Model.Administradores) { <option value="@administrador.Id">@administrador.Nome</option> }
+                                            </select>
+                                        }
                                     </div>
                                     <div class="purchase-field">
                                         <label for="codigoCompra">Código/Número*</label>
-                                        <input id="codigoCompra" type="text" value="Gerado ao salvar" readonly />
+                                        <input id="codigoCompra" type="text" value="@(editando ? $"CP{Model.CompraEmEdicao!.Numero}" : "Gerado ao salvar")" readonly />
                                     </div>
                                 </div>
                             </section>
@@ -99,18 +114,44 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr>
-                                                <td><span class="purchase-sku">—</span></td>
-                                                <td><select class="purchase-product" name="Itens[0].ProdutoCodigo">
-                                                    <option value="">Selecione produto...</option>
-                                                    @foreach (var produto in Model.Produtos) { <option value="@produto.Codigo" data-sku="@produto.CodigoBarras" data-cor="@produto.Cor">@produto.Nome</option> }
-                                                </select></td>
-                                                <td><input class="purchase-item-color" name="Itens[0].Cor" type="text" maxlength="60" placeholder="Cor" /></td>
-                                                <td><input class="purchase-quantity" name="Itens[0].Quantidade" type="number" value="0" min="0" /></td>
-                                                <td><input class="purchase-unit-price" name="Itens[0].PrecoUnitario" type="number" value="0" min="0" step="0.01" /></td>
-                                                <td class="purchase-item-total">R$<br />0,00</td>
-                                                <td class="purchase-item-action"><button type="button" aria-label="Remover item"><i class="bi bi-trash3"></i></button></td>
-                                            </tr>
+                                            @if (editando)
+                                            {
+                                                @foreach (var item in Model.CompraEmEdicao!.Itens)
+                                                {
+                                                    var produtoAtual = Model.Produtos.FirstOrDefault(produto => produto.Codigo == item.ProdutoCodigo);
+                                                    <tr>
+                                                        <td><span class="purchase-sku">@(produtoAtual?.CodigoBarras ?? "—")</span></td>
+                                                        <td><select class="purchase-product">
+                                                            <option value="">Selecione produto...</option>
+                                                            @foreach (var produto in Model.Produtos)
+                                                            {
+                                                                var selecionado = produto.Codigo == item.ProdutoCodigo;
+                                                                <option value="@produto.Codigo" data-sku="@produto.CodigoBarras" data-cor="@produto.Cor" selected="@selecionado" disabled="@(!produto.Ativo && !selecionado)">@produto.Nome@(produto.Ativo ? "" : " (inativo)")</option>
+                                                            }
+                                                        </select></td>
+                                                        <td><input class="purchase-item-color" type="text" value="@item.Cor" maxlength="60" placeholder="Cor" /></td>
+                                                        <td><input class="purchase-quantity" type="number" value="@item.Quantidade" min="0" /></td>
+                                                        <td><input class="purchase-unit-price" type="number" value="@item.PrecoUnitario.ToString("0.############", System.Globalization.CultureInfo.InvariantCulture)" min="0" step="any" /></td>
+                                                        <td class="purchase-item-total">@item.Valor.ToString("C2", System.Globalization.CultureInfo.GetCultureInfo("pt-BR"))</td>
+                                                        <td class="purchase-item-action"><button type="button" aria-label="Remover item"><i class="bi bi-trash3"></i></button></td>
+                                                    </tr>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <tr>
+                                                    <td><span class="purchase-sku">—</span></td>
+                                                    <td><select class="purchase-product" name="Itens[0].ProdutoCodigo">
+                                                        <option value="">Selecione produto...</option>
+                                                        @foreach (var produto in Model.Produtos) { <option value="@produto.Codigo" data-sku="@produto.CodigoBarras" data-cor="@produto.Cor">@produto.Nome</option> }
+                                                    </select></td>
+                                                    <td><input class="purchase-item-color" name="Itens[0].Cor" type="text" maxlength="60" placeholder="Cor" /></td>
+                                                    <td><input class="purchase-quantity" name="Itens[0].Quantidade" type="number" value="0" min="0" /></td>
+                                                    <td><input class="purchase-unit-price" name="Itens[0].PrecoUnitario" type="number" value="0" min="0" step="0.01" /></td>
+                                                    <td class="purchase-item-total">R$<br />0,00</td>
+                                                    <td class="purchase-item-action"><button type="button" aria-label="Remover item"><i class="bi bi-trash3"></i></button></td>
+                                                </tr>
+                                            }
                                         </tbody>
                                     </table>
                                 </div>
@@ -136,22 +177,30 @@
                             </section>
 
                             <div class="purchase-footer-actions">
-                                <button type="reset" class="purchase-cancel-button">Cancelar Compra</button>
-                                <button type="submit" class="purchase-finish-button">Finalizar Compra</button>
+                                @if (editando)
+                                {
+                                    <button type="button" class="purchase-cancel-button" onclick="window.location.href='@Url.Action("MovimentoCompras", "Administrador")'">Cancelar Edição</button>
+                                    <button type="submit" class="purchase-finish-button">Salvar Alterações</button>
+                                }
+                                else
+                                {
+                                    <button type="reset" class="purchase-cancel-button">Cancelar Compra</button>
+                                    <button type="submit" class="purchase-finish-button">Finalizar Compra</button>
+                                }
                             </div>
                         </form>
                     </div>
 
                     <aside class="purchase-recent-panel">
                         <div class="purchase-panel-header">
-                            <h2>Compras Recentes</h2>
+                            <h2>Histórico de Compras</h2>
                         </div>
                         <div class="purchase-recent-list">
-                            @if (Model.ComprasRecentes.Count == 0)
+                            @if (Model.HistoricoCompras.Count == 0)
                             {
                                 <p>Nenhuma compra registrada no banco.</p>
                             }
-                            @foreach (var compra in Model.ComprasRecentes)
+                            @foreach (var compra in Model.HistoricoCompras)
                             {
                                 var statusClass = compra.Status == 1 ? "status-paid" : compra.Status == 2 ? "status-canceled" : "status-pending";
                                 var statusText = compra.Status == 1 ? "Recebida" : compra.Status == 2 ? "Cancelada" : "Pendente";
@@ -160,6 +209,17 @@
                                     <small>CP@compra.Numero</small>
                                     <b>@compra.Total.ToString("C2", System.Globalization.CultureInfo.GetCultureInfo("pt-BR"))</b>
                                     <div class="recent-purchase-bottom"><time>@compra.DataCompra.ToString("dd/MM/yyyy")</time><i class="bi bi-database"></i></div>
+                                    @if (compra.Status == 1)
+                                    {
+                                        <div class="d-flex gap-2 mt-2">
+                                            <a class="btn btn-sm btn-outline-primary" asp-controller="CompraEstoque" asp-action="Editar" asp-route-numero="@compra.Numero">Editar</a>
+                                            <form asp-controller="CompraEstoque" asp-action="Cancelar" method="post" onsubmit="return confirm('Cancelar a compra CP@compra.Numero? As quantidades serão retiradas do estoque e o movimento deixará de compor os gráficos.');">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="numero" value="@compra.Numero" />
+                                                <button class="btn btn-sm btn-outline-danger" type="submit">Cancelar compra</button>
+                                            </form>
+                                        </div>
+                                    }
                                 </article>
                             }
                         </div>
@@ -172,7 +232,7 @@
     <template id="purchaseRowTemplate">
         <tr>
             <td><span class="purchase-sku">—</span></td>
-            <td><select class="purchase-product"><option value="">Selecione produto...</option>@foreach (var produto in Model.Produtos) { <option value="@produto.Codigo" data-sku="@produto.CodigoBarras" data-cor="@produto.Cor">@produto.Nome</option> }</select></td>
+            <td><select class="purchase-product"><option value="">Selecione produto...</option>@foreach (var produto in Model.Produtos.Where(produto => produto.Ativo)) { <option value="@produto.Codigo" data-sku="@produto.CodigoBarras" data-cor="@produto.Cor">@produto.Nome</option> }</select></td>
             <td><input class="purchase-item-color" type="text" maxlength="60" placeholder="Cor" /></td>
             <td><input class="purchase-quantity" type="number" value="0" min="0" /></td>
             <td><input class="purchase-unit-price" type="number" value="0" min="0" step="0.01" /></td>

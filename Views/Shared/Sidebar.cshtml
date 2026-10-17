@@ -23,8 +23,8 @@
         <!-- DASHBOARD -->
 
         <a asp-controller="Administrador"
-           asp-action="Dashboard"
-           class="menu-item @(ViewContext.RouteData.Values["action"]?.ToString() == "Dashboard" ? "active" : "")">
+            asp-action="Dashboard"
+            class="menu-item @(ViewContext.RouteData.Values["action"]?.ToString() == "Dashboard" ? "active" : "")">
 
             <i class="bi bi-grid"></i>
 
@@ -35,8 +35,8 @@
         <!-- RELATÓRIOS -->
 
         <a asp-controller="Administrador"
-           asp-action="Relatorios"
-           class="menu-item @(ViewContext.RouteData.Values["action"]?.ToString() == "Relatorios" ? "active" : "")">
+            asp-action="Relatorios"
+            class="menu-item @(ViewContext.RouteData.Values["action"]?.ToString() == "Relatorios" ? "active" : "")">
 
             <i class="bi bi-bar-chart-line"></i>
 
@@ -47,8 +47,8 @@
         <!-- ESTOQUE -->
 
         <a asp-controller="Administrador"
-           asp-action="Estoque"
-           class="menu-item @(ViewContext.RouteData.Values["action"]?.ToString() == "Estoque" ? "active" : "")">
+            asp-action="Estoque"
+            class="menu-item @(ViewContext.RouteData.Values["action"]?.ToString() == "Estoque" ? "active" : "")">
 
             <i class="bi bi-box-seam"></i>
 
@@ -59,8 +59,8 @@
         <!-- MOVIMENTO DE COMPRAS -->
 
         <a asp-controller="Administrador"
-           asp-action="MovimentoCompras"
-           class="menu-item @(ViewContext.RouteData.Values["action"]?.ToString() == "MovimentoCompras" ? "active" : "")">
+            asp-action="MovimentoCompras"
+            class="menu-item @(ViewContext.RouteData.Values["action"]?.ToString() == "MovimentoCompras" ? "active" : "")">
 
             <i class="bi bi-cart3"></i>
 
@@ -73,9 +73,9 @@
         <div class="employees-menu">
 
             <a href="#"
-               class="menu-item employees-menu-toggle"
-               aria-expanded="true"
-               aria-controls="employees-submenu">
+                class="menu-item employees-menu-toggle"
+                aria-expanded="true"
+                aria-controls="employees-submenu">
 
                 <i class="bi bi-people"></i>
 
@@ -88,8 +88,8 @@
             <div id="employees-submenu" class="submenu">
 
                 <a asp-controller="Administrador"
-                   asp-action="CadastrarUsuario"
-                   class="menu-item @(ViewContext.RouteData.Values["action"]?.ToString() == "CadastrarUsuario" ? "active" : "")">
+                    asp-action="CadastrarUsuario"
+                    class="menu-item @(ViewContext.RouteData.Values["action"]?.ToString() == "CadastrarUsuario" ? "active" : "")">
 
                     <i class="bi bi-person-plus"></i>
 
@@ -98,8 +98,8 @@
                 </a>
 
                 <a asp-controller="Administrador"
-                   asp-action="GerenciarUsuarios"
-                   class="menu-item @(ViewContext.RouteData.Values["action"]?.ToString() == "GerenciarUsuarios" ? "active" : "")">
+                    asp-action="GerenciarUsuarios"
+                    class="menu-item @(ViewContext.RouteData.Values["action"]?.ToString() == "GerenciarUsuarios" ? "active" : "")">
 
                     <i class="bi bi-people"></i>
 
@@ -114,8 +114,8 @@
         <!-- NOTIFICAÇÕES -->
 
         <a asp-controller="Administrador"
-           asp-action="Notificacoes"
-           class="menu-item @(ViewContext.RouteData.Values["action"]?.ToString() == "Notificacoes" ? "active" : "")">
+            asp-action="Notificacoes"
+            class="menu-item @(ViewContext.RouteData.Values["action"]?.ToString() == "Notificacoes" ? "active" : "")">
 
                 <i class="bi bi-bell"></i>
 
@@ -149,8 +149,8 @@
         </div>
 
         <a asp-controller="Autenticacao"
-           asp-action="Login"
-           class="logout">
+            asp-action="Login"
+            class="logout">
 
             <i class="bi bi-box-arrow-right"></i>
 

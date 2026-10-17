@@ -10,12 +10,13 @@ public sealed class SqlServerRepository : DataConnection, ISIVADRepository
 {
     public SqlServerRepository(IConfiguration configuration) : base(configuration) { }
 
-    public async Task<List<Produto>> ListarProdutosAsync(bool somenteComEstoque = false)
+    public async Task<List<Produto>> ListarProdutosAsync(bool somenteComEstoque = false, bool incluirInativos = false)
     {
         const string sql = """
             SELECT p.codigo, p.codigo_barras, p.nome, p.preco_unit, p.estoque,
                    p.categoria_codigo, c.nome AS categoria_nome, p.cor,
-                   COALESCE(ultimaCompra.fornecedor_nome, '') AS fornecedor_nome
+                   COALESCE(ultimaCompra.fornecedor_nome, '') AS fornecedor_nome,
+                   p.ativo
             FROM Produtos p
             INNER JOIN Categorias c ON c.codigo = p.categoria_codigo
             OUTER APPLY
@@ -26,7 +27,8 @@ public sealed class SqlServerRepository : DataConnection, ISIVADRepository
                 WHERE ic.produto_codigo = p.codigo
                 ORDER BY ce.data_compra DESC, ce.numero DESC
             ) ultimaCompra
-            WHERE p.ativo = 1 AND (@somenteComEstoque = 0 OR p.estoque > 0)
+            WHERE (@incluirInativos = 1 OR p.ativo = 1)
+              AND (@somenteComEstoque = 0 OR p.estoque > 0)
             ORDER BY p.nome, p.codigo;
             """;
         var produtos = new List<Produto>();
@@ -34,51 +36,25 @@ public sealed class SqlServerRepository : DataConnection, ISIVADRepository
         await connection.OpenAsync();
         await using var command = new SqlCommand(sql, connection);
         command.Parameters.Add("@somenteComEstoque", SqlDbType.Bit).Value = somenteComEstoque;
+        command.Parameters.Add("@incluirInativos", SqlDbType.Bit).Value = incluirInativos;
         await using var reader = await command.ExecuteReaderAsync();
         while (await reader.ReadAsync())
         {
             produtos.Add(new Produto
             {
-                Codigo = reader.GetInt32(0), CodigoBarras = reader.GetString(1),
-                Nome = reader.GetString(2), PrecoUnit = reader.GetDecimal(3),
-                Estoque = reader.GetInt32(4), CategoriaCodigo = reader.GetInt32(5),
+                Codigo = reader.GetInt32(0),
+                CodigoBarras = reader.GetString(1),
+                Nome = reader.GetString(2),
+                PrecoUnit = reader.GetDecimal(3),
+                Estoque = reader.GetInt32(4),
+                CategoriaCodigo = reader.GetInt32(5),
                 Categoria = new Categoria { Codigo = reader.GetInt32(5), Nome = reader.GetString(6) },
-                Cor = reader.GetString(7), FornecedorNome = reader.GetString(8)
+                Cor = reader.GetString(7),
+                FornecedorNome = reader.GetString(8),
+                Ativo = reader.GetBoolean(9)
             });
         }
         return produtos;
-    }
-
-    public async Task<List<Cliente>> ListarClientesAsync()
-    {
-        const string sql = """
-            SELECT p.id, p.nome, c.cpf FROM Pessoas p
-            INNER JOIN Clientes c ON c.pessoa_id = p.id ORDER BY p.nome;
-            """;
-        var lista = new List<Cliente>();
-        await using var connection = CriarConexao();
-        await connection.OpenAsync();
-        await using var command = new SqlCommand(sql, connection);
-        await using var reader = await command.ExecuteReaderAsync();
-        while (await reader.ReadAsync())
-            lista.Add(new Cliente { Id = reader.GetInt32(0), Nome = reader.GetString(1), CPF = reader.GetString(2) });
-        return lista;
-    }
-
-    public async Task<int?> BuscarClienteIdPorCpfAsync(string cpf)
-    {
-        var digitos = new string((cpf ?? string.Empty).Where(char.IsDigit).ToArray());
-        if (digitos.Length != 11) return null;
-        const string sql = """
-            SELECT TOP (1) pessoa_id FROM Clientes
-            WHERE REPLACE(REPLACE(REPLACE(cpf, '.', ''), '-', ''), ' ', '') = @cpf;
-            """;
-        await using var connection = CriarConexao();
-        await connection.OpenAsync();
-        await using var command = new SqlCommand(sql, connection);
-        command.Parameters.Add("@cpf", SqlDbType.VarChar, 11).Value = digitos;
-        var result = await command.ExecuteScalarAsync();
-        return result is null || result is DBNull ? null : Convert.ToInt32(result);
     }
 
     public async Task<List<Funcionario>> ListarFuncionariosAsync()
@@ -143,17 +119,21 @@ public sealed class SqlServerRepository : DataConnection, ISIVADRepository
         while (await reader.ReadAsync())
             lista.Add(new Produto
             {
-                Codigo = reader.GetInt32(0), CodigoBarras = reader.GetString(1), Nome = reader.GetString(2),
-                PrecoUnit = reader.GetDecimal(3), Estoque = reader.GetInt32(4), CategoriaCodigo = reader.GetInt32(5),
+                Codigo = reader.GetInt32(0),
+                CodigoBarras = reader.GetString(1),
+                Nome = reader.GetString(2),
+                PrecoUnit = reader.GetDecimal(3),
+                Estoque = reader.GetInt32(4),
+                CategoriaCodigo = reader.GetInt32(5),
                 Categoria = new Categoria { Codigo = reader.GetInt32(5), Nome = reader.GetString(6) }
             });
         return lista;
     }
 
-    public async Task<List<CompraEstoque>> ListarComprasRecentesAsync(int quantidade = 5)
+    public async Task<List<CompraEstoque>> ListarComprasAsync()
     {
         const string sql = """
-            SELECT TOP (@quantidade) c.numero, c.data_compra, c.total, c.status,
+            SELECT c.numero, c.data_compra, c.total, c.status,
                    c.administrador_id, c.fornecedor_id, COALESCE(c.fornecedor_nome,p.nome) AS fornecedor_nome
             FROM CompraEstoque c
             LEFT JOIN Fornecedores f ON f.pessoa_id = c.fornecedor_id
@@ -164,15 +144,18 @@ public sealed class SqlServerRepository : DataConnection, ISIVADRepository
         await using var connection = CriarConexao();
         await connection.OpenAsync();
         await using var command = new SqlCommand(sql, connection);
-        command.Parameters.Add("@quantidade", SqlDbType.Int).Value = quantidade;
         await using var reader = await command.ExecuteReaderAsync();
         while (await reader.ReadAsync())
         {
             lista.Add(new CompraEstoque
             {
-                Numero = reader.GetInt32(0), DataCompra = reader.GetDateTime(1), Total = reader.GetDecimal(2),
-                Status = reader.GetInt32(3), AdministradorId = reader.GetInt32(4),
-                FornecedorId = reader.IsDBNull(5) ? null : reader.GetInt32(5), FornecedorNome = reader.GetString(6),
+                Numero = reader.GetInt32(0),
+                DataCompra = reader.GetDateTime(1),
+                Total = reader.GetDecimal(2),
+                Status = reader.GetInt32(3),
+                AdministradorId = reader.GetInt32(4),
+                FornecedorId = reader.IsDBNull(5) ? null : reader.GetInt32(5),
+                FornecedorNome = reader.GetString(6),
                 Fornecedor = new Fornecedor { Nome = reader.GetString(6) }
             });
         }
@@ -241,6 +224,18 @@ public sealed class SqlServerRepository : DataConnection, ISIVADRepository
                 });
         }
 
+        const string purchasesByYearSql = "SELECT YEAR(data_compra), SUM(total) FROM CompraEstoque WHERE status=1 GROUP BY YEAR(data_compra) ORDER BY YEAR(data_compra)";
+        await using (var command = new SqlCommand(purchasesByYearSql, connection))
+        await using (var reader = await command.ExecuteReaderAsync())
+        {
+            while (await reader.ReadAsync())
+                model.ComprasPorAno.Add(new AnnualPurchaseViewModel
+                {
+                    Ano = reader.GetInt32(0),
+                    Total = reader.GetDecimal(1)
+                });
+        }
+
         const string categorySql = """
             SELECT c.nome, SUM(ip.qtd) AS unidades
             FROM Itens_Pedidos ip
@@ -276,7 +271,9 @@ public sealed class SqlServerRepository : DataConnection, ISIVADRepository
             {
                 model.Atividades.Add(new ActivityViewModel
                 {
-                    Descricao = reader.GetString(0), Data = reader.GetDateTime(1), Tipo = reader.GetString(2)
+                    Descricao = reader.GetString(0),
+                    Data = reader.GetDateTime(1),
+                    Tipo = reader.GetString(2)
                 });
             }
         }
@@ -290,8 +287,12 @@ public sealed class SqlServerRepository : DataConnection, ISIVADRepository
         {
             while (await reader.ReadAsync()) model.EstoqueBaixo.Add(new Produto
             {
-                Codigo = reader.GetInt32(0), CodigoBarras = reader.GetString(1), Nome = reader.GetString(2),
-                PrecoUnit = reader.GetDecimal(3), Estoque = reader.GetInt32(4), CategoriaCodigo = reader.GetInt32(5),
+                Codigo = reader.GetInt32(0),
+                CodigoBarras = reader.GetString(1),
+                Nome = reader.GetString(2),
+                PrecoUnit = reader.GetDecimal(3),
+                Estoque = reader.GetInt32(4),
+                CategoriaCodigo = reader.GetInt32(5),
                 Categoria = new Categoria { Codigo = reader.GetInt32(5), Nome = reader.GetString(6) }
             });
         }
@@ -314,7 +315,9 @@ public sealed class SqlServerRepository : DataConnection, ISIVADRepository
         await using var reader = await command.ExecuteReaderAsync();
         while (await reader.ReadAsync()) movimentos.Add(new ReportMovementViewModel
         {
-            Data = reader.GetDateTime(0), Tipo = reader.GetString(1), Valor = reader.GetDecimal(2)
+            Data = reader.GetDateTime(0),
+            Tipo = reader.GetString(1),
+            Valor = reader.GetDecimal(2)
         });
         return movimentos;
     }
@@ -325,8 +328,8 @@ public sealed class SqlServerRepository : DataConnection, ISIVADRepository
             throw new InvalidOperationException("Informe pelo menos um produto com quantidade maior que zero.");
         if (pedido.Itens.GroupBy(item => item.ProdutoCodigo).Any(group => group.Count() > 1))
             throw new InvalidOperationException("Cada produto deve aparecer uma única vez no pedido.");
-        if (pedido.ClienteId <= 0 || pedido.FuncionarioId <= 0)
-            throw new InvalidOperationException("O pedido precisa estar associado a um cliente e a um funcionário válidos.");
+        if (pedido.ClienteId is <= 0 || pedido.FuncionarioId <= 0)
+            throw new InvalidOperationException("O pedido precisa estar associado a um funcionário válido.");
 
         await using var connection = CriarConexao();
         await connection.OpenAsync();
@@ -358,7 +361,7 @@ public sealed class SqlServerRepository : DataConnection, ISIVADRepository
         {
             AddInt(command, "@status", 0);
             AddMoney(command, "@total", total);
-            AddInt(command, "@cliente", pedido.ClienteId);
+            command.Parameters.Add("@cliente", SqlDbType.Int).Value = pedido.ClienteId is null ? DBNull.Value : pedido.ClienteId.Value;
             AddInt(command, "@funcionario", pedido.FuncionarioId);
             pedido.Codigo = Convert.ToInt32(await command.ExecuteScalarAsync());
         }
@@ -433,8 +436,11 @@ public sealed class SqlServerRepository : DataConnection, ISIVADRepository
             if (!await reader.ReadAsync()) return null;
             pedido = new Pedido
             {
-                Codigo = reader.GetInt32(0), Status = reader.GetInt32(1), ValorTotal = reader.GetDecimal(2),
-                ClienteId = reader.GetInt32(3), FuncionarioId = reader.GetInt32(4)
+                Codigo = reader.GetInt32(0),
+                Status = reader.GetInt32(1),
+                ValorTotal = reader.GetDecimal(2),
+                ClienteId = reader.IsDBNull(3) ? null : reader.GetInt32(3),
+                FuncionarioId = reader.GetInt32(4)
             };
         }
         pedido.Itens = await LerItensPedidoAsync(connection, codigo);
@@ -452,6 +458,14 @@ public sealed class SqlServerRepository : DataConnection, ISIVADRepository
             codigo = result is null ? null : Convert.ToInt32(result);
         }
         return codigo.HasValue ? await ObterPedidoAsync(codigo.Value) : null;
+    }
+
+    public async Task<Pedido?> ObterUltimoPedidoAsync()
+    {
+        await using var connection = CriarConexao();
+        await connection.OpenAsync();
+        var result = await new SqlCommand("SELECT TOP (1) codigo FROM Pedidos ORDER BY codigo DESC", connection).ExecuteScalarAsync();
+        return result is null || result is DBNull ? null : await ObterPedidoAsync(Convert.ToInt32(result));
     }
 
     public async Task<int> RegistrarCompraEstoqueAsync(CompraEstoque compra)
@@ -502,6 +516,187 @@ public sealed class SqlServerRepository : DataConnection, ISIVADRepository
         return compra.Numero;
     }
 
+    public async Task<CompraEstoque?> ObterCompraEstoqueAsync(int numero)
+    {
+        const string sql = "SELECT numero,data_compra,total,status,administrador_id,fornecedor_id,fornecedor_nome FROM CompraEstoque WHERE numero=@numero";
+        await using var connection = CriarConexao();
+        await connection.OpenAsync();
+        CompraEstoque? compra;
+        await using (var command = new SqlCommand(sql, connection))
+        {
+            AddInt(command, "@numero", numero);
+            await using var reader = await command.ExecuteReaderAsync();
+            if (!await reader.ReadAsync()) return null;
+            compra = new CompraEstoque
+            {
+                Numero = reader.GetInt32(0),
+                DataCompra = reader.GetDateTime(1),
+                Total = reader.GetDecimal(2),
+                Status = reader.GetInt32(3),
+                AdministradorId = reader.GetInt32(4),
+                FornecedorId = reader.IsDBNull(5) ? null : reader.GetInt32(5),
+                FornecedorNome = reader.GetString(6)
+            };
+        }
+        compra.Itens = await LerItensCompraAsync(connection, numero);
+        return compra;
+    }
+
+    public async Task<bool> AtualizarCompraEstoqueAsync(CompraEstoque compra)
+    {
+        if (compra.Numero <= 0 || string.IsNullOrWhiteSpace(compra.FornecedorNome) || compra.FornecedorNome.Trim().Length > 150)
+            throw new InvalidOperationException("Informe um nome de fornecedor válido (até 150 caracteres).");
+        if (compra.Itens.Count == 0 || compra.Itens.Any(item => item.ProdutoCodigo <= 0 || item.Quantidade <= 0 || item.PrecoUnitario < 0))
+            throw new InvalidOperationException("A compra precisa ter ao menos um item com produto, quantidade positiva e preço válido.");
+        if (compra.Itens.GroupBy(item => item.ProdutoCodigo).Any(group => group.Count() > 1))
+            throw new InvalidOperationException("Cada produto deve aparecer uma única vez na compra.");
+
+        foreach (var item in compra.Itens)
+        {
+            item.Cor = string.IsNullOrWhiteSpace(item.Cor) ? "Não informada" : item.Cor.Trim();
+            if (item.Cor.Length > 60)
+                throw new InvalidOperationException("A cor do produto deve ter até 60 caracteres.");
+            item.Valor = decimal.Round(item.PrecoUnitario * item.Quantidade, 2, MidpointRounding.AwayFromZero);
+        }
+        var novoTotal = compra.Itens.Sum(item => item.Valor);
+
+        await using var connection = CriarConexao();
+        await connection.OpenAsync();
+        await using var transaction = (SqlTransaction)await connection.BeginTransactionAsync(IsolationLevel.Serializable);
+        int statusAtual;
+        DateTime dataAtual;
+        await using (var header = new SqlCommand("SELECT status,data_compra FROM CompraEstoque WITH (UPDLOCK,HOLDLOCK) WHERE numero=@numero", connection, transaction))
+        {
+            AddInt(header, "@numero", compra.Numero);
+            await using var reader = await header.ExecuteReaderAsync();
+            if (!await reader.ReadAsync())
+            {
+                await reader.CloseAsync();
+                await transaction.RollbackAsync();
+                return false;
+            }
+            statusAtual = reader.GetInt32(0);
+            dataAtual = reader.GetDateTime(1);
+        }
+        if (statusAtual != 1)
+        {
+            await transaction.RollbackAsync();
+            return false;
+        }
+        if (compra.DataCompra == default) compra.DataCompra = dataAtual;
+
+        var quantidadesAnteriores = new Dictionary<int, int>();
+        await using (var oldItems = new SqlCommand("SELECT produto_codigo,quantidade FROM Itens_CompraEstoque WITH (UPDLOCK,HOLDLOCK) WHERE compra_numero=@numero", connection, transaction))
+        {
+            AddInt(oldItems, "@numero", compra.Numero);
+            await using var reader = await oldItems.ExecuteReaderAsync();
+            while (await reader.ReadAsync()) quantidadesAnteriores[reader.GetInt32(0)] = reader.GetInt32(1);
+        }
+        var quantidadesNovas = compra.Itens.ToDictionary(item => item.ProdutoCodigo, item => item.Quantidade);
+        foreach (var produtoCodigo in quantidadesAnteriores.Keys.Union(quantidadesNovas.Keys).OrderBy(id => id))
+        {
+            quantidadesAnteriores.TryGetValue(produtoCodigo, out var quantidadeAnterior);
+            quantidadesNovas.TryGetValue(produtoCodigo, out var quantidadeNova);
+            var diferenca = quantidadeNova - quantidadeAnterior;
+            if (diferenca == 0) continue;
+
+            var adicionar = diferenca > 0;
+            var quantidade = Math.Abs(diferenca);
+            var sqlEstoque = adicionar
+                ? "UPDATE Produtos SET estoque=estoque+@quantidade WHERE codigo=@produto AND ativo=1"
+                : "UPDATE Produtos SET estoque=estoque-@quantidade WHERE codigo=@produto AND estoque>=@quantidade";
+            await using var updateStock = new SqlCommand(sqlEstoque, connection, transaction);
+            AddInt(updateStock, "@quantidade", quantidade);
+            AddInt(updateStock, "@produto", produtoCodigo);
+            if (await updateStock.ExecuteNonQueryAsync() != 1)
+            {
+                var motivo = adicionar
+                    ? "não existe ou está inativo"
+                    : "não possui saldo suficiente para retirar a diferença (parte do estoque pode já ter sido vendida)";
+                throw new InvalidOperationException($"Não foi possível editar a compra #{compra.Numero}: o produto {produtoCodigo} {motivo}.");
+            }
+        }
+
+        await using (var updateHeader = new SqlCommand("UPDATE CompraEstoque SET data_compra=@data,total=@total,fornecedor_id=NULL,fornecedor_nome=@fornecedor WHERE numero=@numero AND status=1", connection, transaction))
+        {
+            updateHeader.Parameters.Add("@data", SqlDbType.DateTime).Value = compra.DataCompra;
+            AddMoney(updateHeader, "@total", novoTotal);
+            updateHeader.Parameters.Add("@fornecedor", SqlDbType.VarChar, 150).Value = compra.FornecedorNome.Trim();
+            AddInt(updateHeader, "@numero", compra.Numero);
+            if (await updateHeader.ExecuteNonQueryAsync() != 1)
+                throw new InvalidOperationException("A compra deixou de estar disponível para edição.");
+        }
+        await using (var deleteItems = new SqlCommand("DELETE FROM Itens_CompraEstoque WHERE compra_numero=@numero", connection, transaction))
+        {
+            AddInt(deleteItems, "@numero", compra.Numero);
+            await deleteItems.ExecuteNonQueryAsync();
+        }
+        foreach (var item in compra.Itens)
+        {
+            await using var insertItem = new SqlCommand("INSERT INTO Itens_CompraEstoque(compra_numero,produto_codigo,cor,quantidade,valor) VALUES(@compra,@produto,@cor,@quantidade,@valor)", connection, transaction);
+            AddInt(insertItem, "@compra", compra.Numero);
+            AddInt(insertItem, "@produto", item.ProdutoCodigo);
+            insertItem.Parameters.Add("@cor", SqlDbType.VarChar, 60).Value = item.Cor;
+            AddInt(insertItem, "@quantidade", item.Quantidade);
+            AddMoney(insertItem, "@valor", item.Valor);
+            await insertItem.ExecuteNonQueryAsync();
+        }
+
+        await transaction.CommitAsync();
+        compra.Total = novoTotal;
+        compra.Status = 1;
+        return true;
+    }
+
+    public async Task<bool> CancelarCompraEstoqueAsync(int numero)
+    {
+        await using var connection = CriarConexao();
+        await connection.OpenAsync();
+        await using var transaction = (SqlTransaction)await connection.BeginTransactionAsync(IsolationLevel.Serializable);
+        int status;
+        await using (var header = new SqlCommand("SELECT status FROM CompraEstoque WITH (UPDLOCK,HOLDLOCK) WHERE numero=@numero", connection, transaction))
+        {
+            AddInt(header, "@numero", numero);
+            var result = await header.ExecuteScalarAsync();
+            if (result is null || result is DBNull)
+            {
+                await transaction.RollbackAsync();
+                return false;
+            }
+            status = Convert.ToInt32(result);
+        }
+        if (status != 1)
+        {
+            await transaction.RollbackAsync();
+            return false;
+        }
+
+        var itens = new Dictionary<int, int>();
+        await using (var queryItems = new SqlCommand("SELECT produto_codigo,quantidade FROM Itens_CompraEstoque WITH (UPDLOCK,HOLDLOCK) WHERE compra_numero=@numero", connection, transaction))
+        {
+            AddInt(queryItems, "@numero", numero);
+            await using var reader = await queryItems.ExecuteReaderAsync();
+            while (await reader.ReadAsync()) itens[reader.GetInt32(0)] = reader.GetInt32(1);
+        }
+        foreach (var item in itens.OrderBy(item => item.Key))
+        {
+            await using var updateStock = new SqlCommand("UPDATE Produtos SET estoque=estoque-@quantidade WHERE codigo=@produto AND estoque>=@quantidade", connection, transaction);
+            AddInt(updateStock, "@quantidade", item.Value);
+            AddInt(updateStock, "@produto", item.Key);
+            if (await updateStock.ExecuteNonQueryAsync() != 1)
+                throw new InvalidOperationException($"Não é possível cancelar a compra #{numero}: o produto {item.Key} não tem saldo suficiente para retirar as unidades compradas. Ajuste o estoque antes de cancelar.");
+        }
+
+        await using (var updateHeader = new SqlCommand("UPDATE CompraEstoque SET status=2 WHERE numero=@numero AND status=1", connection, transaction))
+        {
+            AddInt(updateHeader, "@numero", numero);
+            if (await updateHeader.ExecuteNonQueryAsync() != 1)
+                throw new InvalidOperationException("A compra deixou de estar disponível para cancelamento.");
+        }
+        await transaction.CommitAsync();
+        return true;
+    }
+
     public async Task<CompraEstoque?> ObterPrimeiraCompraEstoqueAsync()
     {
         await using var connection = CriarConexao();
@@ -521,9 +716,13 @@ public sealed class SqlServerRepository : DataConnection, ISIVADRepository
             if (!await reader.ReadAsync()) return null;
             compra = new CompraEstoque
             {
-                Numero = reader.GetInt32(0), DataCompra = reader.GetDateTime(1), Total = reader.GetDecimal(2),
-                Status = reader.GetInt32(3), AdministradorId = reader.GetInt32(4),
-                FornecedorId = reader.IsDBNull(5) ? null : reader.GetInt32(5), FornecedorNome = reader.GetString(6)
+                Numero = reader.GetInt32(0),
+                DataCompra = reader.GetDateTime(1),
+                Total = reader.GetDecimal(2),
+                Status = reader.GetInt32(3),
+                AdministradorId = reader.GetInt32(4),
+                FornecedorId = reader.IsDBNull(5) ? null : reader.GetInt32(5),
+                FornecedorNome = reader.GetString(6)
             };
         }
         compra.Itens = await LerItensCompraAsync(connection, compra.Numero);
@@ -542,11 +741,18 @@ public sealed class SqlServerRepository : DataConnection, ISIVADRepository
         await using var reader = await command.ExecuteReaderAsync();
         while (await reader.ReadAsync()) items.Add(new ItemPedido
         {
-            PedidoCodigo = reader.GetInt32(0), ProdutoCodigo = reader.GetInt32(1), Qtd = reader.GetInt32(2), PrecoTotal = reader.GetDecimal(3),
+            PedidoCodigo = reader.GetInt32(0),
+            ProdutoCodigo = reader.GetInt32(1),
+            Qtd = reader.GetInt32(2),
+            PrecoTotal = reader.GetDecimal(3),
             Produto = new Produto
             {
-                Codigo = reader.GetInt32(1), Nome = reader.GetString(4), CodigoBarras = reader.GetString(5),
-                Estoque = reader.GetInt32(6), CategoriaCodigo = reader.GetInt32(7), Categoria = new Categoria { Codigo = reader.GetInt32(7), Nome = reader.GetString(8) }
+                Codigo = reader.GetInt32(1),
+                Nome = reader.GetString(4),
+                CodigoBarras = reader.GetString(5),
+                Estoque = reader.GetInt32(6),
+                CategoriaCodigo = reader.GetInt32(7),
+                Categoria = new Categoria { Codigo = reader.GetInt32(7), Nome = reader.GetString(8) }
             }
         });
         return items;
@@ -570,7 +776,12 @@ public sealed class SqlServerRepository : DataConnection, ISIVADRepository
         await using var reader = await command.ExecuteReaderAsync();
         while (await reader.ReadAsync()) items.Add(new ItemCompraEstoque
         {
-            CompraNumero = reader.GetInt32(0), ProdutoCodigo = reader.GetInt32(1), Quantidade = reader.GetInt32(2), Valor = reader.GetDecimal(3), Cor = reader.GetString(4)
+            CompraNumero = reader.GetInt32(0),
+            ProdutoCodigo = reader.GetInt32(1),
+            Quantidade = reader.GetInt32(2),
+            Valor = reader.GetDecimal(3),
+            Cor = reader.GetString(4),
+            PrecoUnitario = decimal.Round(reader.GetDecimal(3) / reader.GetInt32(2), 12, MidpointRounding.AwayFromZero)
         });
         return items;
     }
@@ -693,8 +904,12 @@ public sealed class SqlServerRepository : DataConnection, ISIVADRepository
         if (!await reader.ReadAsync()) throw new InvalidOperationException("O SQL Server não retornou informações do banco conectado.");
         return new DatabaseConnectionInfoViewModel
         {
-            Servidor = reader.GetString(0), Banco = reader.GetString(1), Produtos = reader.GetInt32(2),
-            FuncionariosAtivos = reader.GetInt32(3), Pedidos = reader.GetInt32(4), Compras = reader.GetInt32(5)
+            Servidor = reader.GetString(0),
+            Banco = reader.GetString(1),
+            Produtos = reader.GetInt32(2),
+            FuncionariosAtivos = reader.GetInt32(3),
+            Pedidos = reader.GetInt32(4),
+            Compras = reader.GetInt32(5)
         };
     }
 

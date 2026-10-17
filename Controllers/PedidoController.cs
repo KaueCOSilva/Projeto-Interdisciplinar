@@ -18,21 +18,9 @@ public class PedidoController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Registrar(Pedido pedido, string cpfCliente)
+    public async Task<IActionResult> Registrar(Pedido pedido)
     {
-        var cpf = new string((cpfCliente ?? string.Empty).Where(char.IsDigit).ToArray());
-        if (cpf.Length != 11)
-        {
-            TempData["Erro"] = "Digite um CPF válido com 11 números.";
-            return RedirectToAction("RegistrarPedido", "Funcionario");
-        }
-        var clienteId = await _repository.BuscarClienteIdPorCpfAsync(cpf);
-        if (clienteId is null)
-        {
-            TempData["Erro"] = "Esse CPF não foi encontrado na tabela de clientes do banco.";
-            return RedirectToAction("RegistrarPedido", "Funcionario");
-        }
-        pedido.ClienteId = clienteId.Value;
+        pedido.ClienteId = null;
         pedido.Itens = pedido.Itens.Where(item => item.Qtd > 0).ToList();
         if (pedido.FuncionarioId <= 0 || pedido.Itens.Count == 0)
         {

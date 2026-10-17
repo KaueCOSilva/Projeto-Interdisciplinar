@@ -27,13 +27,11 @@
                     <p>Bem-vindo ao sistema de gestão</p>
                 </div>
                 <div class="notifications-topbar-actions" aria-label="Ações do usuário">
-                    <button class="notifications-bell-button" type="button" aria-label="Notificações">
-                        <a asp-controller="Administrador"
-                           asp-action="Notificacoes">
-                            <i class="bi bi-bell" aria-hidden="true"></i>
-                            @if (Model.Count > 0) { <span aria-label="@Model.Count alertas">@Model.Count</span> }
-                        </a>
-                    </button>
+                    <a class="notifications-bell-button" asp-controller="Administrador"
+                        asp-action="Notificacoes" aria-label="Notificações">
+                        <i class="bi bi-bell" aria-hidden="true"></i>
+                        @if (Model.Count > 0) { <span aria-label="@Model.Count alertas">@Model.Count</span> }
+                    </a>
                 </div>
             </header>
 

@@ -11,6 +11,7 @@ namespace SIVAD.Models
         public string FornecedorNome { get; set; } = string.Empty;
         public decimal PrecoUnit { get; set; }
         public int Estoque { get; set; }
+        public bool Ativo { get; set; } = true;
 
         public int CategoriaCodigo { get; set; }
         public Categoria Categoria { get; set; } = null!;

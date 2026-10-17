@@ -12,10 +12,10 @@
     <title>Dashboard - Sistema ERP</title>
 
     <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
 
     <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
+            href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
 
     <link rel="stylesheet" href="/css/base.css?v=1" />
     <link rel="stylesheet" href="/css/shared/sidebar-admin.css?v=1" />
@@ -33,7 +33,7 @@
         <main class="main-content">
 
         <!-- =====================================================
-             TOPBAR
+            TOPBAR
         ====================================================== -->
 
         <header class="topbar">
@@ -54,7 +54,7 @@
 
                 <div class="notification-button">
                     <a asp-controller="Administrador"
-                           asp-action="Notificacoes">
+                            asp-action="Notificacoes">
                     <i class="bi bi-bell"></i>
 
                     @if (Model.AlertasEstoque > 0)
@@ -69,13 +69,13 @@
         </header>
 
         <!-- =====================================================
-             DASHBOARD
+            DASHBOARD
         ====================================================== -->
 
         <section class="dashboard">
 
             <!-- =================================================
-                 CARDS
+                CARDS
             ================================================== -->
 
             <div class="stats">
@@ -195,7 +195,7 @@
             </div>
 
             <!-- =================================================
-                 VENDAS + ATIVIDADES
+                VENDAS + ATIVIDADES
             ================================================== -->
 
             <div class="top-panels">
@@ -251,7 +251,7 @@
             </div>
 
             <!-- =================================================
-                 CATEGORIAS + NOTIFICAÇÕES
+                CATEGORIAS + NOTIFICAÇÕES
             ================================================== -->
 
             <div class="bottom-panels">
@@ -302,6 +302,15 @@
 
             </div>
 
+            <div class="history-panels">
+                <div class="panel">
+                    <div class="panel-title">
+                        <h2>Compras de Estoque por Ano</h2>
+                    </div>
+                    <div id="stockPurchaseHistoryChart" aria-label="Compras de estoque recebidas por ano"></div>
+                </div>
+            </div>
+
         </section>
 
     </main>
@@ -309,7 +318,7 @@
 </div>
 
 <!-- =============================================================
-     GOOGLE CHARTS
+    GOOGLE CHARTS
 ============================================================== -->
 
 <!-- CORREÇÃO: biblioteca do Google Charts (sem esta linha, "google" não existe e os gráficos não aparecem) -->
@@ -327,10 +336,12 @@
 
         desenharGraficoCategorias();
 
+        desenharGraficoComprasHistoricas();
+
     });
 
     /* ============================================================
-       VENDAS E RECEITA
+        VENDAS E RECEITA
     ============================================================= */
 
     function desenharGraficoVendas() {
@@ -430,7 +441,7 @@
     }
 
     /* ============================================================
-       VENDAS POR CATEGORIA
+        VENDAS POR CATEGORIA
     ============================================================= */
 
     function desenharGraficoCategorias() {
@@ -537,8 +548,34 @@
 
     }
 
+    function desenharGraficoComprasHistoricas() {
+        const historico = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.ComprasPorAno.Select(item => new object[] { item.Ano.ToString(), item.Total })));
+        const recipiente = document.getElementById("stockPurchaseHistoryChart");
+
+        if (historico.length === 0) {
+            recipiente.textContent = "Nenhuma compra de estoque recebida encontrada.";
+            recipiente.classList.add("chart-empty-message");
+            return;
+        }
+
+        const dados = google.visualization.arrayToDataTable([
+            ["Ano", "Compras de estoque"],
+            ...historico
+        ]);
+        const opcoes = {
+            backgroundColor: "transparent",
+            legend: { position: "none" },
+            colors: ["#46c9a2"],
+            chartArea: { left: 58, top: 12, width: "87%", height: "76%" },
+            hAxis: { textStyle: { color: "#9ca3af", fontSize: 9 }, gridlines: { color: "transparent" }, baselineColor: "#d8dce2" },
+            vAxis: { minValue: 0, format: "short", textStyle: { color: "#9ca3af", fontSize: 8 }, gridlines: { color: "#edf0f3", count: 5 }, baselineColor: "#d8dce2" }
+        };
+        const grafico = new google.visualization.ColumnChart(recipiente);
+        grafico.draw(dados, opcoes);
+    }
+
     /* ============================================================
-       REDIMENSIONAMENTO
+        REDIMENSIONAMENTO
     ============================================================= */
 
     window.addEventListener("resize", function () {
@@ -549,6 +586,8 @@
             desenharGraficoVendas();
 
             desenharGraficoCategorias();
+
+            desenharGraficoComprasHistoricas();
 
         }
 
