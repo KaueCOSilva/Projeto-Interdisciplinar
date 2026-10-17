@@ -1,3 +1,4 @@
+@model SIVAD.Models.ViewModels.EmployeeManagementViewModel
 @{
     ViewData["Title"] = "Gerenciamento de Usuários";
 }
@@ -26,13 +27,11 @@
                     <p>Bem-vindo ao sistema de gestão</p>
                 </div>
                 <div class="user-management-topbar-actions" aria-label="Ações do usuário">
-                    <button class="user-management-notification" type="button" aria-label="Notificações">
-                        <a asp-controller="Administrador"
-                           asp-action="Notificacoes">
-                            <i class="bi bi-bell" aria-hidden="true"></i>
-                            <span aria-hidden="true"></span>
-                        </a>
-                    </button>
+                    <a class="user-management-notification" asp-controller="Administrador"
+                        asp-action="Notificacoes" aria-label="Notificações">
+                        <i class="bi bi-bell" aria-hidden="true"></i>
+                        @if (ViewBag.AlertasEstoque is int alertas && alertas > 0) { <span title="@alertas alertas de estoque" aria-label="@alertas alertas de estoque"></span> }
+                    </a>
                 </div>
             </header>
 
@@ -41,6 +40,10 @@
                     <h2 id="user-management-heading">Gerenciamento de Usuários</h2>
                     <p>Gerencie usuários e altere senhas</p>
                 </section>
+
+                @if (TempData["Erro"] is string erro) { <div class="alert alert-danger" role="alert">@erro</div> }
+                @if (TempData["Sucesso"] is string sucesso) { <div class="alert alert-success" role="status">@sucesso</div> }
+                <div class="alert alert-info" role="status">A lista abaixo vem da tabela Funcionarios. Remover desativa o funcionário, preservando pedidos antigos. O schema ainda não armazena senhas de acesso.</div>
 
                 <section class="user-management-panel user-password-panel" aria-labelledby="password-panel-heading">
                     <div class="user-management-panel-heading">
@@ -89,7 +92,7 @@
                                     autocomplete="off" />
                             </div>
                         </div>
-                        <button class="user-password-submit" type="button">Confirmar</button>
+                        <button class="user-password-submit" type="button" disabled title="Requer tabela de credenciais no banco">Confirmar</button>
                     </form>
                 </section>
 
@@ -100,65 +103,45 @@
                         <h3 id="registered-users-heading">Usuários Cadastrados</h3>
                     </div>
                     <div class="registered-users-list">
-                        <article class="registered-user-row">
-                            <div class="registered-user-identity">
-                                <span class="registered-user-avatar" aria-hidden="true">JS</span>
-                                <div class="registered-user-details">
-                                    <strong>João Silva</strong>
-                                    <small>UID001 <span aria-hidden="true">•</span> Administrador</small>
+                        @if (Model.Funcionarios.Count == 0)
+                        {
+                            <p class="text-muted">Nenhum funcionário ativo cadastrado no banco.</p>
+                        }
+                        @foreach (var funcionario in Model.Funcionarios)
+                        {
+                            <article class="registered-user-row">
+                                <div class="registered-user-identity">
+                                    <span class="registered-user-avatar" aria-hidden="true">@(funcionario.Nome.Trim().Length > 0 ? funcionario.Nome.Trim()[0].ToString().ToUpperInvariant() : "F")</span>
+                                    <div class="registered-user-details"><strong>@funcionario.Nome</strong><small>ID @funcionario.Id <span aria-hidden="true">•</span> Funcionário ativo</small></div>
                                 </div>
-                            </div>
-                            <div class="registered-user-actions">
-                                <button class="registered-user-edit" type="button">Editar</button>
-                                <button class="registered-user-remove" type="button">Remover</button>
-                            </div>
-                        </article>
-
-                        <article class="registered-user-row">
-                            <div class="registered-user-identity">
-                                <span class="registered-user-avatar" aria-hidden="true">MS</span>
-                                <div class="registered-user-details">
-                                    <strong>Maria Santos</strong>
-                                    <small>UID002 <span aria-hidden="true">•</span> Funcionário</small>
+                                <div class="registered-user-actions">
+                                    <button class="registered-user-edit" type="button" data-edit-employee data-name="@funcionario.Nome" data-form="edit-employee-@funcionario.Id">Editar</button>
+                                    <form id="edit-employee-@funcionario.Id" asp-controller="Administrador" asp-action="EditarFuncionario" method="post" hidden>
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@funcionario.Id" />
+                                        <input type="hidden" name="nome" />
+                                    </form>
+                                    <form asp-controller="Administrador" asp-action="ExcluirUsuario" method="post" onsubmit="return confirm('Remover este funcionário da lista? Os pedidos históricos serão preservados.');">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@funcionario.Id" />
+                                        <button class="registered-user-remove" type="submit">Remover</button>
+                                    </form>
                                 </div>
-                            </div>
-                            <div class="registered-user-actions">
-                                <button class="registered-user-edit" type="button">Editar</button>
-                                <button class="registered-user-remove" type="button">Remover</button>
-                            </div>
-                        </article>
-
-                        <article class="registered-user-row">
-                            <div class="registered-user-identity">
-                                <span class="registered-user-avatar" aria-hidden="true">PO</span>
-                                <div class="registered-user-details">
-                                    <strong>Pedro Oliveira</strong>
-                                    <small>UID003 <span aria-hidden="true">•</span> Funcionário</small>
-                                </div>
-                            </div>
-                            <div class="registered-user-actions">
-                                <button class="registered-user-edit" type="button">Editar</button>
-                                <button class="registered-user-remove" type="button">Remover</button>
-                            </div>
-                        </article>
-
-                        <article class="registered-user-row">
-                            <div class="registered-user-identity">
-                                <span class="registered-user-avatar" aria-hidden="true">AC</span>
-                                <div class="registered-user-details">
-                                    <strong>Ana Costa</strong>
-                                    <small>UID004 <span aria-hidden="true">•</span> Funcionário</small>
-                                </div>
-                            </div>
-                            <div class="registered-user-actions">
-                                <button class="registered-user-edit" type="button">Editar</button>
-                                <button class="registered-user-remove" type="button">Remover</button>
-                            </div>
-                        </article>
+                            </article>
+                        }
                     </div>
                 </section>
             </div>
         </main>
     </div>
+    <script>
+        document.querySelectorAll('[data-edit-employee]').forEach(button => button.addEventListener('click', () => {
+            const nome = window.prompt('Nome do funcionário:', button.dataset.name);
+            if (nome === null || !nome.trim()) return;
+            const form = document.getElementById(button.dataset.form);
+            form.querySelector('[name="nome"]').value = nome.trim();
+            form.requestSubmit();
+        }));
+    </script>
 </body>
 </html>

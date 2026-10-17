@@ -263,6 +263,31 @@ body.employee-purchase-registration-page .employee-purchase-read-button {
     white-space: nowrap;
 }
 
+
+body.employee-purchase-registration-page .employee-purchase-barcode {
+    display: flex;
+    width: min(56%, 390px);
+    align-items: center;
+    gap: 6px;
+}
+
+body.employee-purchase-registration-page .employee-purchase-barcode .employee-purchase-input {
+    height: 25px;
+    font-size: 8px;
+}
+
+body.employee-purchase-registration-page .employee-purchase-read-button {
+    flex: 0 0 auto;
+    cursor: pointer;
+}
+
+body.employee-purchase-registration-page .employee-purchase-barcode-feedback {
+    min-height: 12px;
+    margin-top: 5px;
+    color: #68717c;
+    font-size: 8px;
+}
+
 body.employee-purchase-registration-page .employee-purchase-table-wrap {
     width: 100%;
     overflow-x: auto;
@@ -385,7 +410,7 @@ body.employee-purchase-registration-page .employee-purchase-input::placeholder {
     opacity: 1;
 }
 
-body.employee-purchase-registration-page .employee-purchase-demo-note {
+body.employee-purchase-registration-page .employee-purchase-data-note {
     display: none;
 }
 
@@ -478,5 +503,11 @@ body.employee-purchase-registration-page .employee-purchase-finish-button {
         .employee-purchase-card-heading
         h3 {
         font-size: 9px;
+    }
+    body.employee-purchase-registration-page .employee-purchase-barcode {
+        width: 58%;
+    }
+    body.employee-purchase-registration-page .employee-purchase-read-button {
+        padding: 0 8px;
     }
 }

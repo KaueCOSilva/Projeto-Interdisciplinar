@@ -1,3 +1,4 @@
+@model SIVAD.Models.ViewModels.EmployeeOrderViewModel
 @{
     ViewData["Title"] = "Registro de Compras";
     Layout = null;
@@ -12,118 +13,149 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
     <link rel="stylesheet" href="/css/base.css?v=1" />
     <link rel="stylesheet" href="/css/shared/logout-link.css?v=1" />
-    <link rel="stylesheet" href="/css/views/funcionario/registrar-pedido.css?v=2" />
+    <link rel="stylesheet" href="/css/views/funcionario/registrar-pedido.css?v=3" />
     <link rel="stylesheet" href="/css/shared/sidebar-funcionario.css?v=1" />
     <link rel="stylesheet" href="/css/shared/profile-avatars.css?v=1" />
 </head>
 <body class="employee-purchase-registration-page">
     <partial name="SidebarFuncionario" />
-
     <main class="employee-purchase-registration-main">
         <header class="employee-purchase-topbar">
-            <div class="employee-purchase-topbar-title">
-                <h1>Registro de Compras</h1>
-                <p>Bem-vindo ao sistema</p>
-            </div>
+            <div class="employee-purchase-topbar-title"><h1>Registro de Compras</h1><p>Bem-vindo ao sistema</p></div>
         </header>
-
         <section class="employee-purchase-content" aria-labelledby="employee-purchase-heading">
-            <div class="employee-purchase-heading">
-                <h2 id="employee-purchase-heading">Registro de Compra</h2>
-                <p>Finalize o registro da compra</p>
-            </div>
-
-            <section
-                class="employee-purchase-card employee-purchase-automatic"
-                aria-labelledby="employee-purchase-auto-heading">
-                <div class="employee-purchase-card-heading">
-                    <h3 id="employee-purchase-auto-heading">Registrar Compra Automaticamente</h3>
-                    <button
-                        class="employee-purchase-read-button"
-                        type="button"
-                        disabled
-                        aria-disabled="true"
-                        title="Leitura de NF-e ainda não integrada">
-                        Ler Código de NF-e
-                    </button>
-                </div>
-
-                <div class="employee-purchase-table-wrap">
-                    <table class="employee-purchase-table">
-                        <thead>
-                            <tr>
-                                <th scope="col">Produto</th>
-                                <th scope="col">Código</th>
-                                <th scope="col">Valor</th>
-                                <th scope="col">Quantidade</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Camisa Polo</td>
-                                <td>PR001</td>
-                                <td>R$ 3.500,00</td>
-                                <td>4 un.</td>
-                            </tr>
-                            <tr>
-                                <td>Camisa Polo</td>
-                                <td>PR003</td>
-                                <td>R$ 150,00</td>
-                                <td>10 un.</td>
-                            </tr>
-                            <tr>
-                                <td>Camisa Polo</td>
-                                <td>PR005</td>
-                                <td>R$ 450,00</td>
-                                <td>5 un.</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <p class="employee-purchase-demo-note">Itens demonstrativos — leitura e importação de NF-e ainda não estão conectadas.</p>
-            </section>
-
-            <section
-                class="employee-purchase-card employee-purchase-manual"
-                aria-labelledby="employee-purchase-manual-heading">
-                <div class="employee-purchase-card-heading employee-purchase-manual-heading">
-                    <h3 id="employee-purchase-manual-heading">Registrar Compra Manualmente</h3>
-                </div>
-                <div class="employee-purchase-fields">
-                    <div class="employee-purchase-field">
-                        <label for="employee-purchase-nfe">Código de NF-e<span aria-hidden="true">*</span></label>
-                        <input
-                            id="employee-purchase-nfe"
-                            class="employee-purchase-input"
-                            type="text"
-                            placeholder="000-000-000" />
+            <div class="employee-purchase-heading"><h2 id="employee-purchase-heading">Registro de Compra</h2><p>Finalize o registro da compra</p></div>
+            @if (TempData["Erro"] is string erro) { <div class="alert alert-danger" role="alert">@erro</div> }
+            @if (TempData["Sucesso"] is string sucesso) { <div class="alert alert-success" role="status">@sucesso</div> }
+            <form asp-controller="Pedido" asp-action="Registrar" method="post">
+                @Html.AntiForgeryToken()
+                <section class="employee-purchase-card employee-purchase-automatic" aria-labelledby="employee-purchase-auto-heading">
+                    <div class="employee-purchase-card-heading"><h3 id="employee-purchase-auto-heading">Registrar Compra Automaticamente</h3>
+                        <div class="employee-purchase-barcode">
+                            <input id="employee-barcode" class="employee-purchase-input" type="text" placeholder="Leia ou digite o código de barras" maxlength="50" autocomplete="off" aria-label="Código de barras do produto" />
+                            <button class="employee-purchase-read-button" id="employee-barcode-add" type="button">Adicionar</button>
+                        </div>
                     </div>
-                    <div class="employee-purchase-field">
-                        <label for="employee-purchase-cpf">CPF do Cliente</label>
-                        <input
-                            id="employee-purchase-cpf"
-                            class="employee-purchase-input"
-                            type="text"
-                            placeholder="000.000.000-00" />
+                    <div class="employee-purchase-table-wrap">
+                        <table class="employee-purchase-table">
+                            <thead><tr><th scope="col">Produto</th><th scope="col">Código</th><th scope="col">Valor</th><th scope="col">Quantidade</th></tr></thead>
+                            <tbody>
+                            @if (Model.Produtos.Count == 0)
+                            {
+                                <tr><td colspan="4">Não há produtos com estoque disponível.</td></tr>
+                            }
+                            @for (var i = 0; i < Model.Produtos.Count; i++)
+                            {
+                                var produto = Model.Produtos[i];
+                                <tr data-codigo-barras="@produto.CodigoBarras" data-produto-codigo="@produto.Codigo">
+                                    <td>@produto.Nome</td>
+                                    <td>@produto.CodigoBarras</td>
+                                    <td>@produto.PrecoUnit.ToString("C2", System.Globalization.CultureInfo.GetCultureInfo("pt-BR"))</td>
+                                    <td>
+                                        <input type="hidden" name="Itens[@i].ProdutoCodigo" value="@produto.Codigo" />
+                                        <input class="employee-purchase-input employee-purchase-quantity" aria-label="Quantidade de @produto.Nome" type="number" name="Itens[@i].Qtd" value="0" min="0" max="@produto.Estoque" />
+                                        <small>Disp.: @produto.Estoque</small>
+                                    </td>
+                                </tr>
+                            }
+                            </tbody>
+                        </table>
                     </div>
-                    <div class="employee-purchase-field employee-purchase-field-wide">
-                        <label for="employee-purchase-name">Nome</label>
-                        <input
-                            id="employee-purchase-name"
-                            class="employee-purchase-input"
-                            type="text"
-                            placeholder="Nome completo do cliente" />
+                    <p class="employee-purchase-data-note">Produtos, preços e saldo exibidos a partir do banco de dados.</p>
+                    <div id="employee-barcode-message" class="employee-purchase-barcode-feedback" aria-live="polite"></div>
+                </section>
+                <section class="employee-purchase-card employee-purchase-manual" aria-labelledby="employee-purchase-manual-heading">
+                    <div class="employee-purchase-card-heading employee-purchase-manual-heading"><h3 id="employee-purchase-manual-heading">Registrar Compra Manualmente</h3></div>
+                    <div class="employee-purchase-fields">
+                        <div class="employee-purchase-field employee-purchase-field-wide">
+                            <label for="employee-manual-product">Produto do estoque</label>
+                            <select id="employee-manual-product" class="employee-purchase-input">
+                                <option value="">Selecione o produto para adicionar</option>
+                                @foreach (var produto in Model.Produtos) { <option value="@produto.Codigo">@produto.Nome (@produto.CodigoBarras)</option> }
+                            </select>
+                        </div>
+                        <div class="employee-purchase-field">
+                            <label for="employee-manual-quantity">Quantidade</label>
+                            <input id="employee-manual-quantity" class="employee-purchase-input" type="number" min="1" value="1" />
+                        </div>
+                        <div class="employee-purchase-field">
+                            <label>&nbsp;</label>
+                            <button id="employee-manual-add" class="employee-purchase-read-button" type="button">Adicionar produto</button>
+                        </div>
+                        <div class="employee-purchase-field employee-purchase-field-wide">
+                            <div id="employee-manual-message" class="employee-purchase-barcode-feedback" aria-live="polite"></div>
+                        </div>
+                        <div class="employee-purchase-field">
+                            <label for="employee-purchase-employee">Funcionário</label>
+                            <select id="employee-purchase-employee" class="employee-purchase-input" name="FuncionarioId" required>
+                                <option value="">Selecione o funcionário</option>
+                                @foreach (var funcionario in Model.Funcionarios) { <option value="@funcionario.Id">@funcionario.Nome</option> }
+                            </select>
+                        </div>
+                        <div class="employee-purchase-field employee-purchase-field-wide">
+                            <label>Origem dos dados</label><span class="employee-purchase-input">SQL Server — pedido será salvo como pendente</span>
+                        </div>
                     </div>
-                </div>
-                <p class="employee-purchase-demo-note">Campos ilustrativos — cadastro manual ainda não está conectado ao controller.</p>
-            </section>
-
-            <form asp-controller="Funcionario" asp-action="ResumoCompra" method="get">
-                <button class="employee-purchase-finish-button" type="submit">
-                    Visualizar Resumo da Compra
-                </button>
+                </section>
+                <button class="employee-purchase-finish-button" type="submit">Criar Pedido e Visualizar Resumo</button>
             </form>
         </section>
     </main>
+    <script>
+        (() => {
+            const barcodeInput = document.getElementById('employee-barcode');
+            const addButton = document.getElementById('employee-barcode-add');
+            const barcodeMessage = document.getElementById('employee-barcode-message');
+            const manualSelect = document.getElementById('employee-manual-product');
+            const manualQuantity = document.getElementById('employee-manual-quantity');
+            const manualAdd = document.getElementById('employee-manual-add');
+            const manualMessage = document.getElementById('employee-manual-message');
+            const rows = [...document.querySelectorAll('.employee-purchase-table tbody tr[data-codigo-barras]')];
+            const addQuantity = (row, amount, feedback) => {
+                const quantity = row.querySelector('.employee-purchase-quantity');
+                const current = Number(quantity.value || 0);
+                const maximum = Number(quantity.max || 0);
+                if (!Number.isInteger(amount) || amount < 1) {
+                    feedback.textContent = 'Informe uma quantidade inteira maior que zero.';
+                    return false;
+                }
+                if (current + amount > maximum) {
+                    feedback.textContent = 'Quantidade acima do estoque disponível (' + maximum + ').';
+                    return false;
+                }
+                quantity.value = String(current + amount);
+                feedback.textContent = 'Produto adicionado: ' + row.cells[0].textContent.trim() + '.';
+                return true;
+            };
+            const addByBarcode = () => {
+                const barcode = barcodeInput.value.trim();
+                const row = rows.find(item => item.dataset.codigoBarras === barcode);
+                if (!row) {
+                    barcodeMessage.textContent = barcode ? 'Código de barras não encontrado entre os produtos ativos com estoque.' : 'Leia ou digite um código de barras.';
+                    barcodeInput.focus();
+                    return;
+                }
+                if (addQuantity(row, 1, barcodeMessage)) {
+                    barcodeInput.value = '';
+                    barcodeInput.focus();
+                }
+            };
+            const addManually = () => {
+                const code = manualSelect.value;
+                const row = rows.find(item => item.dataset.produtoCodigo === code);
+                if (!row) {
+                    manualMessage.textContent = 'Selecione um produto do estoque.';
+                    manualSelect.focus();
+                    return;
+                }
+                addQuantity(row, Number(manualQuantity.value), manualMessage);
+            };
+            addButton?.addEventListener('click', addByBarcode);
+            manualAdd?.addEventListener('click', addManually);
+            barcodeInput?.addEventListener('keydown', event => {
+                if (event.key === 'Enter') { event.preventDefault(); addByBarcode(); }
+            });
+        })();
+    </script>
 </body>
 </html>

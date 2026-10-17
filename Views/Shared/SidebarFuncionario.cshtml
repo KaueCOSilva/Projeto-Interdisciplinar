@@ -13,15 +13,15 @@
 
     <nav class="employee-sidebar-menu" aria-label="Menu principal">
         <a asp-controller="Funcionario" asp-action="RegistrarPedido"
-           class="employee-sidebar-link @(currentAction == "RegistrarPedido" ? "is-active" : "")"
-           aria-current="@(currentAction == "RegistrarPedido" ? "page" : null)">
+            class="employee-sidebar-link @(currentAction == "RegistrarPedido" ? "is-active" : "")"
+            aria-current="@(currentAction == "RegistrarPedido" ? "page" : null)">
             <i class="bi bi-cart-plus" aria-hidden="true"></i>
             <span>Registro de Compras</span>
         </a>
 
         <a asp-controller="Funcionario" asp-action="ResumoCompra"
-           class="employee-sidebar-link @(currentAction == "ResumoCompra" ? "is-active" : "")"
-           aria-current="@(currentAction == "ResumoCompra" ? "page" : null)">
+            class="employee-sidebar-link @(currentAction == "ResumoCompra" ? "is-active" : "")"
+            aria-current="@(currentAction == "ResumoCompra" ? "page" : null)">
             <i class="bi bi-clipboard-check" aria-hidden="true"></i>
             <span>Resumo de Compra</span>
         </a>
@@ -29,16 +29,16 @@
 
     <div class="employee-sidebar-bottom">
         <div class="employee-sidebar-user">
-            <span class="employee-sidebar-user-avatar" aria-hidden="true">JD</span>
+            <span class="employee-sidebar-user-avatar" aria-hidden="true">FN</span>
             <span class="employee-sidebar-user-copy">
-                <strong>João Silva</strong>
-                <small>Funcionário</small>
+                <strong>Funcionário</strong>
+                <small>Perfil</small>
             </span>
         </div>
 
         <a asp-controller="Autenticacao"
-           asp-action="Login"
-           class="logout">
+            asp-action="Login"
+            class="logout">
 
             <i class="bi bi-box-arrow-right"></i>
 

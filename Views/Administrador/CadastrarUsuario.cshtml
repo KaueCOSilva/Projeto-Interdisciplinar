@@ -27,13 +27,11 @@
                 </div>
 
                 <div class="employee-topbar-actions" aria-label="Ações do usuário">
-                    <button class="employee-notification-button" type="button" aria-label="Notificações">
-                        <a asp-controller="Administrador"
-                           asp-action="Notificacoes">
-                            <i class="bi bi-bell" aria-hidden="true"></i>
-                            <span class="employee-notification-dot" aria-hidden="true"></span>
-                        </a>
-                    </button>
+                    <a class="employee-notification-button" asp-controller="Administrador"
+                        asp-action="Notificacoes" aria-label="Notificações">
+                        <i class="bi bi-bell" aria-hidden="true"></i>
+                        @if (ViewBag.AlertasEstoque is int alertas && alertas > 0) { <span class="employee-notification-dot" title="@alertas alertas de estoque" aria-label="@alertas alertas de estoque"></span> }
+                    </a>
                 </div>
             </header>
 
@@ -49,37 +47,22 @@
                         </div>
                     </div>
 
-                    <form class="employee-registration-form"
-                          method="post"
-                          asp-controller="Administrador"
-                          asp-action="CadastrarUsuario">
+                    @if (TempData["Erro"] is string erro) { <div class="alert alert-danger" role="alert">@erro</div> }
+                    @if (TempData["Sucesso"] is string sucesso) { <div class="alert alert-success" role="status">@sucesso</div> }
+                    <p class="alert alert-info" id="password-not-persisted">Este cadastro cria a pessoa e o funcionário no SQL Server. A senha é apenas um campo visual e não é enviada nem armazenada, pois o schema atual ainda não implementa contas de acesso.</p>
+                    <form class="employee-registration-form" method="post" asp-controller="Administrador" asp-action="CadastrarUsuario">
                         @Html.AntiForgeryToken()
-
                         <div class="employee-fields-grid">
                             <div class="employee-field">
-                                <label for="NomeUsuario">Nome do Usuário<span aria-hidden="true">*</span></label>
-                                <input id="NomeUsuario"
-                                       name="NomeUsuario"
-                                       type="text"
-                                       class="form-control employee-input"
-                                       placeholder="Digite o nome de usuário"
-                                       autocomplete="username"
-                                       required />
+                                <label for="nome">Nome do Funcionário<span aria-hidden="true">*</span></label>
+                                <input id="nome" name="nome" type="text" class="form-control employee-input" placeholder="Digite o nome" maxlength="150" required />
                             </div>
-
                             <div class="employee-field">
-                                <label for="Senha">Senha<span aria-hidden="true">*</span></label>
-                                <input id="Senha"
-                                       name="Senha"
-                                       type="password"
-                                       class="form-control employee-input"
-                                       placeholder="Senha de acesso ao sistema"
-                                       autocomplete="new-password"
-                                       required />
+                                <label for="senha">Senha</label>
+                                <input id="senha" type="password" class="form-control employee-input" placeholder="Digite a senha do funcionário" autocomplete="new-password" aria-describedby="password-not-persisted" />
                             </div>
                         </div>
-
-                        <button class="employee-submit-button" type="submit">Confirmar Cadastro</button>
+                        <button class="employee-submit-button" type="submit">Cadastrar Funcionário</button>
                     </form>
                 </div>
             </section>

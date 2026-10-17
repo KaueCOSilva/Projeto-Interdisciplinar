@@ -1,5 +1,7 @@
+@model SIVAD.Models.ViewModels.StockPurchaseViewModel
 @{
     ViewData["Title"] = "Movimento de Compras";
+    var editando = Model.CompraEmEdicao is not null;
 }
 
 <!DOCTYPE html>
@@ -14,7 +16,7 @@
     <link rel="stylesheet" href="/css/base.css?v=1" />
     <link rel="stylesheet" href="/css/shared/sidebar-admin.css?v=1" />
     <link rel="stylesheet" href="/css/shared/logout-link.css?v=1" />
-    <link rel="stylesheet" href="/css/views/administrador/movimento-compras.css?v=1" />
+    <link rel="stylesheet" href="/css/views/administrador/movimento-compras.css?v=2" />
     <link rel="stylesheet" href="/css/shared/profile-avatars.css?v=1" />
 </head>
 <body class="purchase-page">
@@ -29,44 +31,63 @@
                 </div>
 
                 <div class="purchase-topbar-actions">
-                    <button type="button" class="purchase-notification" aria-label="Notificações">
-                        <a asp-controller="Administrador"
-                           asp-action="Notificacoes">
-                            <i class="bi bi-bell"></i>
-                            <span></span>
-                        </a>
-                    </button>
+                    <a class="purchase-notification" asp-controller="Administrador"
+                        asp-action="Notificacoes" aria-label="Notificações">
+                        <i class="bi bi-bell" aria-hidden="true"></i>
+                        @if (ViewBag.AlertasEstoque is int alertas && alertas > 0) { <span title="@alertas alertas de estoque" aria-label="@alertas alertas de estoque"></span> }
+                    </a>
                 </div>
             </header>
 
             <section class="purchase-content">
                 <div class="purchase-layout">
                     <div class="purchase-left-column">
-                        <form asp-controller="CompraEstoque" asp-action="Registrar" method="post">
+                        <form asp-controller="CompraEstoque" asp-action="@(editando ? "Editar" : "Registrar")" method="post" class="purchase-form">
+                            @Html.AntiForgeryToken()
+                            @if (editando)
+                            {
+                                <input type="hidden" name="Numero" value="@Model.CompraEmEdicao!.Numero" />
+                            }
+                            @if (TempData["Erro"] is string erro) { <div class="alert alert-danger" role="alert">@erro</div> }
+                            @if (TempData["Sucesso"] is string sucesso) { <div class="alert alert-success" role="status">@sucesso</div> }
                             <section class="purchase-panel purchase-data-panel">
                                 <div class="purchase-panel-header">
-                                    <h2>Nova Compra</h2>
+                                    <h2>@(editando ? $"Editar Compra #{Model.CompraEmEdicao!.Numero}" : "Nova Compra")</h2>
                                 </div>
                                 <div class="purchase-fields-grid">
                                     <div class="purchase-field">
                                         <label for="dataRecebimento">Data de recebimento de compra*</label>
-                                        <input
-                                            id="dataRecebimento"
-                                            name="DataRecebimento"
-                                            type="text"
-                                            placeholder="26/03/2026" />
+                                        @if (editando)
+                                        {
+                                            <input id="dataRecebimento" name="DataCompra" type="datetime-local" step="1" value="@Model.CompraEmEdicao!.DataCompra.ToString("yyyy-MM-ddTHH:mm:ss", System.Globalization.CultureInfo.InvariantCulture)" required />
+                                        }
+                                        else
+                                        {
+                                            <input id="dataRecebimento" name="DataCompra" type="date" />
+                                        }
                                     </div>
                                     <div class="purchase-field">
                                         <label for="fornecedor">Fornecedor*</label>
-                                        <input id="fornecedor" name="Fornecedor" type="text" placeholder="Fábrica..." />
+                                        <input id="fornecedor" name="FornecedorNome" type="text" value="@(editando ? Model.CompraEmEdicao!.FornecedorNome : "")" placeholder="Digite o nome do fornecedor" maxlength="150" required />
                                     </div>
                                     <div class="purchase-field">
-                                        <label for="notaFiscal">NF-e*</label>
-                                        <input id="notaFiscal" name="NotaFiscal" type="text" placeholder="NF-000000" />
+                                        <label for="administrador">Administrador responsável*</label>
+                                        @if (editando)
+                                        {
+                                            <input type="hidden" name="AdministradorId" value="@Model.CompraEmEdicao!.AdministradorId" />
+                                            <input id="administrador" type="text" value="Administrador #@Model.CompraEmEdicao!.AdministradorId" readonly />
+                                        }
+                                        else
+                                        {
+                                            <select id="administrador" name="AdministradorId" required>
+                                                <option value="">Administrador responsável...</option>
+                                                @foreach (var administrador in Model.Administradores) { <option value="@administrador.Id">@administrador.Nome</option> }
+                                            </select>
+                                        }
                                     </div>
                                     <div class="purchase-field">
                                         <label for="codigoCompra">Código/Número*</label>
-                                        <input id="codigoCompra" name="CodigoCompra" type="text" placeholder="CP-001" />
+                                        <input id="codigoCompra" type="text" value="@(editando ? $"CP{Model.CompraEmEdicao!.Numero}" : "Gerado ao salvar")" readonly />
                                     </div>
                                 </div>
                             </section>
@@ -93,17 +114,44 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr>
-                                                <td><input name="Sku" type="text" placeholder="PR001" /></td>
-                                                <td><input name="Produto" type="text" placeholder="Nome do produto" /></td>
-                                                <td><input name="Cor" type="text" placeholder="Cor" /></td>
-                                                <td><input name="Quantidade" type="number" value="0" min="0" /></td>
-                                                <td><input name="PrecoUnitario" type="text" placeholder="0,00" /></td>
-                                                <td class="purchase-item-total">R$<br />0,00</td>
-                                                <td class="purchase-item-action">
-                                                    <button type="button" aria-label="Remover item"><i class="bi bi-trash3"></i></button>
-                                                </td>
-                                            </tr>
+                                            @if (editando)
+                                            {
+                                                @foreach (var item in Model.CompraEmEdicao!.Itens)
+                                                {
+                                                    var produtoAtual = Model.Produtos.FirstOrDefault(produto => produto.Codigo == item.ProdutoCodigo);
+                                                    <tr>
+                                                        <td><span class="purchase-sku">@(produtoAtual?.CodigoBarras ?? "—")</span></td>
+                                                        <td><select class="purchase-product">
+                                                            <option value="">Selecione produto...</option>
+                                                            @foreach (var produto in Model.Produtos)
+                                                            {
+                                                                var selecionado = produto.Codigo == item.ProdutoCodigo;
+                                                                <option value="@produto.Codigo" data-sku="@produto.CodigoBarras" data-cor="@produto.Cor" selected="@selecionado" disabled="@(!produto.Ativo && !selecionado)">@produto.Nome@(produto.Ativo ? "" : " (inativo)")</option>
+                                                            }
+                                                        </select></td>
+                                                        <td><input class="purchase-item-color" type="text" value="@item.Cor" maxlength="60" placeholder="Cor" /></td>
+                                                        <td><input class="purchase-quantity" type="number" value="@item.Quantidade" min="0" /></td>
+                                                        <td><input class="purchase-unit-price" type="number" value="@item.PrecoUnitario.ToString("0.############", System.Globalization.CultureInfo.InvariantCulture)" min="0" step="any" /></td>
+                                                        <td class="purchase-item-total">@item.Valor.ToString("C2", System.Globalization.CultureInfo.GetCultureInfo("pt-BR"))</td>
+                                                        <td class="purchase-item-action"><button type="button" aria-label="Remover item"><i class="bi bi-trash3"></i></button></td>
+                                                    </tr>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <tr>
+                                                    <td><span class="purchase-sku">—</span></td>
+                                                    <td><select class="purchase-product" name="Itens[0].ProdutoCodigo">
+                                                        <option value="">Selecione produto...</option>
+                                                        @foreach (var produto in Model.Produtos) { <option value="@produto.Codigo" data-sku="@produto.CodigoBarras" data-cor="@produto.Cor">@produto.Nome</option> }
+                                                    </select></td>
+                                                    <td><input class="purchase-item-color" name="Itens[0].Cor" type="text" maxlength="60" placeholder="Cor" /></td>
+                                                    <td><input class="purchase-quantity" name="Itens[0].Quantidade" type="number" value="0" min="0" /></td>
+                                                    <td><input class="purchase-unit-price" name="Itens[0].PrecoUnitario" type="number" value="0" min="0" step="0.01" /></td>
+                                                    <td class="purchase-item-total">R$<br />0,00</td>
+                                                    <td class="purchase-item-action"><button type="button" aria-label="Remover item"><i class="bi bi-trash3"></i></button></td>
+                                                </tr>
+                                            }
                                         </tbody>
                                     </table>
                                 </div>
@@ -112,63 +160,140 @@
                             <section class="purchase-summary-panel">
                                 <div class="purchase-summary-line">
                                     <span>Subtotal</span>
-                                    <strong>R$ 0,00</strong>
+                                    <strong id="purchaseSubtotal">R$ 0,00</strong>
                                 </div>
                                 <div class="purchase-summary-line">
-                                    <span>Impostos (15%)</span>
+                                    <span>Impostos</span>
                                     <strong>R$ 0,00</strong>
                                 </div>
                                 <div class="purchase-summary-line purchase-discount">
-                                    <span>Descontos (5%)</span>
+                                    <span>Descontos</span>
                                     <strong>- R$ 0,00</strong>
                                 </div>
                                 <div class="purchase-summary-total">
                                     <span>Total Final</span>
-                                    <strong>R$ 0,00</strong>
+                                    <strong id="purchaseFinal">R$ 0,00</strong>
                                 </div>
                             </section>
 
                             <div class="purchase-footer-actions">
-                                <button type="button" class="purchase-cancel-button">Cancelar Compra</button>
-                                <button type="submit" class="purchase-finish-button">Finalizar Compra</button>
+                                @if (editando)
+                                {
+                                    <button type="button" class="purchase-cancel-button" onclick="window.location.href='@Url.Action("MovimentoCompras", "Administrador")'">Cancelar Edição</button>
+                                    <button type="submit" class="purchase-finish-button">Salvar Alterações</button>
+                                }
+                                else
+                                {
+                                    <button type="reset" class="purchase-cancel-button">Cancelar Compra</button>
+                                    <button type="submit" class="purchase-finish-button">Finalizar Compra</button>
+                                }
                             </div>
                         </form>
                     </div>
 
                     <aside class="purchase-recent-panel">
                         <div class="purchase-panel-header">
-                            <h2>Compras Recentes</h2>
+                            <h2>Histórico de Compras</h2>
                         </div>
                         <div class="purchase-recent-list">
-                            <article class="recent-purchase">
-                                <div class="recent-purchase-top"><strong>Blunt</strong><span class="purchase-status status-paid">Pago</span></div>
-                                <small>CP001</small>
-                                <b>R$ 15.400,00</b>
-                                <div class="recent-purchase-bottom"><time>2026-05-20</time><i class="bi bi-eye"></i></div>
-                            </article>
-                            <article class="recent-purchase">
-                                <div class="recent-purchase-top"><strong>Blunt</strong><span class="purchase-status status-pending">Pendente</span></div>
-                                <small>CP002</small>
-                                <b>R$ 8.230,00</b>
-                                <div class="recent-purchase-bottom"><time>2026-05-19</time><i class="bi bi-eye"></i></div>
-                            </article>
-                            <article class="recent-purchase">
-                                <div class="recent-purchase-top"><strong>Blunt</strong><span class="purchase-status status-paid">Pago</span></div>
-                                <small>CP003</small>
-                                <b>R$ 3.450,00</b>
-                                <div class="recent-purchase-bottom"><time>2026-05-18</time><i class="bi bi-eye"></i></div>
-                            </article>
-                            <article class="recent-purchase">
-                                <div class="recent-purchase-top"><strong>Blunt</strong><span class="purchase-status status-canceled">Cancelado</span></div>
-                                <small>CP004</small>
-                                <b>R$ 12.800,00</b>
-                                <div class="recent-purchase-bottom"><time>2026-05-17</time><i class="bi bi-eye"></i></div>
-                            </article>
+                            @if (Model.HistoricoCompras.Count == 0)
+                            {
+                                <p>Nenhuma compra registrada no banco.</p>
+                            }
+                            @foreach (var compra in Model.HistoricoCompras)
+                            {
+                                var statusClass = compra.Status == 1 ? "status-paid" : compra.Status == 2 ? "status-canceled" : "status-pending";
+                                var statusText = compra.Status == 1 ? "Recebida" : compra.Status == 2 ? "Cancelada" : "Pendente";
+                                <article class="recent-purchase">
+                                    <div class="recent-purchase-top"><strong>@compra.FornecedorNome</strong><span class="purchase-status @statusClass">@statusText</span></div>
+                                    <small>CP@compra.Numero</small>
+                                    <b>@compra.Total.ToString("C2", System.Globalization.CultureInfo.GetCultureInfo("pt-BR"))</b>
+                                    <div class="recent-purchase-bottom"><time>@compra.DataCompra.ToString("dd/MM/yyyy")</time><i class="bi bi-database"></i></div>
+                                    @if (compra.Status == 1)
+                                    {
+                                        <div class="d-flex gap-2 mt-2">
+                                            <a class="btn btn-sm btn-outline-primary" asp-controller="CompraEstoque" asp-action="Editar" asp-route-numero="@compra.Numero">Editar</a>
+                                            <form asp-controller="CompraEstoque" asp-action="Cancelar" method="post" onsubmit="return confirm('Cancelar a compra CP@compra.Numero? As quantidades serão retiradas do estoque e o movimento deixará de compor os gráficos.');">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="numero" value="@compra.Numero" />
+                                                <button class="btn btn-sm btn-outline-danger" type="submit">Cancelar compra</button>
+                                            </form>
+                                        </div>
+                                    }
+                                </article>
+                            }
                         </div>
                     </aside>
                 </div>
             </section>
         </main>
     </div>
+
+    <template id="purchaseRowTemplate">
+        <tr>
+            <td><span class="purchase-sku">—</span></td>
+            <td><select class="purchase-product"><option value="">Selecione produto...</option>@foreach (var produto in Model.Produtos.Where(produto => produto.Ativo)) { <option value="@produto.Codigo" data-sku="@produto.CodigoBarras" data-cor="@produto.Cor">@produto.Nome</option> }</select></td>
+            <td><input class="purchase-item-color" type="text" maxlength="60" placeholder="Cor" /></td>
+            <td><input class="purchase-quantity" type="number" value="0" min="0" /></td>
+            <td><input class="purchase-unit-price" type="number" value="0" min="0" step="0.01" /></td>
+            <td class="purchase-item-total">R$<br />0,00</td>
+            <td class="purchase-item-action"><button type="button" aria-label="Remover item"><i class="bi bi-trash3"></i></button></td>
+        </tr>
+    </template>
+    <script>
+    (() => {
+        const body = document.querySelector('.purchase-items-table tbody');
+        const initialRow = body.firstElementChild?.cloneNode(true);
+        const purchaseForm = document.querySelector('.purchase-form');
+        const addButton = document.querySelector('.purchase-add-item');
+        const formatter = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
+        function recalc() {
+            let total = 0;
+            body.querySelectorAll('tr').forEach(row => {
+                const qty = Number(row.querySelector('.purchase-quantity').value || 0);
+                const price = Number(row.querySelector('.purchase-unit-price').value || 0);
+                const line = qty * price; total += line;
+                row.querySelector('.purchase-item-total').textContent = formatter.format(line);
+            });
+            document.getElementById('purchaseSubtotal').textContent = formatter.format(total);
+            document.getElementById('purchaseFinal').textContent = formatter.format(total);
+        }
+        function nameRows() {
+            body.querySelectorAll('tr').forEach((row, index) => {
+                row.querySelector('.purchase-product').name = `Itens[${index}].ProdutoCodigo`;
+                row.querySelector('.purchase-quantity').name = `Itens[${index}].Quantidade`;
+                row.querySelector('.purchase-unit-price').name = `Itens[${index}].PrecoUnitario`;
+                row.querySelector('.purchase-item-color').name = `Itens[${index}].Cor`;
+            });
+        }
+        addButton?.addEventListener('click', () => {
+            body.appendChild(document.getElementById('purchaseRowTemplate').content.cloneNode(true));
+            nameRows();
+        });
+        body.addEventListener('input', recalc);
+        body.addEventListener('change', event => {
+            if (event.target.matches('.purchase-product')) {
+                const row = event.target.closest('tr');
+                row.querySelector('.purchase-sku').textContent = event.target.selectedOptions[0]?.dataset.sku || '—';
+                row.querySelector('.purchase-item-color').value = event.target.selectedOptions[0]?.dataset.cor || '';
+            }
+            recalc();
+        });
+        body.addEventListener('click', event => {
+            if (event.target.closest('.purchase-item-action button')) {
+                event.target.closest('tr').remove(); nameRows(); recalc();
+            }
+        });
+        purchaseForm?.addEventListener('reset', () => {
+            setTimeout(() => {
+                if (initialRow) body.replaceChildren(initialRow.cloneNode(true));
+                body.querySelectorAll('.purchase-sku').forEach(sku => sku.textContent = '—');
+                nameRows(); recalc();
+            }, 0);
+        });
+        nameRows(); recalc();
+    })();
+    </script>
+
 </body>
 </html>

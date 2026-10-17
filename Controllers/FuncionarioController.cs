@@ -1,57 +1,45 @@
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using SIVAD.Data;
+using SIVAD.Models.ViewModels;
+using SIVAD.Repositories;
 
-namespace SIVAD.Controllers
+namespace SIVAD.Controllers;
+
+public class FuncionarioController : Controller
 {
-    // Telas do funcionário (documento 2.4.4):
-    // "Registro de Compras" (RegistrarPedido) e "Resumo de Compra" (ResumoCompra).
-    //
-    // Este controller só entrega as páginas. Os formulários enviam para o PedidoController:
-    //   - Finalizar Compra      -> POST Pedido/Registrar  (calcula o total e vai para o resumo)
-    //   - Contabilizar Compra   -> POST Pedido/Finalizar  (conclui e volta para o registro)
-    public class FuncionarioController : Controller
+    private readonly ISIVADRepository _repository;
+    public FuncionarioController(ISIVADRepository repository) => _repository = repository;
+
+    [HttpGet]
+    public IActionResult Index() => RedirectToAction(nameof(RegistrarPedido));
+
+    [HttpGet]
+    public async Task<IActionResult> RegistrarPedido()
     {
-        private readonly AppDbContext _context;
-
-        public FuncionarioController(AppDbContext context)
+        var model = new EmployeeOrderViewModel
         {
-            _context = context;
-        }
+            Produtos = await _repository.ListarProdutosAsync(somenteComEstoque: true),
+            Funcionarios = await _repository.ListarFuncionariosAsync()
+        };
+        return View(model);
+    }
 
-        // A tela inicial do funcionário é o registro de compra.
-        [HttpGet]
-        public IActionResult Index()
+    [HttpGet]
+    public async Task<IActionResult> ResumoCompra(int? id)
+    {
+        if (id is null)
         {
-            return RedirectToAction("RegistrarPedido");
-        }
-
-        [HttpGet]
-        public IActionResult RegistrarPedido()
-        {
-            return View();
-        }
-
-        // Sem id (clique direto no menu "Resumo de Compra") não há pedido para resumir.
-        [HttpGet]
-        public async Task<IActionResult> ResumoCompra(int? id)
-        {
-            if (id == null)
+            var ultimoPedido = await _repository.ObterUltimoPedidoAsync();
+            if (ultimoPedido is null)
             {
-                // A tela contém dados demonstrativos para navegação antes do CRUD/SQL Server.
-                return View();
+                TempData["Erro"] = "Ainda não há pedidos para mostrar no resumo.";
+                return RedirectToAction(nameof(RegistrarPedido));
             }
 
-            var pedido = await _context.Pedidos.FindAsync(id.Value);
-
-            if (pedido == null)
-            {
-                return NotFound();
-            }
-
-            await _context.Entry(pedido).Collection(p => p.Itens).LoadAsync();
-
-            return View(pedido);
+            return View(ultimoPedido);
         }
+
+        var pedido = await _repository.ObterPedidoAsync(id.Value);
+        if (pedido is null) return NotFound();
+        return View(pedido);
     }
 }

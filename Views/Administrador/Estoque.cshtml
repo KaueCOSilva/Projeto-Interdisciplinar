@@ -1,3 +1,4 @@
+@model SIVAD.Models.ViewModels.StockViewModel
 @{
     ViewData["Title"] = "Estoque";
 }
@@ -30,13 +31,11 @@
                 </div>
 
                 <div class="stock-topbar-actions">
-                    <button type="button" class="stock-notification" aria-label="Notificações">
-                        <a asp-controller="Administrador"
-                           asp-action="Notificacoes">
-                            <i class="bi bi-bell"></i>
-                            <span class="stock-notification-dot"></span>
-                        </a>
-                    </button>
+                    <a class="stock-notification" asp-controller="Administrador"
+                        asp-action="Notificacoes" aria-label="Notificações">
+                        <i class="bi bi-bell" aria-hidden="true"></i>
+                        @if (ViewBag.AlertasEstoque is int alertas && alertas > 0) { <span class="stock-notification-dot" title="@alertas alertas de estoque" aria-label="@alertas alertas de estoque"></span> }
+                    </a>
                 </div>
             </header>
 
@@ -47,22 +46,55 @@
                         <p>Gerencie todos os produtos em estoque</p>
                     </div>
 
-                    <a asp-controller="Administrador"
-                       asp-action="Estoque"
-                       class="stock-add-button">
+                    <a href="#newProductForm" id="toggleProductForm" class="stock-add-button">
                         <i class="bi bi-plus-lg"></i>
                         <span>Adicionar Produto</span>
                     </a>
                 </div>
+
+                @if (TempData["Erro"] is string erro) { <div class="alert alert-danger" role="alert">@erro</div> }
+                @if (TempData["Sucesso"] is string sucesso) { <div class="alert alert-success" role="status">@sucesso</div> }
+                <section class="stock-table-card" id="newProductForm" hidden>
+                    <form asp-controller="Produto" asp-action="Cadastrar" method="post" class="p-3">
+                        @Html.AntiForgeryToken()
+                        <h3>Novo produto</h3>
+                        <div class="row g-2">
+                            <div class="col-md-2"><label for="produtoBarcode">Código de barras</label><input id="produtoBarcode" class="form-control" name="CodigoBarras" required maxlength="50" /></div>
+                            <div class="col-md-2"><label for="produtoNome">Nome</label><input id="produtoNome" class="form-control" name="Nome" required maxlength="150" /></div>
+                            <div class="col-md-2"><label for="produtoCor">Cor</label><input id="produtoCor" class="form-control" name="Cor" placeholder="Ex.: Azul" maxlength="60" /></div>
+                            <div class="col-md-2"><label for="produtoPreco">Preço unitário</label><input id="produtoPreco" class="form-control" name="PrecoUnit" type="number" min="0" step="0.01" required /></div>
+                            <div class="col-md-2"><label for="produtoEstoque">Estoque inicial</label><input id="produtoEstoque" class="form-control" name="Estoque" type="number" min="0" value="0" required /></div>
+                            <div class="col-md-2"><label for="produtoCategoria">Categoria</label><select id="produtoCategoria" class="form-select" name="CategoriaCodigo" required><option value="">Selecione</option>@foreach (var categoria in Model.Categorias) { <option value="@categoria.Codigo">@categoria.Nome</option> }</select></div>
+                        </div>
+                        <button type="submit" class="btn btn-primary mt-3">Salvar produto</button>
+                    </form>
+                </section>
+                <section class="stock-table-card" id="editProductPanel" hidden>
+                    <form asp-controller="Produto" asp-action="Editar" method="post" class="p-3">
+                        @Html.AntiForgeryToken()
+                        <h3>Editar produto</h3>
+                        <input type="hidden" id="editProductId" name="Codigo" />
+                        <div class="row g-2">
+                            <div class="col-md-2"><label for="editProductBarcode">Código de barras</label><input id="editProductBarcode" class="form-control" name="CodigoBarras" required maxlength="50" /></div>
+                            <div class="col-md-2"><label for="editProductName">Nome</label><input id="editProductName" class="form-control" name="Nome" required maxlength="150" /></div>
+                            <div class="col-md-2"><label for="editProductColor">Cor</label><input id="editProductColor" class="form-control" name="Cor" placeholder="Ex.: Azul" maxlength="60" /></div>
+                            <div class="col-md-2"><label for="editProductPrice">Preço unitário</label><input id="editProductPrice" class="form-control" name="PrecoUnit" type="number" min="0" step="0.01" required /></div>
+                            <div class="col-md-2"><label for="editProductStock">Estoque</label><input id="editProductStock" class="form-control" name="Estoque" type="number" min="0" required /></div>
+                            <div class="col-md-2"><label for="editProductCategory">Categoria</label><select id="editProductCategory" class="form-select" name="CategoriaCodigo" required>@foreach (var categoria in Model.Categorias) { <option value="@categoria.Codigo">@categoria.Nome</option> }</select></div>
+                        </div>
+                        <button type="submit" class="btn btn-primary mt-3">Salvar alterações</button>
+                        <button type="button" class="btn btn-secondary mt-3" id="cancelEditProduct">Cancelar</button>
+                    </form>
+                </section>
 
                 <div class="stock-table-card">
                     <div class="stock-toolbar">
                         <div class="stock-search-wrapper">
                             <i class="bi bi-search"></i>
                             <input type="search"
-                                   class="stock-search"
-                                   placeholder="Buscar produto, fornecedor ou ID..."
-                                   aria-label="Buscar produto, fornecedor ou ID" />
+                                    class="stock-search"
+                                    placeholder="Buscar produto, fornecedor ou ID..."
+                                    aria-label="Buscar produto, fornecedor ou ID" />
                         </div>
 
                         <button type="button" class="stock-filter-button">
@@ -85,110 +117,30 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>Vestuário</td>
-                                    <td class="stock-product-name">Camisa Polo</td>
-                                    <td>Blunt</td>
-                                    <td>Preto</td>
-                                    <td class="stock-id">PR001</td>
-                                    <td><span class="stock-quantity quantity-good">45 unidades</span></td>
-                                    <td class="stock-actions">
-                                        <a href="#" aria-label="Visualizar PR001"><i class="bi bi-eye"></i></a>
-                                        <a href="#" aria-label="Editar PR001"><i class="bi bi-pencil-square"></i></a>
-                                        <a href="#" class="stock-delete" aria-label="Excluir PR001"><i class="bi bi-trash3"></i></a>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Vestuário</td>
-                                    <td class="stock-product-name">Camisa Polo</td>
-                                    <td>Blunt</td>
-                                    <td>Azul</td>
-                                    <td class="stock-id">PR002</td>
-                                    <td><span class="stock-quantity quantity-warning">23 unidades</span></td>
-                                    <td class="stock-actions">
-                                        <a href="#" aria-label="Visualizar PR002"><i class="bi bi-eye"></i></a>
-                                        <a href="#" aria-label="Editar PR002"><i class="bi bi-pencil-square"></i></a>
-                                        <a href="#" class="stock-delete" aria-label="Excluir PR002"><i class="bi bi-trash3"></i></a>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Vestuário</td>
-                                    <td class="stock-product-name">Camisa Polo</td>
-                                    <td>Blunt</td>
-                                    <td>Cinza</td>
-                                    <td class="stock-id">PR003</td>
-                                    <td><span class="stock-quantity quantity-low">8 unidades</span></td>
-                                    <td class="stock-actions">
-                                        <a href="#" aria-label="Visualizar PR003"><i class="bi bi-eye"></i></a>
-                                        <a href="#" aria-label="Editar PR003"><i class="bi bi-pencil-square"></i></a>
-                                        <a href="#" class="stock-delete" aria-label="Excluir PR003"><i class="bi bi-trash3"></i></a>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Vestuário</td>
-                                    <td class="stock-product-name">Camisa Polo</td>
-                                    <td>Blunt</td>
-                                    <td>Marrom</td>
-                                    <td class="stock-id">PR004</td>
-                                    <td><span class="stock-quantity quantity-good">67 unidades</span></td>
-                                    <td class="stock-actions">
-                                        <a href="#" aria-label="Visualizar PR004"><i class="bi bi-eye"></i></a>
-                                        <a href="#" aria-label="Editar PR004"><i class="bi bi-pencil-square"></i></a>
-                                        <a href="#" class="stock-delete" aria-label="Excluir PR004"><i class="bi bi-trash3"></i></a>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Vestuário</td>
-                                    <td class="stock-product-name">Camisa Polo</td>
-                                    <td>Blunt</td>
-                                    <td>Branco</td>
-                                    <td class="stock-id">PR005</td>
-                                    <td><span class="stock-quantity quantity-low">12 unidades</span></td>
-                                    <td class="stock-actions">
-                                        <a href="#" aria-label="Visualizar PR005"><i class="bi bi-eye"></i></a>
-                                        <a href="#" aria-label="Editar PR005"><i class="bi bi-pencil-square"></i></a>
-                                        <a href="#" class="stock-delete" aria-label="Excluir PR005"><i class="bi bi-trash3"></i></a>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Vestuário</td>
-                                    <td class="stock-product-name">Camisa Polo</td>
-                                    <td>Blunt</td>
-                                    <td>Vinho</td>
-                                    <td class="stock-id">PR006</td>
-                                    <td><span class="stock-quantity quantity-good">156 unidades</span></td>
-                                    <td class="stock-actions">
-                                        <a href="#" aria-label="Visualizar PR006"><i class="bi bi-eye"></i></a>
-                                        <a href="#" aria-label="Editar PR006"><i class="bi bi-pencil-square"></i></a>
-                                        <a href="#" class="stock-delete" aria-label="Excluir PR006"><i class="bi bi-trash3"></i></a>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Vestuário</td>
-                                    <td class="stock-product-name">Jaqueta Jeans</td>
-                                    <td>Blunt</td>
-                                    <td>Azul</td>
-                                    <td class="stock-id">PR007</td>
-                                    <td><span class="stock-quantity quantity-warning">34 unidades</span></td>
-                                    <td class="stock-actions">
-                                        <a href="#" aria-label="Visualizar PR007"><i class="bi bi-eye"></i></a>
-                                        <a href="#" aria-label="Editar PR007"><i class="bi bi-pencil-square"></i></a>
-                                        <a href="#" class="stock-delete" aria-label="Excluir PR007"><i class="bi bi-trash3"></i></a>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Vestuário</td>
-                                    <td class="stock-product-name">Camisa Polo</td>
-                                    <td>Blunt</td>
-                                    <td>Verde</td>
-                                    <td class="stock-id">PR008</td>
-                                    <td><span class="stock-quantity quantity-low">5 unidades</span></td>
-                                    <td class="stock-actions">
-                                        <a href="#" aria-label="Visualizar PR008"><i class="bi bi-eye"></i></a>
-                                        <a href="#" aria-label="Editar PR008"><i class="bi bi-pencil-square"></i></a>
-                                        <a href="#" class="stock-delete" aria-label="Excluir PR008"><i class="bi bi-trash3"></i></a>
-                                    </td>
-                                </tr>
+                                @if (Model.Produtos.Count == 0)
+                                {
+                                    <tr><td colspan="7" class="text-center">Nenhum produto cadastrado no banco.</td></tr>
+                                }
+                                @foreach (var produto in Model.Produtos)
+                                {
+                                    var quantidadeClass = produto.Estoque <= 10 ? "quantity-low" : produto.Estoque <= 25 ? "quantity-warning" : "quantity-good";
+                                    <tr data-stock="@produto.Estoque" data-search="@produto.Nome @produto.CodigoBarras @produto.Codigo @produto.Categoria.Nome @produto.Cor @produto.FornecedorNome" data-product-id="@produto.Codigo" data-barcode="@produto.CodigoBarras" data-product-name="@produto.Nome" data-product-color="@produto.Cor" data-price="@produto.PrecoUnit.ToString(System.Globalization.CultureInfo.InvariantCulture)" data-category="@produto.CategoriaCodigo">
+                                        <td>@produto.Categoria.Nome</td>
+                                        <td class="stock-product-name">@produto.Nome</td>
+                                        <td>@(string.IsNullOrWhiteSpace(produto.FornecedorNome) ? "—" : produto.FornecedorNome)</td>
+                                        <td>@produto.Cor</td>
+                                        <td class="stock-id">@produto.CodigoBarras</td>
+                                        <td><span class="stock-quantity @quantidadeClass">@produto.Estoque unidades</span></td>
+                                        <td class="stock-actions">
+                                            <button type="button" class="stock-edit-button" data-edit-product aria-label="Editar @produto.Nome" title="Editar produto"><i class="bi bi-pencil-square"></i></button>
+                                            <form asp-controller="Produto" asp-action="Excluir" method="post" class="d-inline" onsubmit="return confirm('Remover este produto da lista? O histórico será preservado.');">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="id" value="@produto.Codigo" />
+                                                <button type="submit" class="stock-delete-button" aria-label="Remover @produto.Nome" title="Remover produto"><i class="bi bi-trash3"></i></button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                }
                             </tbody>
                         </table>
                     </div>
@@ -196,5 +148,45 @@
             </section>
         </main>
     </div>
+    <script>
+
+        const search = document.querySelector('.stock-search');
+        const filterButton = document.querySelector('.stock-filter-button');
+        let onlyLowStock = false;
+        function filterRows() {
+            const query = (search?.value || '').toLocaleLowerCase('pt-BR');
+            document.querySelectorAll('.stock-table tbody tr[data-stock]').forEach(row => {
+                const matchesText = row.dataset.search.toLocaleLowerCase('pt-BR').includes(query);
+                const matchesStock = !onlyLowStock || Number(row.dataset.stock) <= 10;
+                row.hidden = !(matchesText && matchesStock);
+            });
+        }
+        search?.addEventListener('input', filterRows);
+        filterButton?.addEventListener('click', () => { onlyLowStock = !onlyLowStock; filterRows(); });
+        document.getElementById('toggleProductForm')?.addEventListener('click', function (event) {
+            event.preventDefault();
+            const form = document.getElementById('newProductForm');
+            form.hidden = !form.hidden;
+            document.getElementById('editProductPanel').hidden = true;
+            if (!form.hidden) form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+        document.querySelectorAll('[data-edit-product]').forEach(button => button.addEventListener('click', () => {
+            const row = button.closest('tr');
+            document.getElementById('editProductId').value = row.dataset.productId;
+            document.getElementById('editProductBarcode').value = row.dataset.barcode;
+            document.getElementById('editProductName').value = row.dataset.productName;
+            document.getElementById('editProductColor').value = row.dataset.productColor;
+            document.getElementById('editProductPrice').value = row.dataset.price;
+            document.getElementById('editProductStock').value = row.dataset.stock;
+            document.getElementById('editProductCategory').value = row.dataset.category;
+            document.getElementById('newProductForm').hidden = true;
+            const panel = document.getElementById('editProductPanel');
+            panel.hidden = false;
+            panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }));
+        document.getElementById('cancelEditProduct')?.addEventListener('click', () => {
+            document.getElementById('editProductPanel').hidden = true;
+        });
+    </script>
 </body>
 </html>

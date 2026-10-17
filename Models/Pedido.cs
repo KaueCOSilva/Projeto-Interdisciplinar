@@ -8,8 +8,8 @@ namespace SIVAD.Models
         public int Status { get; set; }
         public decimal ValorTotal { get; set; }
 
-        public int ClienteId { get; set; }
-        public Cliente Cliente { get; set; } = null!;
+        public int? ClienteId { get; set; }
+        public Cliente? Cliente { get; set; }
 
         public int FuncionarioId { get; set; }
         public Funcionario Funcionario { get; set; } = null!;

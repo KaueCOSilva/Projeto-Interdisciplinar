@@ -52,8 +52,11 @@ body.purchase-page .purchase-topbar-actions {
 
 body.purchase-page .purchase-notification {
     position: relative;
+    display: inline-flex;
     width: 22px;
     height: 25px;
+    align-items: center;
+    justify-content: center;
     padding: 0;
     border: 0;
     background: transparent;
@@ -454,4 +457,3 @@ body.purchase-page .status-canceled {
         grid-template-columns: 1fr;
     }
 }
-

@@ -1,3 +1,4 @@
+@model SIVAD.Models.ViewModels.ReportViewModel
 @{
     ViewData["Title"] = "Relatórios";
 }
@@ -25,20 +26,20 @@
 <body class="reports-page">
 
     <!-- =========================================================
-         SIDEBAR
-         ========================================================= -->
+        SIDEBAR
+        ========================================================= -->
 
     <partial name="Sidebar" />
 
     <!-- =========================================================
-         PÁGINA
-         ========================================================= -->
+        PÁGINA
+        ========================================================= -->
 
     <div class="page">
 
         <!-- =====================================================
-             TOPBAR
-             ===================================================== -->
+            TOPBAR
+            ===================================================== -->
 
         <header class="topbar">
 
@@ -58,10 +59,10 @@
 
                 <div class="notification">
                     <a asp-controller="Administrador"
-                           asp-action="Notificacoes">
+                            asp-action="Notificacoes">
                         <i class="bi bi-bell"></i>
 
-                        <span class="notification-dot"></span>
+                        @if (ViewBag.AlertasEstoque is int alertas && alertas > 0) { <span class="notification-dot" title="@alertas alertas de estoque" aria-label="@alertas alertas de estoque"></span> }
                     </a>
 
                 </div>
@@ -71,14 +72,14 @@
         </header>
 
         <!-- =====================================================
-             CONTEÚDO
-             ===================================================== -->
+            CONTEÚDO
+            ===================================================== -->
 
         <main class="content">
 
             <!-- =================================================
-                 ABAS
-                 ================================================= -->
+                ABAS
+                ================================================= -->
 
             <div class="report-tabs">
 
@@ -130,8 +131,8 @@
             </div>
 
             <!-- =================================================
-                 CARDS DE INDICADORES
-                 ================================================= -->
+                CARDS DE INDICADORES
+                ================================================= -->
 
             <section class="stats-grid">
 
@@ -146,11 +147,11 @@
                         </div>
 
                         <div class="stat-value" id="primaryMetricValue">
-                            R$ 549,60
+                            R$ 0,00
                         </div>
 
                         <div class="stat-change neutral" id="primaryMetricDescription">
-                            Valores de demonstração
+                            Dados do SQL Server
                         </div>
 
                     </div>
@@ -174,11 +175,11 @@
                         </div>
 
                         <div class="stat-value" id="secondMetricValue">
-                            R$ 549,60
+                            R$ 0,00
                         </div>
 
                         <div class="stat-change neutral" id="secondMetricDescription">
-                            Total dos pedidos
+                            Soma no período selecionado
                         </div>
 
                     </div>
@@ -202,7 +203,7 @@
                         </div>
 
                         <div class="stat-value" id="thirdMetricValue">
-                            4
+                            0
                         </div>
 
                         <div class="stat-change neutral" id="thirdMetricDescription">
@@ -250,14 +251,14 @@
             </section>
 
             <!-- =================================================
-                 GRÁFICO + FILTROS
-                 ================================================= -->
+                GRÁFICO + FILTROS
+                ================================================= -->
 
             <section class="report-main">
 
                 <!-- =================================================
-                     GRÁFICO
-                     ================================================= -->
+                    GRÁFICO
+                    ================================================= -->
 
                 <div class="panel chart-panel">
 
@@ -281,145 +282,19 @@
 
                         <!-- BARRAS -->
 
-                        <div class="bars" id="reportBars">
-
-                            <div class="bar-row" data-month="janeiro">
-
-                                <span class="month-label">
-                                    Janeiro
-                                </span>
-
-                                <div class="bar-container">
-
-                                    <div class="bar"
-                                         style="width: 100%;">
-                                    </div>
-
-                                </div>
-
-                            </div>
-
-                            <div class="bar-row" data-month="fevereiro">
-
-                                <span class="month-label">
-                                    Fevereiro
-                                </span>
-
-                                <div class="bar-container">
-
-                                    <div class="bar"
-                                         style="width: 56%;">
-                                    </div>
-
-                                </div>
-
-                            </div>
-
-                            <div class="bar-row" data-month="marco">
-
-                                <span class="month-label">
-                                    Março
-                                </span>
-
-                                <div class="bar-container">
-
-                                    <div class="bar"
-                                         style="width: 42%;">
-                                    </div>
-
-                                </div>
-
-                            </div>
-
-                            <div class="bar-row" data-month="abril">
-
-                                <span class="month-label">
-                                    Abril
-                                </span>
-
-                                <div class="bar-container">
-
-                                    <div class="bar"
-                                         style="width: 46%;">
-                                    </div>
-
-                                </div>
-
-                            </div>
-
-                            <div class="bar-row" data-month="maio">
-
-                                <span class="month-label">
-                                    Maio
-                                </span>
-
-                                <div class="bar-container">
-
-                                    <div class="bar"
-                                         style="width: 40%;">
-                                    </div>
-
-                                </div>
-
-                            </div>
-
-                            <div class="bar-row" data-month="junho">
-
-                                <span class="month-label">
-                                    Junho
-                                </span>
-
-                                <div class="bar-container">
-
-                                    <div class="bar"
-                                         style="width: 35%;">
-                                    </div>
-
-                                </div>
-
-                            </div>
-
-                            <div class="bar-row" data-month="julho">
-
-                                <span class="month-label">
-                                    Julho
-                                </span>
-
-                                <div class="bar-container">
-
-                                    <div class="bar"
-                                         style="width: 46%;">
-                                    </div>
-
-                                </div>
-
-                            </div>
-
-                        </div>
+                        <div class="bars" id="reportBars"></div>
 
                         <!-- EIXO X -->
 
-                        <div class="x-axis" id="reportXAxis">
-
-                            <span>0</span>
-
-                            <span>15.000</span>
-
-                            <span>30.000</span>
-
-                            <span>45.000</span>
-
-                            <span>60.000</span>
-
-                        </div>
+                        <div class="x-axis" id="reportXAxis"></div>
 
                     </div>
 
                 </div>
 
                 <!-- =================================================
-                     FILTROS
-                     ================================================= -->
+                    FILTROS
+                    ================================================= -->
 
                 <div class="panel filter-panel">
 
@@ -463,9 +338,12 @@
                                 Junho
                             </option>
 
-                            <option value="julho">
-                                Julho
-                            </option>
+                            <option value="julho">Julho</option>
+                            <option value="agosto">Agosto</option>
+                            <option value="setembro">Setembro</option>
+                            <option value="outubro">Outubro</option>
+                            <option value="novembro">Novembro</option>
+                            <option value="dezembro">Dezembro</option>
 
                         </select>
 
@@ -492,7 +370,7 @@
                             </div>
 
                             <div class="filter-box-value" id="transactionCount">
-                                2 pedidos
+                                0 registros
                             </div>
 
                         </div>
@@ -506,7 +384,7 @@
                             </div>
 
                             <div class="filter-box-value" id="averageTicket">
-                                R$ 274,80
+                                R$ 0,00
                             </div>
 
                         </div>
@@ -518,8 +396,8 @@
             </section>
 
             <!-- =================================================
-                 CARDS INFERIORES
-                 ================================================= -->
+                CARDS INFERIORES
+                ================================================= -->
 
             <section class="bottom-grid">
 
@@ -532,11 +410,11 @@
                     </div>
 
                     <div class="bottom-value" id="bestGroupValue">
-                        Atual
+                        —
                     </div>
 
                     <div class="bottom-description description-green" id="bestGroupDescription">
-                        R$ 549,60 em vendas
+                        Sem lançamentos no filtro
                     </div>
 
                 </div>
@@ -550,11 +428,11 @@
                     </div>
 
                     <div class="bottom-value" id="reportTypeValue">
-                        Masculino
+                        —
                     </div>
 
                     <div class="bottom-description description-blue" id="reportTypeDescription">
-                        R$ 359,70 em vendas
+                        Dados do filtro selecionado
                     </div>
 
                 </div>
@@ -583,6 +461,7 @@
 
     </div>
 
+    <script type="application/json" id="report-data">@Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Movimentos.Select(m => new { data = m.Data.ToString("yyyy-MM-dd"), tipo = m.Tipo, valor = m.Valor })))</script>
     <script src="/js/relatorios.js"></script>
 </body>
 </html>
