@@ -17,14 +17,14 @@ public interface ISIVADRepository
     Task<bool> AtualizarStatusPedidoAsync(int codigo, int status);
     Task<Pedido?> ObterPedidoAsync(int codigo);
     Task<Pedido?> ObterPrimeiroPedidoAsync();
-    Task<Pedido?> ObterUltimoPedidoAsync();
+    Task<Pedido?> ObterUltimoPedidoPendenteAsync();
     Task<int> RegistrarCompraEstoqueAsync(CompraEstoque compra);
     Task<CompraEstoque?> ObterCompraEstoqueAsync(int numero);
     Task<bool> AtualizarCompraEstoqueAsync(CompraEstoque compra);
     Task<bool> CancelarCompraEstoqueAsync(int numero);
     Task<CompraEstoque?> ObterPrimeiraCompraEstoqueAsync();
     Task<bool> AtualizarProdutoAsync(Produto produto);
-    Task<bool> DesativarProdutoAsync(int codigo);
+    Task<int> RegistrarDevolucaoAsync(int produtoCodigo, int quantidade);
     Task<int> CadastrarFuncionarioAsync(string nome);
     Task<bool> DesativarFuncionarioAsync(int id);
     Task<bool> AtualizarFuncionarioAsync(int id, string nome);

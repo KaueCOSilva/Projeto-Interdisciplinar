@@ -1,6 +1,6 @@
 @model SIVAD.Models.ViewModels.EmployeeManagementViewModel
 @{
-    ViewData["Title"] = "Gerenciamento de Usuários";
+    ViewData["Title"] = "Gerenciamento de Funcionários";
 }
 <!doctype html>
 <html lang="pt-br">
@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="/css/base.css?v=1" />
     <link rel="stylesheet" href="/css/shared/sidebar-admin.css?v=1" />
     <link rel="stylesheet" href="/css/shared/logout-link.css?v=1" />
-    <link rel="stylesheet" href="/css/views/administrador/gerenciar-usuarios.css?v=1" />
+    <link rel="stylesheet" href="/css/views/administrador/gerenciar-usuarios.css?v=2" />
     <link rel="stylesheet" href="/css/shared/profile-avatars.css?v=1" />
 </head>
 <body class="user-management-page">
@@ -23,7 +23,7 @@
         <main class="user-management-main-content">
             <header class="user-management-topbar">
                 <div class="user-management-topbar-title">
-                    <h1>Gerenciamento de Usuários</h1>
+                    <h1>Gerenciamento de Funcionários</h1>
                     <p>Bem-vindo ao sistema de gestão</p>
                 </div>
                 <div class="user-management-topbar-actions" aria-label="Ações do usuário">
@@ -37,62 +37,43 @@
 
             <div class="user-management-content">
                 <section class="user-management-intro" aria-labelledby="user-management-heading">
-                    <h2 id="user-management-heading">Gerenciamento de Usuários</h2>
-                    <p>Gerencie usuários e altere senhas</p>
+                    <h2 id="user-management-heading">Gerenciamento de Funcionários</h2>
+                    <p>Gerencie os funcionários cadastrados e atualize seus nomes</p>
                 </section>
 
                 @if (TempData["Erro"] is string erro) { <div class="alert alert-danger" role="alert">@erro</div> }
                 @if (TempData["Sucesso"] is string sucesso) { <div class="alert alert-success" role="status">@sucesso</div> }
                 <div class="alert alert-info" role="status">A lista abaixo vem da tabela Funcionarios. Remover desativa o funcionário, preservando pedidos antigos. O schema ainda não armazena senhas de acesso.</div>
 
-                <section class="user-management-panel user-password-panel" aria-labelledby="password-panel-heading">
+                <section class="user-management-panel employee-edit-panel" aria-labelledby="employee-edit-heading">
                     <div class="user-management-panel-heading">
                         <span class="user-management-panel-icon" aria-hidden="true">
-                            <i class="bi bi-lock"></i>
+                            <i class="bi bi-person-gear"></i>
                         </span>
-                        <h3 id="password-panel-heading">Alteração de Senha</h3>
+                        <h3 id="employee-edit-heading">Editar Funcionário</h3>
                     </div>
 
-                    <form class="user-password-form" autocomplete="off">
-                        <div class="user-password-fields">
+                    <form id="employeeEditForm" class="employee-edit-form" asp-controller="Administrador" asp-action="EditarFuncionario" method="post" autocomplete="off">
+                        @Html.AntiForgeryToken()
+                        <input id="editEmployeeId" type="hidden" name="id" value="@Model.FuncionarioEmEdicaoId" />
+                        <div class="employee-edit-fields">
                             <div class="user-management-field">
-                                <label for="new-password">Nova Senha</label>
-                                <input
-                                    id="new-password"
-                                    class="form-control user-management-input"
-                                    type="password"
-                                    placeholder="Digite a nova senha"
-                                    autocomplete="new-password" />
+                                <label for="editEmployeeName">Nome do Funcionário</label>
+                                <input id="editEmployeeName" class="form-control user-management-input" type="text" name="nome" value="@Model.FuncionarioEmEdicaoNome" placeholder="Selecione um funcionário na lista" maxlength="150" required />
                             </div>
                             <div class="user-management-field">
-                                <label for="target-username">Nome do Usuário</label>
-                                <input
-                                    id="target-username"
-                                    class="form-control user-management-input"
-                                    type="text"
-                                    placeholder="Digite o nome do usuário"
-                                    autocomplete="off" />
-                            </div>
-                            <div class="user-management-field">
-                                <label for="confirm-new-password">Confirmar Nova Senha</label>
-                                <input
-                                    id="confirm-new-password"
-                                    class="form-control user-management-input"
-                                    type="password"
-                                    placeholder="Digite novamente a senha"
-                                    autocomplete="new-password" />
-                            </div>
-                            <div class="user-management-field">
-                                <label for="user-uid">UID</label>
-                                <input
-                                    id="user-uid"
-                                    class="form-control user-management-input"
-                                    type="text"
-                                    placeholder="Identificador único"
-                                    autocomplete="off" />
+                                <label for="editEmployeeIdDisplay">ID do Funcionário</label>
+                                <input id="editEmployeeIdDisplay" class="form-control user-management-input" type="text" value="@Model.FuncionarioEmEdicaoId" placeholder="Selecione um funcionário" readonly />
                             </div>
                         </div>
-                        <button class="user-password-submit" type="button" disabled title="Requer tabela de credenciais no banco">Confirmar</button>
+                        @if (Model.FuncionarioEmEdicaoId.HasValue)
+                        {
+                            <button id="saveEmployeeEdit" class="employee-edit-submit" type="submit">Salvar alterações</button>
+                        }
+                        else
+                        {
+                            <button id="saveEmployeeEdit" class="employee-edit-submit" type="submit" disabled>Salvar alterações</button>
+                        }
                     </form>
                 </section>
 
@@ -100,7 +81,7 @@
                     class="user-management-panel registered-users-panel"
                     aria-labelledby="registered-users-heading">
                     <div class="registered-users-heading">
-                        <h3 id="registered-users-heading">Usuários Cadastrados</h3>
+                        <h3 id="registered-users-heading">Funcionários Cadastrados</h3>
                     </div>
                     <div class="registered-users-list">
                         @if (Model.Funcionarios.Count == 0)
@@ -115,11 +96,9 @@
                                     <div class="registered-user-details"><strong>@funcionario.Nome</strong><small>ID @funcionario.Id <span aria-hidden="true">•</span> Funcionário ativo</small></div>
                                 </div>
                                 <div class="registered-user-actions">
-                                    <button class="registered-user-edit" type="button" data-edit-employee data-name="@funcionario.Nome" data-form="edit-employee-@funcionario.Id">Editar</button>
-                                    <form id="edit-employee-@funcionario.Id" asp-controller="Administrador" asp-action="EditarFuncionario" method="post" hidden>
-                                        @Html.AntiForgeryToken()
-                                        <input type="hidden" name="id" value="@funcionario.Id" />
-                                        <input type="hidden" name="nome" />
+                                    <form asp-controller="Administrador" asp-action="GerenciarUsuarios" method="get">
+                                        <input type="hidden" name="editarId" value="@funcionario.Id" />
+                                        <button class="registered-user-edit" type="submit" aria-label="Editar @funcionario.Nome">Editar</button>
                                     </form>
                                     <form asp-controller="Administrador" asp-action="ExcluirUsuario" method="post" onsubmit="return confirm('Remover este funcionário da lista? Os pedidos históricos serão preservados.');">
                                         @Html.AntiForgeryToken()
@@ -134,14 +113,5 @@
             </div>
         </main>
     </div>
-    <script>
-        document.querySelectorAll('[data-edit-employee]').forEach(button => button.addEventListener('click', () => {
-            const nome = window.prompt('Nome do funcionário:', button.dataset.name);
-            if (nome === null || !nome.trim()) return;
-            const form = document.getElementById(button.dataset.form);
-            form.querySelector('[name="nome"]').value = nome.trim();
-            form.requestSubmit();
-        }));
-    </script>
 </body>
 </html>

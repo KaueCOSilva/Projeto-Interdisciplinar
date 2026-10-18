@@ -26,12 +26,13 @@ public class FuncionarioController : Controller
     [HttpGet]
     public async Task<IActionResult> ResumoCompra(int? id)
     {
+        Response.Headers["Cache-Control"] = "no-store, no-cache, must-revalidate";
         if (id is null)
         {
-            var ultimoPedido = await _repository.ObterUltimoPedidoAsync();
+            var ultimoPedido = await _repository.ObterUltimoPedidoPendenteAsync();
             if (ultimoPedido is null)
             {
-                TempData["Erro"] = "Ainda não há pedidos para mostrar no resumo.";
+                TempData["Sucesso"] = "Não há pedido pendente no resumo. O histórico contabilizado foi preservado; você pode registrar um novo pedido.";
                 return RedirectToAction(nameof(RegistrarPedido));
             }
 
@@ -40,6 +41,11 @@ public class FuncionarioController : Controller
 
         var pedido = await _repository.ObterPedidoAsync(id.Value);
         if (pedido is null) return NotFound();
+        if (pedido.Status != 0)
+        {
+            TempData["Sucesso"] = "Este pedido já foi contabilizado ou cancelado. O registro foi preservado no histórico.";
+            return RedirectToAction(nameof(RegistrarPedido));
+        }
         return View(pedido);
     }
 }

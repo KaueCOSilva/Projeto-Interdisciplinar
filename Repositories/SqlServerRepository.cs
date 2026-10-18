@@ -302,10 +302,12 @@ public sealed class SqlServerRepository : DataConnection, ISIVADRepository
     public async Task<List<ReportMovementViewModel>> ListarMovimentosRelatorioAsync()
     {
         const string sql = """
-            SELECT data_pedido AS data_movimento, 'venda' AS tipo, valor_total AS valor
+            SELECT data_pedido AS data_movimento, 'venda' AS tipo, valor_total AS valor, CAST(0 AS int) AS quantidade
             FROM Pedidos WHERE status=1
             UNION ALL
-            SELECT data_compra, 'despesa', total FROM CompraEstoque WHERE status=1
+            SELECT data_compra, 'despesa', total, CAST(0 AS int) FROM CompraEstoque WHERE status=1
+            UNION ALL
+            SELECT data_devolucao, 'devolucao', valor_total, quantidade FROM Devolucoes
             ORDER BY data_movimento;
             """;
         var movimentos = new List<ReportMovementViewModel>();
@@ -317,7 +319,8 @@ public sealed class SqlServerRepository : DataConnection, ISIVADRepository
         {
             Data = reader.GetDateTime(0),
             Tipo = reader.GetString(1),
-            Valor = reader.GetDecimal(2)
+            Valor = reader.GetDecimal(2),
+            Quantidade = reader.GetInt32(3)
         });
         return movimentos;
     }
@@ -460,11 +463,11 @@ public sealed class SqlServerRepository : DataConnection, ISIVADRepository
         return codigo.HasValue ? await ObterPedidoAsync(codigo.Value) : null;
     }
 
-    public async Task<Pedido?> ObterUltimoPedidoAsync()
+    public async Task<Pedido?> ObterUltimoPedidoPendenteAsync()
     {
         await using var connection = CriarConexao();
         await connection.OpenAsync();
-        var result = await new SqlCommand("SELECT TOP (1) codigo FROM Pedidos ORDER BY codigo DESC", connection).ExecuteScalarAsync();
+        var result = await new SqlCommand("SELECT TOP (1) codigo FROM Pedidos WHERE status=0 ORDER BY codigo DESC", connection).ExecuteScalarAsync();
         return result is null || result is DBNull ? null : await ObterPedidoAsync(Convert.ToInt32(result));
     }
 
@@ -805,13 +808,52 @@ public sealed class SqlServerRepository : DataConnection, ISIVADRepository
         { throw new InvalidOperationException("Já existe outro produto com esse código de barras.", ex); }
     }
 
-    public async Task<bool> DesativarProdutoAsync(int codigo)
+    public async Task<int> RegistrarDevolucaoAsync(int produtoCodigo, int quantidade)
     {
+        if (produtoCodigo <= 0 || quantidade <= 0)
+            throw new InvalidOperationException("Selecione um produto e informe uma quantidade de devolução maior que zero.");
+
         await using var connection = CriarConexao();
         await connection.OpenAsync();
-        await using var command = new SqlCommand("UPDATE Produtos SET ativo=0 WHERE codigo=@codigo AND ativo=1", connection);
-        AddInt(command, "@codigo", codigo);
-        return await command.ExecuteNonQueryAsync() == 1;
+        await using var transaction = (SqlTransaction)await connection.BeginTransactionAsync(IsolationLevel.Serializable);
+        decimal precoUnitario;
+        int estoqueAtual;
+        await using (var product = new SqlCommand("SELECT preco_unit,estoque FROM Produtos WITH (UPDLOCK,HOLDLOCK) WHERE codigo=@codigo AND ativo=1", connection, transaction))
+        {
+            AddInt(product, "@codigo", produtoCodigo);
+            await using var reader = await product.ExecuteReaderAsync();
+            if (!await reader.ReadAsync())
+                throw new InvalidOperationException("O produto não foi encontrado ou está inativo.");
+            precoUnitario = reader.GetDecimal(0);
+            estoqueAtual = reader.GetInt32(1);
+        }
+
+        if (quantidade > int.MaxValue - estoqueAtual)
+            throw new InvalidOperationException("A quantidade devolvida ultrapassa o limite de estoque permitido.");
+
+        var valorTotal = decimal.Round(precoUnitario * quantidade, 2, MidpointRounding.AwayFromZero);
+        if (valorTotal > 99_999_999.99m)
+            throw new InvalidOperationException("O valor total da devolução ultrapassa o limite permitido pelo banco.");
+
+        await using (var updateStock = new SqlCommand("UPDATE Produtos SET estoque=estoque+@quantidade WHERE codigo=@codigo AND ativo=1", connection, transaction))
+        {
+            AddInt(updateStock, "@quantidade", quantidade);
+            AddInt(updateStock, "@codigo", produtoCodigo);
+            if (await updateStock.ExecuteNonQueryAsync() != 1)
+                throw new InvalidOperationException("Não foi possível atualizar o estoque do produto.");
+        }
+
+        int numero;
+        await using (var insertReturn = new SqlCommand("INSERT INTO Devolucoes(produto_codigo,quantidade,valor_total) OUTPUT INSERTED.numero VALUES(@produto,@quantidade,@valor)", connection, transaction))
+        {
+            AddInt(insertReturn, "@produto", produtoCodigo);
+            AddInt(insertReturn, "@quantidade", quantidade);
+            AddMoney(insertReturn, "@valor", valorTotal);
+            numero = Convert.ToInt32(await insertReturn.ExecuteScalarAsync());
+        }
+
+        await transaction.CommitAsync();
+        return numero;
     }
 
     public async Task<int> CadastrarFuncionarioAsync(string nome)

@@ -50,6 +50,7 @@ public sealed class ReportMovementViewModel
     public DateTime Data { get; set; }
     public string Tipo { get; set; } = string.Empty;
     public decimal Valor { get; set; }
+    public int Quantidade { get; set; }
 }
 
 public sealed class EmployeeOrderViewModel
