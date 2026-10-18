@@ -168,12 +168,16 @@ function atualizarIndicadores(lancamentos, grupos, relatorio) {
     let total = 0;
     let vendas = 0;
     let saidas = 0;
+    let unidadesDevolvidas = 0;
 
     lancamentos.forEach(function (lancamento) {
         if (lancamento.tipo === "venda") {
             vendas += lancamento.valor;
         } else {
             saidas += lancamento.valor;
+        }
+        if (lancamento.tipo === "devolucao") {
+            unidadesDevolvidas += Number(lancamento.quantidade || 0);
         }
         total += obterValorDoLancamento(lancamento);
     });
@@ -199,7 +203,11 @@ function atualizarIndicadores(lancamentos, grupos, relatorio) {
     if (relatorioAtual === "caixa") {
         document.getElementById("thirdMetricLabel").textContent = "Saídas no período";
         document.getElementById("thirdMetricValue").textContent = formatarMoeda(saidas);
-        document.getElementById("thirdMetricDescription").textContent = "Compras de estoque registradas";
+        document.getElementById("thirdMetricDescription").textContent = "Compras de estoque e devoluções registradas";
+    } else if (relatorioAtual === "devolucoes") {
+        document.getElementById("thirdMetricLabel").textContent = "Unidades devolvidas";
+        document.getElementById("thirdMetricValue").textContent = unidadesDevolvidas.toLocaleString("pt-BR");
+        document.getElementById("thirdMetricDescription").textContent = "Quantidades registradas no SQL Server";
     } else {
         document.getElementById("thirdMetricLabel").textContent = "Registros no filtro";
         document.getElementById("thirdMetricValue").textContent = quantidade.toString();
@@ -239,7 +247,7 @@ function atualizarIndicadores(lancamentos, grupos, relatorio) {
     document.getElementById("recordsLabel").textContent = "Origem dos dados";
     document.getElementById("recordsValue").textContent = "SQL Server";
     document.getElementById("recordsDescription").textContent = relatorioAtual === "devolucoes"
-        ? "Não há tabela de devoluções no schema atual"
+        ? "Valores e unidades consultados no histórico de devoluções"
         : "Movimentos carregados do banco de dados";
 }
 

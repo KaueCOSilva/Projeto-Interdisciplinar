@@ -40,11 +40,17 @@ public class ProdutoController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Excluir(int id)
+    public async Task<IActionResult> RegistrarDevolucao(int produtoCodigo, int quantidade)
     {
-        if (id <= 0) return BadRequest();
-        if (!await _repository.DesativarProdutoAsync(id)) TempData["Erro"] = "Produto não encontrado ou já removido.";
-        else TempData["Sucesso"] = "Produto removido da lista. O histórico de pedidos foi preservado.";
+        try
+        {
+            var numero = await _repository.RegistrarDevolucaoAsync(produtoCodigo, quantidade);
+            TempData["Sucesso"] = $"Devolução #{numero} registrada: {quantidade} unidade(s) adicionada(s) ao estoque.";
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["Erro"] = ex.Message;
+        }
         return RedirectToAction("Estoque", "Administrador");
     }
 }

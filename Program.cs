@@ -1,3 +1,4 @@
+using WebApplication = Microsoft.AspNetCore.Builder.WebApplication;
 using SIVAD.Repositories;
 using SIVAD.Strategies;
 

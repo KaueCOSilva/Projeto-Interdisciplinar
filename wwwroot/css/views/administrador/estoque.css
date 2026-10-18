@@ -149,6 +149,9 @@ body.stock-page .stock-toolbar {
     border-bottom: 1px solid #eceef1;
 }
 
+/* Fallback para uma view Razor antiga ainda em cache: a tela de estoque não usa filtros. */
+body.stock-page .stock-filter-button { display: none !important; }
+
 body.stock-page .stock-search-wrapper {
     position: relative;
     flex: 1;
@@ -182,29 +185,6 @@ body.stock-page .stock-search::placeholder {
 body.stock-page .stock-search:focus {
     border-color: #2160dc;
     box-shadow: 0 0 0 2px rgba(33, 96, 220, 0.12);
-}
-
-body.stock-page .stock-filter-button {
-    display: inline-flex;
-    width: 75px;
-    height: 34px;
-    align-items: center;
-    justify-content: center;
-    gap: 7px;
-    border: 0;
-    border-radius: 7px;
-    background: #f7f8fa;
-    color: #68717c;
-    cursor: pointer;
-    font-size: 11px;
-}
-
-body.stock-page .stock-filter-button:hover {
-    background: #edf0f4;
-}
-
-body.stock-page .stock-filter-button i {
-    font-size: 13px;
 }
 
 body.stock-page .stock-table {
@@ -351,7 +331,7 @@ body.stock-page .stock-actions button {
     transition: color 0.2s ease, transform 0.2s ease;
 }
 body.stock-page .stock-actions button:hover { color: #2160dc; }
-body.stock-page .stock-actions .stock-delete-button:hover { color: #dc3545; }
+body.stock-page .stock-actions .stock-return-button:hover { color: #46a982; }
 body.stock-page .stock-actions button:focus-visible { outline: 2px solid #2160dc; outline-offset: 2px; }
 body.stock-page .stock-actions a:hover {
     color: #2160dc;
@@ -364,6 +344,65 @@ body.stock-page .stock-actions a.stock-delete {
 
 body.stock-page .stock-actions a.stock-delete:hover {
     color: #d6404b;
+}
+
+body.stock-page .stock-return-overlay {
+    position: fixed;
+    z-index: 2000;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    background: rgba(25, 34, 46, 0.46);
+}
+
+body.stock-page .stock-return-overlay[hidden] { display: none !important; }
+body.stock-page.stock-dialog-open { overflow: hidden; }
+
+body.stock-page .stock-return-dialog {
+    width: min(440px, 100%);
+    border-radius: 12px;
+    background: #fff;
+    color: #45505d;
+    box-shadow: 0 18px 55px rgba(26, 35, 48, 0.22);
+}
+
+body.stock-page .stock-return-form {
+    padding: 24px;
+}
+
+body.stock-page .stock-return-form h3 {
+    margin: 0 0 15px;
+    color: #293442;
+    font-size: 18px;
+    font-weight: 650;
+}
+
+body.stock-page .return-product-name,
+body.stock-page .return-current-stock {
+    margin: 0 0 8px;
+    color: #697482;
+    font-size: 13px;
+}
+
+body.stock-page .return-product-name strong {
+    color: #394655;
+}
+
+body.stock-page .stock-return-form label {
+    display: block;
+    margin: 18px 0 6px;
+    color: #45505d;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+body.stock-page .return-dialog-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 20px;
 }
 
 @media (max-width: 900px) {
@@ -397,7 +436,4 @@ body.stock-page .stock-actions a.stock-delete:hover {
         flex-direction: column;
     }
 
-    body.stock-page .stock-filter-button {
-        width: 100%;
-    }
 }

@@ -85,10 +85,23 @@ public class AdministradorController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> GerenciarUsuarios()
+    public async Task<IActionResult> GerenciarUsuarios(int? editarId)
     {
         await DefinirContagemAlertasAsync();
-        return View(new EmployeeManagementViewModel { Funcionarios = await _repository.ListarFuncionariosAsync() });
+        var funcionarios = await _repository.ListarFuncionariosAsync();
+        var funcionario = editarId.HasValue
+            ? funcionarios.FirstOrDefault(item => item.Id == editarId.Value)
+            : null;
+
+        if (editarId.HasValue && funcionario is null)
+            TempData["Erro"] = "Funcionário não encontrado ou inativo.";
+
+        return View(new EmployeeManagementViewModel
+        {
+            Funcionarios = funcionarios,
+            FuncionarioEmEdicaoId = funcionario?.Id,
+            FuncionarioEmEdicaoNome = funcionario?.Nome
+        });
     }
 
     [HttpPost]

@@ -16,7 +16,7 @@
     <link rel="stylesheet" href="/css/base.css?v=1" />
     <link rel="stylesheet" href="/css/shared/sidebar-admin.css?v=1" />
     <link rel="stylesheet" href="/css/shared/logout-link.css?v=1" />
-    <link rel="stylesheet" href="/css/views/administrador/estoque.css?v=1" />
+    <link rel="stylesheet" href="/css/views/administrador/estoque.css?v=4" />
     <link rel="stylesheet" href="/css/shared/profile-avatars.css?v=1" />
 </head>
 <body class="stock-page">
@@ -97,10 +97,6 @@
                                     aria-label="Buscar produto, fornecedor ou ID" />
                         </div>
 
-                        <button type="button" class="stock-filter-button">
-                            <i class="bi bi-funnel"></i>
-                            <span>Filtros</span>
-                        </button>
                     </div>
 
                     <div class="table-responsive">
@@ -133,16 +129,30 @@
                                         <td><span class="stock-quantity @quantidadeClass">@produto.Estoque unidades</span></td>
                                         <td class="stock-actions">
                                             <button type="button" class="stock-edit-button" data-edit-product aria-label="Editar @produto.Nome" title="Editar produto"><i class="bi bi-pencil-square"></i></button>
-                                            <form asp-controller="Produto" asp-action="Excluir" method="post" class="d-inline" onsubmit="return confirm('Remover este produto da lista? O histórico será preservado.');">
-                                                @Html.AntiForgeryToken()
-                                                <input type="hidden" name="id" value="@produto.Codigo" />
-                                                <button type="submit" class="stock-delete-button" aria-label="Remover @produto.Nome" title="Remover produto"><i class="bi bi-trash3"></i></button>
-                                            </form>
+                                            <button type="button" class="stock-return-button" data-return-product aria-label="Registrar devolução de @produto.Nome" title="Registrar devolução"><i class="bi bi-trash3"></i></button>
                                         </td>
                                     </tr>
                                 }
                             </tbody>
                         </table>
+                    </div>
+                </div>
+                <div id="returnProductDialog" class="stock-return-overlay" hidden>
+                    <div class="stock-return-dialog" role="dialog" aria-modal="true" aria-labelledby="returnDialogTitle" tabindex="-1">
+                        <form asp-controller="Produto" asp-action="RegistrarDevolucao" method="post" class="stock-return-form">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" id="returnProductCode" name="produtoCodigo" />
+                            <h3 id="returnDialogTitle">Registrar devolução</h3>
+                            <p class="return-product-name">Produto: <strong id="returnProductName"></strong></p>
+                            <p class="return-current-stock" id="returnProductCurrentStock"></p>
+                            <label for="returnQuantity">Quantidade devolvida</label>
+                            <input id="returnQuantity" class="form-control" name="quantidade" type="number" min="1" step="1" required />
+                            <small class="text-muted">O valor registrado no relatório usa o preço unitário atual do produto.</small>
+                            <div class="return-dialog-actions">
+                                <button type="button" class="btn btn-outline-secondary" data-close-return>Voltar</button>
+                                <button type="submit" class="btn btn-primary">Confirmar devolução</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </section>
@@ -151,18 +161,14 @@
     <script>
 
         const search = document.querySelector('.stock-search');
-        const filterButton = document.querySelector('.stock-filter-button');
-        let onlyLowStock = false;
         function filterRows() {
             const query = (search?.value || '').toLocaleLowerCase('pt-BR');
             document.querySelectorAll('.stock-table tbody tr[data-stock]').forEach(row => {
                 const matchesText = row.dataset.search.toLocaleLowerCase('pt-BR').includes(query);
-                const matchesStock = !onlyLowStock || Number(row.dataset.stock) <= 10;
-                row.hidden = !(matchesText && matchesStock);
+                row.hidden = !matchesText;
             });
         }
         search?.addEventListener('input', filterRows);
-        filterButton?.addEventListener('click', () => { onlyLowStock = !onlyLowStock; filterRows(); });
         document.getElementById('toggleProductForm')?.addEventListener('click', function (event) {
             event.preventDefault();
             const form = document.getElementById('newProductForm');
@@ -186,6 +192,32 @@
         }));
         document.getElementById('cancelEditProduct')?.addEventListener('click', () => {
             document.getElementById('editProductPanel').hidden = true;
+        });
+        const returnDialog = document.getElementById('returnProductDialog');
+        let returnButtonToRestore = null;
+        const closeReturnDialog = () => {
+            returnDialog.hidden = true;
+            document.body.classList.remove('stock-dialog-open');
+            returnButtonToRestore?.focus();
+        };
+        document.querySelectorAll('[data-return-product]').forEach(button => button.addEventListener('click', () => {
+            const row = button.closest('tr');
+            returnButtonToRestore = button;
+            document.getElementById('returnProductCode').value = row.dataset.productId;
+            document.getElementById('returnProductName').textContent = row.dataset.productName;
+            document.getElementById('returnProductCurrentStock').textContent = 'Estoque atual: ' + row.dataset.stock + ' unidades. A quantidade devolvida será somada ao estoque.';
+            const quantity = document.getElementById('returnQuantity');
+            quantity.value = '';
+            document.body.classList.add('stock-dialog-open');
+            returnDialog.hidden = false;
+            quantity.focus();
+        }));
+        document.querySelector('[data-close-return]')?.addEventListener('click', closeReturnDialog);
+        returnDialog?.addEventListener('click', event => {
+            if (event.target === returnDialog) closeReturnDialog();
+        });
+        document.addEventListener('keydown', event => {
+            if (event.key === 'Escape' && !returnDialog.hidden) closeReturnDialog();
         });
     </script>
 </body>

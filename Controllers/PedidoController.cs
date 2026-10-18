@@ -45,10 +45,21 @@ public class PedidoController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Finalizar(int id)
     {
+        if (id <= 0) return BadRequest();
         try
         {
             var atualizado = await _repository.AtualizarStatusPedidoAsync(id, StatusFinalizado);
-            if (!atualizado) return NotFound();
+            if (!atualizado)
+            {
+                var pedidoExistente = await _repository.ObterPedidoAsync(id);
+                if (pedidoExistente is null) return NotFound();
+                if (pedidoExistente.Status == StatusFinalizado)
+                {
+                    TempData["Sucesso"] = "Este pedido já havia sido contabilizado. O resumo foi encerrado e o histórico foi preservado.";
+                    return RedirectToAction("RegistrarPedido", "Funcionario");
+                }
+                return NotFound();
+            }
             TempData["Sucesso"] = "Pedido contabilizado e estoque atualizado.";
             return RedirectToAction("RegistrarPedido", "Funcionario");
         }

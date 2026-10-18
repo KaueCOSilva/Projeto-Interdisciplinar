@@ -13,26 +13,27 @@ O SQL Server precisa estar iniciado e acessível pelo computador que executa o s
 Conectem ao servidor pelo SQL Client.
 
 - **Banco novo:** executem `Database/Banco.sql` uma vez. Ele cria `SQLVendas2026` e as tabelas, além de incluir um administrador e um funcionário fictícios para demonstração. Esses registros não são contas de login.
-- **Banco existente:** abram `Database/AtualizarBanco.sql` no SQL Client conectado ao servidor de vocês e executem. O script adiciona `data_pedido`, flags `ativo`, `fornecedor_nome` e as colunas `cor` de produto/itens se estiverem ausentes; também permite `fornecedor_id` e `Pedidos.cliente_id` nulos. Inclui os registros demonstrativos se ainda não existirem. É uma migração aditiva; não apaga nem substitui registros. O site MVC não altera o schema automaticamente.
+- **Banco existente:** abram `Database/AtualizarBanco.sql` no SQL Client conectado ao servidor de vocês e executem. O script adiciona `data_pedido`, flags `ativo`, `fornecedor_nome`, as colunas `cor` de produto/itens e a tabela `Devolucoes` se estiverem ausentes; também permite `fornecedor_id` e `Pedidos.cliente_id` nulos. Inclui os registros demonstrativos se ainda não existirem. É uma migração aditiva; não apaga nem substitui registros. O site MVC não altera o schema automaticamente.
 
-Antes de executar a migração, selecione no SQL Client o mesmo banco definido em `ConnectionStrings:DefaultConnection`. O script mostra o `banco_alvo`, recusa bancos sem as tabelas-base do SIVAD e, ao final, retorna o banco e as colunas verificadas. O campo textual `fornecedor_nome` é o nome digitado do **fornecedor**; não existe `funcionario_nome`: o nome do funcionário é armazenado em `Pessoas.nome` e ligado por `Funcionarios.pessoa_id`.
+Antes de executar a migração, confirme que o catálogo `SQLVendas2026` corresponde ao `Initial Catalog` de `ConnectionStrings:DefaultConnection`; o script seleciona esse banco explicitamente. Ele mostra o `banco_alvo`, recusa bancos sem as tabelas-base do SIVAD e, ao final, retorna o banco e as colunas verificadas. O campo textual `fornecedor_nome` é o nome digitado do **fornecedor**; não existe `funcionario_nome`: o nome do funcionário é armazenado em `Pessoas.nome` e ligado por `Funcionarios.pessoa_id`.
 
 Os scripts criam um administrador e um funcionário fictícios, mas não criam contas nem senhas. Também garantem a categoria **Vestuário** para testes; nas demais categorias e produtos, cadastrem o que for necessário antes de registrar operações. Fornecedores são informados por texto no lançamento de compra. O sistema não solicita nem processa CPF de cliente ao registrar pedidos, que são salvos sem associação a cliente.
 
 ## 2. Configurar e executar no VS Code
 
-1. Abra a pasta do projeto que contém `SIVAD.csproj`.
+1. Abra a pasta que contém `SIVAD.sln` e `SIVAD.csproj`; abra `SIVAD.sln` no C# Dev Kit.
 2. Confira `ConnectionStrings:DefaultConnection` em `appsettings.json`. Ajustem servidor, banco, usuário e senha para a instância SQL de vocês. Para o site executado no computador, usem `127.0.0.1,1433` se essa for a porta publicada pelo SQL Server. Não compartilhem nem versionem credenciais reais; substituam qualquer senha de demonstração antes de distribuir o projeto.
 3. No terminal do VS Code, executem:
 
 ```bash
-dotnet restore
-dotnet run
+dotnet restore SIVAD.sln
+dotnet build SIVAD.sln -c Release
+dotnet run --project SIVAD.csproj
 ```
 
 4. Abram a URL local mostrada pelo `dotnet run` (por exemplo, `http://localhost:5129`).
 
-Se o VS Code mostrar erros em cascata como `Microsoft.AspNetCore` ou `Controller` não encontrados, abra a pasta raiz que contém `SIVAD.csproj` (não apenas `Controllers`) e confirme que o SDK .NET 10 está instalado (`dotnet --list-sdks`). No terminal dessa pasta, execute `dotnet restore SIVAD.csproj` e `dotnet build SIVAD.csproj -c Release`. Depois, use **Developer: Reload Window** no VS Code para recarregar o serviço de linguagem C#.
+Se o VS Code mostrar erros em cascata como `Microsoft.AspNetCore`, `Controller` ou `WebApplication` não encontrados, confirme que o SDK .NET 10 está instalado (`dotnet --list-sdks`), que o C# Dev Kit abriu `SIVAD.sln` e que o `dotnet build SIVAD.sln -c Release` conclui. Depois, use **Developer: Reload Window** no VS Code para recarregar o serviço de linguagem C#; os diagnósticos do editor não substituem o resultado do build.
 
 Antes de iniciar o site com um banco existente, confirmem que a migração SQL foi executada. O dashboard falha com `Invalid column name 'data_pedido'` enquanto essa coluna não existir.
 
@@ -65,22 +66,23 @@ A aplicação não apaga registros antigos automaticamente. Se a base já contin
 2. A entrada manual do produto (seleção do produto do banco + quantidade) e a leitura/digitação do código de barras são controles separados; ambos adicionam ao mesmo pedido e respeitam o estoque disponível.
 3. O Repository relê os preços no banco e grava pedido e itens em transação; o resumo carrega os itens pelo código salvo.
 4. Ao clicar em **Contabilizar Compra**, a aplicação valida o estoque, baixa as quantidades e atualiza o status na mesma transação. A venda passa a compor os gráficos depois de finalizada.
+5. Depois da contabilização, o sistema volta ao formulário de registro com um modelo novo; pedidos contabilizados permanecem no histórico, mas não voltam a aparecer como resumos pendentes. A rota do resumo também impede reabrir um pedido concluído pelo botão Voltar do navegador.
 
 ### Administrador — estoque, funcionários e compras
 
 1. Estoque, categorias, administradores e compras recentes vêm do banco. O fornecedor é texto livre e fica salvo na compra; na tabela de estoque aparece o fornecedor da compra recebida mais recente daquele produto.
-2. Cadastro/edição de produtos persistem cor, código, preço e quantidade no SQL Server. Cada linha de compra também recebe uma cor, salva no histórico do item e atualizada no produto do estoque. Remover desativa o produto, preservando referências históricas.
+2. Cadastro/edição de produtos persistem cor, código, preço e quantidade no SQL Server. Cada linha de compra também recebe uma cor, salva no histórico do item e atualizada no produto do estoque. Na tela de estoque, a lixeira abre o diálogo **Registrar devolução**; ela não exclui nem desativa o produto.
 3. Cadastro, edição do nome e remoção de funcionários persistem no SQL Server. Remover desativa o funcionário e preserva pedidos antigos.
 4. Remover item ou clicar em **Cancelar Compra** no formulário descarta apenas o rascunho. Todas as compras já gravadas aparecem no painel **Histórico de Compras** e podem ser editadas ou canceladas. A edição aplica ao estoque a diferença entre as quantidades antigas e novas e atualiza data/fornecedor/total; o cancelamento retira do estoque as quantidades daquela compra e muda o status para cancelado, tudo em transação. Se o saldo atual não comportar a retirada, a operação é recusada sem alterar os dados.
 
 ### Dashboard e relatórios
 
-O Dashboard e os gráficos Google Charts consultam o banco: o gráfico mensal mantém vendas e compras recebidas do ano corrente, e um gráfico anual separado exibe compras recebidas de **todos os anos** (inclusive datas históricas como 2005). Atividades recentes combinam pedidos e compras recebidas. Edição de compra atualiza o total/data exibidos nos gráficos e relatórios; cancelamento reverte as unidades e exclui esse movimento dos totais (o registro permanece marcado como cancelado para auditoria). A tela de relatórios agrupa os movimentos lidos do SQL Server; **Fluxo de Caixa** considera compras de estoque como saídas. O badge e a central de notificações usam produtos ativos com estoque igual ou inferior a 10 unidades, então a edição/cancelamento recalcula também os alertas. O schema não tem tabela de devoluções, por isso essa aba não inventa lançamentos.
+O Dashboard e os gráficos Google Charts consultam o banco: o gráfico mensal mantém vendas e compras recebidas do ano corrente, e um gráfico anual separado exibe compras recebidas de **todos os anos** (inclusive datas históricas como 2005). Atividades recentes combinam pedidos e compras recebidas. Edição de compra atualiza o total/data exibidos nos gráficos e relatórios; cancelamento reverte as unidades e exclui esse movimento dos totais (o registro permanece marcado como cancelado para auditoria). Ao registrar uma devolução, a operação guarda produto, quantidade, data e valor calculado pelo preço unitário vigente, além de somar as unidades ao estoque, em uma transação. A aba **Devoluções** consulta esses registros e mostra tanto o valor quanto o total de unidades devolvidas. **Fluxo de Caixa** considera compras de estoque e devoluções como saídas financeiras. O badge e a central de notificações usam produtos ativos com estoque igual ou inferior a 10 unidades, então as movimentações atualizam também os alertas.
 
 ## 5. Limites do schema atual
 
-Não há tabela de credenciais; portanto, login por senha, recuperação/alteração de senha e autenticação real não podem ser persistidos pelo schema fornecido. O código não implementa hash de senha porque não existe fluxo de autenticação com senha armazenada. Os registros demonstrativos de administrador e funcionário são apenas entidades de negócio, não usuários autenticáveis. O cadastro de funcionário grava em `Pessoas`/`Funcionarios`, mas não cria uma conta de acesso. A coluna `Clientes.cpf` permanece no schema para compatibilidade com dados existentes, mas o fluxo atual de pedidos não a solicita, consulta nem grava. Também não há tabela de devoluções.
+Não há tabela de credenciais; portanto, login por senha, recuperação/alteração de senha e autenticação real não podem ser persistidos pelo schema fornecido. O código não implementa hash de senha porque não existe fluxo de autenticação com senha armazenada. Os registros demonstrativos de administrador e funcionário são apenas entidades de negócio, não usuários autenticáveis. O cadastro de funcionário grava em `Pessoas`/`Funcionarios`, mas não cria uma conta de acesso. A coluna `Clientes.cpf` permanece no schema para compatibilidade com dados existentes, mas o fluxo atual de pedidos não a solicita, consulta nem grava.
 
 ## 6. Testes realizados
 
-O projeto foi compilado em Release após as alterações (**0 avisos e 0 erros**); a formatação C# foi verificada, os scripts JavaScript externos e o script embutido do Dashboard passaram na verificação de sintaxe, e a página inicial respondeu HTTP 200. **Não foi possível executar os scripts SQL nem testes de integração com SQL Server nesta sandbox**, pois não há instância acessível em `127.0.0.1:1433`. Para validar leitura/gravação, executem `Database/AtualizarBanco.sql` no SQL Client, iniciem o site com a conexão de vocês, registrem uma compra e testem editar/cancelar uma compra recebida. Depois confiram estoque, gráfico anual do Dashboard e **Fluxo de Caixa** nos relatórios. Se aparecer `Invalid column name 'data_pedido'` ou `fornecedor_nome`, a migração não foi executada na base que o site está usando.
+O projeto foi compilado em Release após as alterações (**0 avisos e 0 erros**); a formatação C# foi verificada; os JavaScripts externos e o script embutido do estoque passaram na verificação de sintaxe; e a página inicial, o CSS de estoque e o JavaScript de relatórios responderam HTTP 200. **Não foi possível executar os scripts SQL nem testes de integração com SQL Server nesta sandbox**, pois não há instância acessível em `127.0.0.1:1433`. A migração define explicitamente `USE [SQLVendas2026]`, conforme o catálogo atual do `appsettings.json`; se o catálogo da connection string mudar, atualizem esse nome no script. Antes de testar, executem `Database/AtualizarBanco.sql` para criar a tabela `Devolucoes`. Depois iniciem o site, registrem uma devolução pelo ícone da lixeira e confiram o estoque e a aba **Devoluções** nos relatórios (valor e unidades). Se aparecer erro de tabela `Devolucoes` inexistente, a migração foi executada em outro banco ou não foi executada.

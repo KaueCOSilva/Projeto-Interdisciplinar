@@ -59,8 +59,8 @@
 /home/kakesty/Documentos/GitHub/Ze_do_Pagode/Projeto-Interdisciplinar/obj/Release/net10.0/compressed/84ayl01iz9-{0}-jwp1vtxkad-jwp1vtxkad.gz
 /home/kakesty/Documentos/GitHub/Ze_do_Pagode/Projeto-Interdisciplinar/obj/Release/net10.0/compressed/xllditwtd9-{0}-y4g1k6m9yj-y4g1k6m9yj.gz
 /home/kakesty/Documentos/GitHub/Ze_do_Pagode/Projeto-Interdisciplinar/obj/Release/net10.0/compressed/lmo3eql5t6-{0}-t91143610g-t91143610g.gz
-/home/kakesty/Documentos/GitHub/Ze_do_Pagode/Projeto-Interdisciplinar/obj/Release/net10.0/compressed/t7zjgpbp7i-{0}-ds5ntrb35h-ds5ntrb35h.gz
-/home/kakesty/Documentos/GitHub/Ze_do_Pagode/Projeto-Interdisciplinar/obj/Release/net10.0/compressed/xsyq54hw8s-{0}-3fm3ynghmg-3fm3ynghmg.gz
+/home/kakesty/Documentos/GitHub/Ze_do_Pagode/Projeto-Interdisciplinar/obj/Release/net10.0/compressed/t7zjgpbp7i-{0}-ilo9d06kfl-ilo9d06kfl.gz
+/home/kakesty/Documentos/GitHub/Ze_do_Pagode/Projeto-Interdisciplinar/obj/Release/net10.0/compressed/xsyq54hw8s-{0}-8qdjaf4zpj-8qdjaf4zpj.gz
 /home/kakesty/Documentos/GitHub/Ze_do_Pagode/Projeto-Interdisciplinar/obj/Release/net10.0/compressed/ocovrkbrgm-{0}-4ra3wr6uar-4ra3wr6uar.gz
 /home/kakesty/Documentos/GitHub/Ze_do_Pagode/Projeto-Interdisciplinar/obj/Release/net10.0/compressed/npi7lvhpl5-{0}-wevej3ux68-wevej3ux68.gz
 /home/kakesty/Documentos/GitHub/Ze_do_Pagode/Projeto-Interdisciplinar/obj/Release/net10.0/compressed/3h83ff34ql-{0}-fpbz35qzqe-fpbz35qzqe.gz
@@ -68,7 +68,7 @@
 /home/kakesty/Documentos/GitHub/Ze_do_Pagode/Projeto-Interdisciplinar/obj/Release/net10.0/compressed/pift6fuwou-{0}-lm4eqghz4t-lm4eqghz4t.gz
 /home/kakesty/Documentos/GitHub/Ze_do_Pagode/Projeto-Interdisciplinar/obj/Release/net10.0/compressed/056hvn2d3h-{0}-45qu64dsse-45qu64dsse.gz
 /home/kakesty/Documentos/GitHub/Ze_do_Pagode/Projeto-Interdisciplinar/obj/Release/net10.0/compressed/xof6vw0oh1-{0}-2oqvqzzeg3-2oqvqzzeg3.gz
-/home/kakesty/Documentos/GitHub/Ze_do_Pagode/Projeto-Interdisciplinar/obj/Release/net10.0/compressed/sgmcwawh2d-{0}-a6b3l8awht-a6b3l8awht.gz
+/home/kakesty/Documentos/GitHub/Ze_do_Pagode/Projeto-Interdisciplinar/obj/Release/net10.0/compressed/sgmcwawh2d-{0}-ipbv8thgm0-ipbv8thgm0.gz
 /home/kakesty/Documentos/GitHub/Ze_do_Pagode/Projeto-Interdisciplinar/obj/Release/net10.0/compressed/q7f0e72y7o-{0}-nr2mzvyf38-nr2mzvyf38.gz
 /home/kakesty/Documentos/GitHub/Ze_do_Pagode/Projeto-Interdisciplinar/obj/Release/net10.0/staticwebassets.build.json
 /home/kakesty/Documentos/GitHub/Ze_do_Pagode/Projeto-Interdisciplinar/obj/Release/net10.0/staticwebassets.build.json.cache

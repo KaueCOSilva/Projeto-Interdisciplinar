@@ -461,7 +461,7 @@
 
     </div>
 
-    <script type="application/json" id="report-data">@Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Movimentos.Select(m => new { data = m.Data.ToString("yyyy-MM-dd"), tipo = m.Tipo, valor = m.Valor })))</script>
-    <script src="/js/relatorios.js"></script>
+    <script type="application/json" id="report-data">@Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Movimentos.Select(m => new { data = m.Data.ToString("yyyy-MM-dd"), tipo = m.Tipo, valor = m.Valor, quantidade = m.Quantidade })))</script>
+    <script src="/js/relatorios.js?v=2"></script>
 </body>
 </html>
