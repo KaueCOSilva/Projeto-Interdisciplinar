@@ -5,7 +5,7 @@ public sealed class DashboardViewModel
     public decimal VendasTotais { get; set; }
     public decimal VendasDoMes { get; set; }
     public int UnidadesVendidas { get; set; }
-    public int PedidosCancelados { get; set; }
+    public int UnidadesDevolvidas { get; set; }
     public int AlertasEstoque { get; set; }
     public List<MonthlySalesViewModel> VendasPorMes { get; set; } = [];
     public List<AnnualPurchaseViewModel> ComprasPorAno { get; set; } = [];

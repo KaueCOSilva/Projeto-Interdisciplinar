@@ -16,6 +16,7 @@ public sealed class DiagnosticoController : Controller
     }
 
     [HttpGet]
+    // Endpoint somente leitura e restrito a Development; não altera dados.
     public async Task<IActionResult> Index()
     {
         if (!_environment.IsDevelopment()) return NotFound();

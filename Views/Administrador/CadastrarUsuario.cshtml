@@ -49,7 +49,6 @@
 
                     @if (TempData["Erro"] is string erro) { <div class="alert alert-danger" role="alert">@erro</div> }
                     @if (TempData["Sucesso"] is string sucesso) { <div class="alert alert-success" role="status">@sucesso</div> }
-                    <p class="alert alert-info" id="password-not-persisted">Este cadastro cria a pessoa e o funcionário no SQL Server. A senha é apenas um campo visual e não é enviada nem armazenada, pois o schema atual ainda não implementa contas de acesso.</p>
                     <form class="employee-registration-form" method="post" asp-controller="Administrador" asp-action="CadastrarUsuario">
                         @Html.AntiForgeryToken()
                         <div class="employee-fields-grid">
@@ -59,7 +58,7 @@
                             </div>
                             <div class="employee-field">
                                 <label for="senha">Senha</label>
-                                <input id="senha" type="password" class="form-control employee-input" placeholder="Digite a senha do funcionário" autocomplete="new-password" aria-describedby="password-not-persisted" />
+                                <input id="senha" type="password" class="form-control employee-input" placeholder="Digite a senha do funcionário" autocomplete="new-password" />
                             </div>
                         </div>
                         <button class="employee-submit-button" type="submit">Cadastrar Funcionário</button>

@@ -21,6 +21,7 @@ namespace SIVAD.Controllers
         }
 
         [HttpGet]
+        // READ + cálculo: busca o primeiro pedido e delega a soma à Strategy específica.
         public async Task<IActionResult> CalcularPedido()
         {
             var pedido = await _repository.ObterPrimeiroPedidoAsync();
@@ -34,6 +35,7 @@ namespace SIVAD.Controllers
         }
 
         [HttpGet]
+        // READ + cálculo: busca a primeira compra e soma seus itens pela Strategy de estoque.
         public async Task<IActionResult> CalcularCompraEstoque()
         {
             var compra = await _repository.ObterPrimeiraCompraEstoqueAsync();

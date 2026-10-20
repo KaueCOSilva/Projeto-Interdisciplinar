@@ -13,6 +13,7 @@ public class FuncionarioController : Controller
     public IActionResult Index() => RedirectToAction(nameof(RegistrarPedido));
 
     [HttpGet]
+    // READ: carrega produtos ativos com saldo e funcionários para montar um novo pedido.
     public async Task<IActionResult> RegistrarPedido()
     {
         var model = new EmployeeOrderViewModel
@@ -24,6 +25,7 @@ public class FuncionarioController : Controller
     }
 
     [HttpGet]
+    // READ: busca um pedido pendente e seus itens para a tela de resumo.
     public async Task<IActionResult> ResumoCompra(int? id)
     {
         Response.Headers["Cache-Control"] = "no-store, no-cache, must-revalidate";

@@ -16,12 +16,14 @@ public class AdministradorController : Controller
     public AdministradorController(ISIVADRepository repository) => _repository = repository;
 
     [HttpGet]
+    // READ: carrega indicadores agregados para o painel administrativo.
     public async Task<IActionResult> Dashboard() => View(await _repository.ObterDashboardAsync());
 
     [HttpGet]
     public IActionResult Index() => RedirectToAction(nameof(Dashboard));
 
     [HttpGet]
+    // READ: consulta movimentos consolidados para os relatórios.
     public async Task<IActionResult> Relatorios(string periodo = "mensais")
     {
         ViewBag.Periodo = periodo;
@@ -30,6 +32,7 @@ public class AdministradorController : Controller
     }
 
     [HttpGet]
+    // READ: carrega produtos e categorias para a tela de estoque.
     public async Task<IActionResult> Estoque()
     {
         await DefinirContagemAlertasAsync();
@@ -69,6 +72,7 @@ public class AdministradorController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    // CREATE: grava Pessoa e Funcionário dentro de uma transação no Repository.
     public async Task<IActionResult> CadastrarUsuario(string nome)
     {
         try
@@ -85,6 +89,7 @@ public class AdministradorController : Controller
     }
 
     [HttpGet]
+    // READ: lista apenas funcionários ativos e prepara o item em edição.
     public async Task<IActionResult> GerenciarUsuarios(int? editarId)
     {
         await DefinirContagemAlertasAsync();
@@ -106,6 +111,7 @@ public class AdministradorController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    // UPDATE: altera o nome do funcionário identificado pelo ID.
     public async Task<IActionResult> EditarFuncionario(int id, string nome)
     {
         try
@@ -126,6 +132,7 @@ public class AdministradorController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    // DELETE lógico: desativa o funcionário e preserva pedidos históricos.
     public async Task<IActionResult> ExcluirUsuario(int id)
     {
         if (id <= 0) return BadRequest();

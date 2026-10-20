@@ -1,5 +1,7 @@
 # SIVAD
 
+Para preparar a apresentação, consulte o [Guia de apresentação dos CRUDs](GUIA_APRESENTACAO_CRUD.md), com o caminho da tela ao banco, regras de estoque e frases curtas para explicar cada operação.
+
 Aplicação acadêmica em **ASP.NET Core MVC + Repository + SQL Server**. O acesso a dados está concentrado em `Repositories/SqlServerRepository.cs`, usando `Microsoft.Data.SqlClient`. As views e estilos originais foram preservados; os indicadores e gráficos são alimentados por consultas ao banco.
 
 ## Padrão de arquitetura

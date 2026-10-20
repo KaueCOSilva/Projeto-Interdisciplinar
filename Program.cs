@@ -2,6 +2,7 @@ using WebApplication = Microsoft.AspNetCore.Builder.WebApplication;
 using SIVAD.Repositories;
 using SIVAD.Strategies;
 
+// Program.cs configura a aplicação; regras de negócio ficam nos controllers/repository.
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
@@ -24,6 +25,7 @@ if (!app.Environment.IsDevelopment())
 
 app.UseStaticFiles();
 app.UseRouting();
+// O fluxo atual usa os endpoints MVC; autenticação real depende do schema de contas.
 app.UseAuthorization();
 
 app.MapControllerRoute(

@@ -22,6 +22,7 @@ public class CompraEstoqueController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    // CREATE: grava compra + itens e aumenta o estoque dentro de transação.
     public async Task<IActionResult> Registrar(CompraEstoque compraEstoque)
     {
         compraEstoque.Itens = (compraEstoque.Itens ?? []).Where(item => item.Quantidade > 0).ToList();
@@ -54,6 +55,7 @@ public class CompraEstoqueController : Controller
     }
 
     [HttpGet]
+    // READ de edição: busca a compra e monta o formulário com dados atuais.
     public async Task<IActionResult> Editar(int numero)
     {
         if (numero <= 0) return BadRequest();
@@ -82,6 +84,7 @@ public class CompraEstoqueController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    // UPDATE: recompõe o estoque antigo antes de aplicar os novos itens.
     public async Task<IActionResult> Editar(CompraEstoque compraEstoque)
     {
         compraEstoque.Itens = (compraEstoque.Itens ?? []).Where(item => item.Quantidade > 0).ToList();
@@ -112,6 +115,7 @@ public class CompraEstoqueController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    // DELETE de negócio: cancela a entrada e reverte suas quantidades no estoque.
     public async Task<IActionResult> Cancelar(int numero)
     {
         try

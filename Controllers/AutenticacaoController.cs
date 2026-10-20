@@ -11,12 +11,14 @@ namespace SIVAD.Controllers
         // =====================================================
 
         [HttpGet]
+        // GET apenas exibe o formulário; o POST faz a validação dos campos.
         public IActionResult Login()
         {
             return View();
         }
 
         [HttpPost]
+        // POST: valida entrada, identifica o perfil e redireciona para a área correta.
         public IActionResult Login(string uid, string senha)
         {
             if (string.IsNullOrWhiteSpace(uid) || string.IsNullOrWhiteSpace(senha))
@@ -62,6 +64,7 @@ namespace SIVAD.Controllers
 
         // Conforme a tela: "A solicitação será enviada ao administrador para análise e aprovação."
         [HttpPost]
+        // POST: valida a solicitação e prepara o retorno para o login.
         public IActionResult RecuperacaoSenha(string nomeUsuario, string uid, string email)
         {
             if (string.IsNullOrWhiteSpace(nomeUsuario) ||
@@ -84,6 +87,7 @@ namespace SIVAD.Controllers
         // =====================================================
 
         [HttpGet]
+        // GET de saída; no schema atual não há cookie persistido para invalidar.
         public IActionResult Sair()
         {
             // Posteriormente: HttpContext.SignOutAsync().

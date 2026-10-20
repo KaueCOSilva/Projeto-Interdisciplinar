@@ -39,29 +39,11 @@
                     <div class="employee-purchase-table-wrap">
                         <table class="employee-purchase-table">
                             <thead><tr><th scope="col">Produto</th><th scope="col">Código</th><th scope="col">Valor</th><th scope="col">Quantidade</th></tr></thead>
-                            <tbody>
-                            @if (Model.Produtos.Count == 0)
-                            {
-                                <tr><td colspan="4">Não há produtos com estoque disponível.</td></tr>
-                            }
-                            @for (var i = 0; i < Model.Produtos.Count; i++)
-                            {
-                                var produto = Model.Produtos[i];
-                                <tr data-codigo-barras="@produto.CodigoBarras" data-produto-codigo="@produto.Codigo">
-                                    <td>@produto.Nome</td>
-                                    <td>@produto.CodigoBarras</td>
-                                    <td>@produto.PrecoUnit.ToString("C2", System.Globalization.CultureInfo.GetCultureInfo("pt-BR"))</td>
-                                    <td>
-                                        <input type="hidden" name="Itens[@i].ProdutoCodigo" value="@produto.Codigo" />
-                                        <input class="employee-purchase-input employee-purchase-quantity" aria-label="Quantidade de @produto.Nome" type="number" name="Itens[@i].Qtd" value="0" min="0" max="@produto.Estoque" />
-                                        <small>Disp.: @produto.Estoque</small>
-                                    </td>
-                                </tr>
-                            }
+                            <tbody id="employee-cart-body">
+                                <tr id="employee-cart-empty"><td colspan="4">Nenhum produto adicionado ao carrinho.</td></tr>
                             </tbody>
                         </table>
                     </div>
-                    <p class="employee-purchase-data-note">Produtos, preços e saldo exibidos a partir do banco de dados.</p>
                     <div id="employee-barcode-message" class="employee-purchase-barcode-feedback" aria-live="polite"></div>
                 </section>
                 <section class="employee-purchase-card employee-purchase-manual" aria-labelledby="employee-purchase-manual-heading">
@@ -71,7 +53,10 @@
                             <label for="employee-manual-product">Produto do estoque</label>
                             <select id="employee-manual-product" class="employee-purchase-input">
                                 <option value="">Selecione o produto para adicionar</option>
-                                @foreach (var produto in Model.Produtos) { <option value="@produto.Codigo">@produto.Nome (@produto.CodigoBarras)</option> }
+                                @foreach (var produto in Model.Produtos)
+                                {
+                                    <option value="@produto.Codigo" data-nome="@produto.Nome" data-codigo-barras="@produto.CodigoBarras" data-preco="@produto.PrecoUnit.ToString(System.Globalization.CultureInfo.InvariantCulture)" data-estoque="@produto.Estoque">@produto.Nome (@produto.CodigoBarras)</option>
+                                }
                             </select>
                         </div>
                         <div class="employee-purchase-field">
@@ -92,9 +77,6 @@
                                 @foreach (var funcionario in Model.Funcionarios) { <option value="@funcionario.Id">@funcionario.Nome</option> }
                             </select>
                         </div>
-                        <div class="employee-purchase-field employee-purchase-field-wide">
-                            <label>Origem dos dados</label><span class="employee-purchase-input">SQL Server — pedido será salvo como pendente</span>
-                        </div>
                     </div>
                 </section>
                 <button class="employee-purchase-finish-button" type="submit">Criar Pedido e Visualizar Resumo</button>
@@ -110,11 +92,54 @@
             const manualQuantity = document.getElementById('employee-manual-quantity');
             const manualAdd = document.getElementById('employee-manual-add');
             const manualMessage = document.getElementById('employee-manual-message');
-            const rows = [...document.querySelectorAll('.employee-purchase-table tbody tr[data-codigo-barras]')];
-            const addQuantity = (row, amount, feedback) => {
-                const quantity = row.querySelector('.employee-purchase-quantity');
-                const current = Number(quantity.value || 0);
-                const maximum = Number(quantity.max || 0);
+            const cartBody = document.getElementById('employee-cart-body');
+            const emptyCartRow = document.getElementById('employee-cart-empty');
+            const rows = new Map();
+            let cartIndex = 0;
+            const productFromOption = option => ({
+                code: option.value,
+                name: option.dataset.nome,
+                barcode: option.dataset.codigoBarras,
+                price: Number(option.dataset.preco),
+                stock: Number(option.dataset.estoque)
+            });
+            const createRow = product => {
+                const row = document.createElement('tr');
+                row.dataset.codigoBarras = product.barcode;
+                row.dataset.produtoCodigo = product.code;
+                const nameCell = document.createElement('td');
+                nameCell.textContent = product.name;
+                const barcodeCell = document.createElement('td');
+                barcodeCell.textContent = product.barcode;
+                const priceCell = document.createElement('td');
+                priceCell.textContent = product.price.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+                const quantityCell = document.createElement('td');
+                const productInput = document.createElement('input');
+                productInput.type = 'hidden';
+                productInput.name = `Itens[${cartIndex}].ProdutoCodigo`;
+                productInput.value = product.code;
+                const quantityInput = document.createElement('input');
+                quantityInput.className = 'employee-purchase-input employee-purchase-quantity';
+                quantityInput.setAttribute('aria-label', 'Quantidade de ' + product.name);
+                quantityInput.type = 'number';
+                quantityInput.name = `Itens[${cartIndex}].Qtd`;
+                quantityInput.value = '0';
+                quantityInput.min = '0';
+                quantityInput.max = String(product.stock);
+                const stockLabel = document.createElement('small');
+                stockLabel.textContent = 'Disp.: ' + product.stock;
+                quantityCell.append(productInput, quantityInput, stockLabel);
+                row.append(nameCell, barcodeCell, priceCell, quantityCell);
+                cartBody.appendChild(row);
+                rows.set(product.code, row);
+                cartIndex += 1;
+                emptyCartRow?.remove();
+                return row;
+            };
+            const addQuantity = (product, amount, feedback) => {
+                let row = rows.get(product.code);
+                const current = row ? Number(row.querySelector('.employee-purchase-quantity').value || 0) : 0;
+                const maximum = product.stock;
                 if (!Number.isInteger(amount) || amount < 1) {
                     feedback.textContent = 'Informe uma quantidade inteira maior que zero.';
                     return false;
@@ -123,32 +148,32 @@
                     feedback.textContent = 'Quantidade acima do estoque disponível (' + maximum + ').';
                     return false;
                 }
-                quantity.value = String(current + amount);
-                feedback.textContent = 'Produto adicionado: ' + row.cells[0].textContent.trim() + '.';
+                row ??= createRow(product);
+                row.querySelector('.employee-purchase-quantity').value = String(current + amount);
+                feedback.textContent = 'Produto adicionado: ' + product.name + '.';
                 return true;
             };
             const addByBarcode = () => {
                 const barcode = barcodeInput.value.trim();
-                const row = rows.find(item => item.dataset.codigoBarras === barcode);
-                if (!row) {
+                const option = [...manualSelect.options].find(item => item.dataset.codigoBarras === barcode);
+                if (!option) {
                     barcodeMessage.textContent = barcode ? 'Código de barras não encontrado entre os produtos ativos com estoque.' : 'Leia ou digite um código de barras.';
                     barcodeInput.focus();
                     return;
                 }
-                if (addQuantity(row, 1, barcodeMessage)) {
+                if (addQuantity(productFromOption(option), 1, barcodeMessage)) {
                     barcodeInput.value = '';
                     barcodeInput.focus();
                 }
             };
             const addManually = () => {
-                const code = manualSelect.value;
-                const row = rows.find(item => item.dataset.produtoCodigo === code);
-                if (!row) {
+                const option = manualSelect.options[manualSelect.selectedIndex];
+                if (!option?.value) {
                     manualMessage.textContent = 'Selecione um produto do estoque.';
                     manualSelect.focus();
                     return;
                 }
-                addQuantity(row, Number(manualQuantity.value), manualMessage);
+                addQuantity(productFromOption(option), Number(manualQuantity.value), manualMessage);
             };
             addButton?.addEventListener('click', addByBarcode);
             manualAdd?.addEventListener('click', addManually);

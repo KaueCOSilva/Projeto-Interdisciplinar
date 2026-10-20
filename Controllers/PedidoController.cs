@@ -18,6 +18,7 @@ public class PedidoController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    // CREATE: valida itens, calcula no servidor e grava pedido + itens.
     public async Task<IActionResult> Registrar(Pedido pedido)
     {
         pedido.ClienteId = null;
@@ -43,6 +44,7 @@ public class PedidoController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    // UPDATE: finaliza o pedido e baixa o estoque na mesma transação.
     public async Task<IActionResult> Finalizar(int id)
     {
         if (id <= 0) return BadRequest();
@@ -72,6 +74,7 @@ public class PedidoController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    // DELETE de negócio: cancela o pedido e preserva seu histórico.
     public async Task<IActionResult> Cancelar(int id)
     {
         var atualizado = await _repository.AtualizarStatusPedidoAsync(id, StatusCancelado);

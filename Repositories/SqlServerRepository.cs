@@ -10,6 +10,11 @@ public sealed class SqlServerRepository : DataConnection, ISIVADRepository
 {
     public SqlServerRepository(IConfiguration configuration) : base(configuration) { }
 
+    // ================================================================
+    // READ — catálogo, pessoas, alertas e histórico
+    // ================================================================
+    // Cada método abre sua própria conexão, usa parâmetros e transforma
+    // as linhas do SQL em objetos que os controllers entregam às Views.
     public async Task<List<Produto>> ListarProdutosAsync(bool somenteComEstoque = false, bool incluirInativos = false)
     {
         const string sql = """
@@ -27,6 +32,8 @@ public sealed class SqlServerRepository : DataConnection, ISIVADRepository
                 WHERE ic.produto_codigo = p.codigo
                 ORDER BY ce.data_compra DESC, ce.numero DESC
             ) ultimaCompra
+            -- Funcionário recebe somente produtos ativos com saldo positivo;
+            -- o administrador pode consultar inativos quando precisa editar histórico.
             WHERE (@incluirInativos = 1 OR p.ativo = 1)
               AND (@somenteComEstoque = 0 OR p.estoque > 0)
             ORDER BY p.nome, p.codigo;
@@ -162,6 +169,8 @@ public sealed class SqlServerRepository : DataConnection, ISIVADRepository
         return lista;
     }
 
+    // Dashboard: uma única consulta de totais alimenta os cartões superiores;
+    // devoluções são somadas por quantidade, não confundidas com pedidos cancelados.
     public async Task<DashboardViewModel> ObterDashboardAsync()
     {
         var model = new DashboardViewModel();
@@ -172,7 +181,7 @@ public sealed class SqlServerRepository : DataConnection, ISIVADRepository
               COALESCE((SELECT SUM(valor_total) FROM Pedidos WHERE status = 1), 0),
               COALESCE((SELECT SUM(valor_total) FROM Pedidos WHERE status = 1 AND YEAR(data_pedido)=YEAR(GETDATE()) AND MONTH(data_pedido)=MONTH(GETDATE())), 0),
               COALESCE((SELECT SUM(ip.qtd) FROM Itens_Pedidos ip INNER JOIN Pedidos p ON p.codigo=ip.pedido_codigo WHERE p.status=1), 0),
-              (SELECT COUNT(*) FROM Pedidos WHERE status=2),
+              COALESCE((SELECT SUM(quantidade) FROM Devolucoes), 0),
               (SELECT COUNT(*) FROM Produtos WHERE ativo=1 AND estoque<=10);
             """;
         await using (var command = new SqlCommand(totalsSql, connection))
@@ -183,7 +192,7 @@ public sealed class SqlServerRepository : DataConnection, ISIVADRepository
                 model.VendasTotais = reader.GetDecimal(0);
                 model.VendasDoMes = reader.GetDecimal(1);
                 model.UnidadesVendidas = Convert.ToInt32(reader.GetValue(2));
-                model.PedidosCancelados = reader.GetInt32(3);
+                model.UnidadesDevolvidas = Convert.ToInt32(reader.GetValue(3));
                 model.AlertasEstoque = reader.GetInt32(4);
             }
         }
@@ -325,6 +334,11 @@ public sealed class SqlServerRepository : DataConnection, ISIVADRepository
         return movimentos;
     }
 
+    // ================================================================
+    // PEDIDOS — CREATE do cabeçalho e dos itens
+    // ================================================================
+    // O preço é relido do banco; nunca confiamos no valor enviado pelo navegador.
+    // A transação grava Pedidos e Itens_Pedidos como uma única operação.
     public async Task<int> RegistrarPedidoAsync(Pedido pedido)
     {
         if (pedido.Itens.Count == 0 || pedido.Itens.Any(item => item.Qtd <= 0))
@@ -337,6 +351,7 @@ public sealed class SqlServerRepository : DataConnection, ISIVADRepository
         await using var connection = CriarConexao();
         await connection.OpenAsync();
         await using var transaction = (SqlTransaction)await connection.BeginTransactionAsync();
+        // Primeiro validamos preço e estoque de todos os itens; só depois inserimos.
         decimal total = 0;
         foreach (var item in pedido.Itens)
         {
@@ -355,6 +370,7 @@ public sealed class SqlServerRepository : DataConnection, ISIVADRepository
             item.PrecoTotal = line;
             total += line;
         }
+        // Cabeçalho do pedido: OUTPUT devolve o código para relacionar os itens.
         const string insertSql = """
             INSERT INTO Pedidos (status, valor_total, cliente_id, funcionario_id, data_pedido)
             OUTPUT INSERTED.codigo
@@ -368,6 +384,7 @@ public sealed class SqlServerRepository : DataConnection, ISIVADRepository
             AddInt(command, "@funcionario", pedido.FuncionarioId);
             pedido.Codigo = Convert.ToInt32(await command.ExecuteScalarAsync());
         }
+        // Detalhes: cada item aponta para o pedido recém-criado.
         foreach (var item in pedido.Itens)
         {
             await using var command = new SqlCommand("INSERT INTO Itens_Pedidos (pedido_codigo, produto_codigo, qtd, preco_total) VALUES (@pedido,@produto,@qtd,@total)", connection, transaction);
@@ -380,12 +397,15 @@ public sealed class SqlServerRepository : DataConnection, ISIVADRepository
         return pedido.Codigo;
     }
 
+    // UPDATE de pedido: 0=pendente, 1=finalizado, 2=cancelado.
+    // Finalizar baixa estoque; cancelar um pedido finalizado repõe as unidades.
     public async Task<bool> AtualizarStatusPedidoAsync(int codigo, int status)
     {
         await using var connection = CriarConexao();
         await connection.OpenAsync();
         await using var transaction = (SqlTransaction)await connection.BeginTransactionAsync();
         int atual;
+        // O bloqueio evita duas finalizações/cancelamentos simultâneos do mesmo pedido.
         await using (var get = new SqlCommand("SELECT status FROM Pedidos WITH (UPDLOCK, ROWLOCK) WHERE codigo=@codigo", connection, transaction))
         {
             AddInt(get, "@codigo", codigo);
@@ -397,6 +417,7 @@ public sealed class SqlServerRepository : DataConnection, ISIVADRepository
         if (status is not (1 or 2)) throw new InvalidOperationException("Status de pedido inválido.");
         if (status == 1 && atual != 0) return false;
         if (status == 2 && atual is not (0 or 1)) return false;
+        // Pendente -> finalizado: saída de mercadoria.
         if (status == 1 && atual == 0)
         {
             var items = await LerItensPedidoNaTransacaoAsync(connection, transaction, codigo);
@@ -407,6 +428,7 @@ public sealed class SqlServerRepository : DataConnection, ISIVADRepository
                 if (await update.ExecuteNonQueryAsync() == 0) throw new InvalidOperationException($"Estoque insuficiente para o produto {item.ProdutoCodigo}.");
             }
         }
+        // Finalizado -> cancelado: reposição das unidades vendidas.
         else if (status == 2 && atual == 1)
         {
             var items = await LerItensPedidoNaTransacaoAsync(connection, transaction, codigo);
@@ -471,6 +493,10 @@ public sealed class SqlServerRepository : DataConnection, ISIVADRepository
         return result is null || result is DBNull ? null : await ObterPedidoAsync(Convert.ToInt32(result));
     }
 
+    // ================================================================
+    // COMPRAS DE ESTOQUE — CREATE e entrada de mercadoria
+    // ================================================================
+    // A compra gera cabeçalho, itens e aumento de estoque na mesma transação.
     public async Task<int> RegistrarCompraEstoqueAsync(CompraEstoque compra)
     {
         if (string.IsNullOrWhiteSpace(compra.FornecedorNome) || compra.FornecedorNome.Trim().Length > 150)
@@ -482,6 +508,7 @@ public sealed class SqlServerRepository : DataConnection, ISIVADRepository
         await using var connection = CriarConexao();
         await connection.OpenAsync();
         await using var transaction = (SqlTransaction)await connection.BeginTransactionAsync();
+        // O total é calculado no servidor a partir de preço unitário x quantidade.
         var total = compra.Itens.Sum(item => item.PrecoUnitario * item.Quantidade);
         const string insertSql = """
             INSERT INTO CompraEstoque(data_compra,total,status,administrador_id,fornecedor_id,fornecedor_nome)
@@ -519,6 +546,7 @@ public sealed class SqlServerRepository : DataConnection, ISIVADRepository
         return compra.Numero;
     }
 
+    // READ de uma compra: lê o cabeçalho e depois seus itens relacionados.
     public async Task<CompraEstoque?> ObterCompraEstoqueAsync(int numero)
     {
         const string sql = "SELECT numero,data_compra,total,status,administrador_id,fornecedor_id,fornecedor_nome FROM CompraEstoque WHERE numero=@numero";
@@ -545,6 +573,8 @@ public sealed class SqlServerRepository : DataConnection, ISIVADRepository
         return compra;
     }
 
+    // UPDATE de compra: desfaz a quantidade antiga, aplica a nova e recria os itens.
+    // A diferença é calculada por produto para não duplicar entradas no estoque.
     public async Task<bool> AtualizarCompraEstoqueAsync(CompraEstoque compra)
     {
         if (compra.Numero <= 0 || string.IsNullOrWhiteSpace(compra.FornecedorNome) || compra.FornecedorNome.Trim().Length > 150)
@@ -588,6 +618,7 @@ public sealed class SqlServerRepository : DataConnection, ISIVADRepository
         }
         if (compra.DataCompra == default) compra.DataCompra = dataAtual;
 
+        // Snapshot dos itens antes da edição: será comparado com o novo formulário.
         var quantidadesAnteriores = new Dictionary<int, int>();
         await using (var oldItems = new SqlCommand("SELECT produto_codigo,quantidade FROM Itens_CompraEstoque WITH (UPDLOCK,HOLDLOCK) WHERE compra_numero=@numero", connection, transaction))
         {
@@ -596,6 +627,7 @@ public sealed class SqlServerRepository : DataConnection, ISIVADRepository
             while (await reader.ReadAsync()) quantidadesAnteriores[reader.GetInt32(0)] = reader.GetInt32(1);
         }
         var quantidadesNovas = compra.Itens.ToDictionary(item => item.ProdutoCodigo, item => item.Quantidade);
+        // A diferença positiva aumenta estoque; a negativa retira apenas o excedente.
         foreach (var produtoCodigo in quantidadesAnteriores.Keys.Union(quantidadesNovas.Keys).OrderBy(id => id))
         {
             quantidadesAnteriores.TryGetValue(produtoCodigo, out var quantidadeAnterior);
@@ -651,6 +683,7 @@ public sealed class SqlServerRepository : DataConnection, ISIVADRepository
         return true;
     }
 
+    // DELETE de negócio: cancela a compra, reverte o estoque e preserva o histórico.
     public async Task<bool> CancelarCompraEstoqueAsync(int numero)
     {
         await using var connection = CriarConexao();
@@ -789,6 +822,10 @@ public sealed class SqlServerRepository : DataConnection, ISIVADRepository
         return items;
     }
 
+    // ================================================================
+    // PRODUTOS — UPDATE e devolução
+    // ================================================================
+    // Produto não é apagado fisicamente: relacionamentos históricos precisam continuar válidos.
     public async Task<bool> AtualizarProdutoAsync(Produto produto)
     {
         if (produto.Codigo <= 0 || string.IsNullOrWhiteSpace(produto.CodigoBarras) || string.IsNullOrWhiteSpace(produto.Nome) || produto.PrecoUnit < 0 || produto.Estoque < 0 || produto.CategoriaCodigo <= 0 || (produto.Cor?.Trim().Length ?? 0) > 60)
@@ -808,6 +845,7 @@ public sealed class SqlServerRepository : DataConnection, ISIVADRepository
         { throw new InvalidOperationException("Já existe outro produto com esse código de barras.", ex); }
     }
 
+    // Devolução: aumenta o estoque e registra o movimento em Devolucoes na mesma transação.
     public async Task<int> RegistrarDevolucaoAsync(int produtoCodigo, int quantidade)
     {
         if (produtoCodigo <= 0 || quantidade <= 0)
@@ -816,6 +854,7 @@ public sealed class SqlServerRepository : DataConnection, ISIVADRepository
         await using var connection = CriarConexao();
         await connection.OpenAsync();
         await using var transaction = (SqlTransaction)await connection.BeginTransactionAsync(IsolationLevel.Serializable);
+        // Serializable + locks impede duas devoluções de ultrapassarem o limite do estoque.
         decimal precoUnitario;
         int estoqueAtual;
         await using (var product = new SqlCommand("SELECT preco_unit,estoque FROM Produtos WITH (UPDLOCK,HOLDLOCK) WHERE codigo=@codigo AND ativo=1", connection, transaction))
@@ -856,6 +895,10 @@ public sealed class SqlServerRepository : DataConnection, ISIVADRepository
         return numero;
     }
 
+    // ================================================================
+    // FUNCIONÁRIOS — CREATE, UPDATE e DELETE lógico
+    // ================================================================
+    // CREATE grava Pessoa e Funcionário juntos; a pessoa é a entidade base do relacionamento.
     public async Task<int> CadastrarFuncionarioAsync(string nome)
     {
         if (string.IsNullOrWhiteSpace(nome) || nome.Trim().Length > 150)
@@ -878,6 +921,7 @@ public sealed class SqlServerRepository : DataConnection, ISIVADRepository
         return id;
     }
 
+    // DELETE lógico: ativo=0 oculta o funcionário, mas preserva pedidos antigos.
     public async Task<bool> DesativarFuncionarioAsync(int id)
     {
         await using var connection = CriarConexao();
@@ -887,6 +931,7 @@ public sealed class SqlServerRepository : DataConnection, ISIVADRepository
         return await command.ExecuteNonQueryAsync() == 1;
     }
 
+    // UPDATE do nome na tabela Pessoas, condicionado ao funcionário ainda estar ativo.
     public async Task<bool> AtualizarFuncionarioAsync(int id, string nome)
     {
         if (id <= 0 || string.IsNullOrWhiteSpace(nome) || nome.Trim().Length > 150)
@@ -911,6 +956,7 @@ public sealed class SqlServerRepository : DataConnection, ISIVADRepository
         return lista;
     }
 
+    // CREATE de produto: INSERT parametrizado e OUTPUT do código gerado.
     public async Task<int> CadastrarProdutoAsync(Produto produto)
     {
         if (string.IsNullOrWhiteSpace(produto.CodigoBarras) || string.IsNullOrWhiteSpace(produto.Nome) || produto.PrecoUnit < 0 || produto.Estoque < 0 || produto.CategoriaCodigo <= 0 || (produto.Cor?.Trim().Length ?? 0) > 60)
@@ -936,6 +982,7 @@ public sealed class SqlServerRepository : DataConnection, ISIVADRepository
         }
     }
 
+    // Diagnóstico somente leitura, usado em Development para confirmar servidor e banco ativos.
     public async Task<DatabaseConnectionInfoViewModel> ObterDiagnosticoBancoAsync()
     {
         await using var connection = CriarConexao();
@@ -955,9 +1002,11 @@ public sealed class SqlServerRepository : DataConnection, ISIVADRepository
         };
     }
 
+    // Helpers de segurança: todos os valores entram como parâmetros, nunca por concatenação de strings.
     private static void AddInt(SqlCommand command, string name, int value) => command.Parameters.Add(name, SqlDbType.Int).Value = value;
     private static void AddMoney(SqlCommand command, string name, decimal value)
     {
+        // Precision/Scale seguem o formato monetário definido no banco.
         var parameter = command.Parameters.Add(name, SqlDbType.Decimal);
         parameter.Precision = 10; parameter.Scale = 2; parameter.Value = value;
     }

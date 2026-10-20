@@ -5,6 +5,7 @@ namespace SIVAD.Repositories;
 
 public interface ISIVADRepository
 {
+    // READ: consultas usadas pelo dashboard, estoque, usuários e relatórios.
     Task<List<Produto>> ListarProdutosAsync(bool somenteComEstoque = false, bool incluirInativos = false);
     Task<List<Funcionario>> ListarFuncionariosAsync();
     Task<List<Administrador>> ListarAdministradoresAsync();
@@ -13,18 +14,26 @@ public interface ISIVADRepository
     Task<List<CompraEstoque>> ListarComprasAsync();
     Task<DashboardViewModel> ObterDashboardAsync();
     Task<List<ReportMovementViewModel>> ListarMovimentosRelatorioAsync();
+
+    // PEDIDOS: CREATE do cabeçalho/itens e UPDATE do status com efeito no estoque.
     Task<int> RegistrarPedidoAsync(Pedido pedido);
     Task<bool> AtualizarStatusPedidoAsync(int codigo, int status);
     Task<Pedido?> ObterPedidoAsync(int codigo);
     Task<Pedido?> ObterPrimeiroPedidoAsync();
     Task<Pedido?> ObterUltimoPedidoPendenteAsync();
+
+    // COMPRAS: CREATE, READ, UPDATE e cancelamento com atualização transacional do estoque.
     Task<int> RegistrarCompraEstoqueAsync(CompraEstoque compra);
     Task<CompraEstoque?> ObterCompraEstoqueAsync(int numero);
     Task<bool> AtualizarCompraEstoqueAsync(CompraEstoque compra);
     Task<bool> CancelarCompraEstoqueAsync(int numero);
     Task<CompraEstoque?> ObterPrimeiraCompraEstoqueAsync();
+
+    // PRODUTOS: UPDATE do cadastro e devolução como reversão controlada de estoque.
     Task<bool> AtualizarProdutoAsync(Produto produto);
     Task<int> RegistrarDevolucaoAsync(int produtoCodigo, int quantidade);
+
+    // FUNCIONÁRIOS: CREATE, UPDATE e DELETE lógico por desativação.
     Task<int> CadastrarFuncionarioAsync(string nome);
     Task<bool> DesativarFuncionarioAsync(int id);
     Task<bool> AtualizarFuncionarioAsync(int id, string nome);

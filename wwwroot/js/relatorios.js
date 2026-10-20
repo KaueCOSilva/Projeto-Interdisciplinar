@@ -190,7 +190,7 @@ function atualizarIndicadores(lancamentos, grupos, relatorio) {
 
     document.getElementById("primaryMetricLabel").textContent = relatorio.titulo;
     document.getElementById("primaryMetricValue").textContent = formatarMoeda(total);
-    document.getElementById("primaryMetricDescription").textContent = "Dados consultados no SQL Server";
+    document.getElementById("primaryMetricDescription").textContent = "Resumo do período selecionado";
 
     const rotuloSecundario = relatorio.tipoDeMovimento === "devolucao"
         ? "Valor devolvido"
@@ -207,11 +207,11 @@ function atualizarIndicadores(lancamentos, grupos, relatorio) {
     } else if (relatorioAtual === "devolucoes") {
         document.getElementById("thirdMetricLabel").textContent = "Unidades devolvidas";
         document.getElementById("thirdMetricValue").textContent = unidadesDevolvidas.toLocaleString("pt-BR");
-        document.getElementById("thirdMetricDescription").textContent = "Quantidades registradas no SQL Server";
+        document.getElementById("thirdMetricDescription").textContent = "Quantidades registradas no período";
     } else {
         document.getElementById("thirdMetricLabel").textContent = "Registros no filtro";
         document.getElementById("thirdMetricValue").textContent = quantidade.toString();
-        document.getElementById("thirdMetricDescription").textContent = "Lançamentos no SQL Server";
+        document.getElementById("thirdMetricDescription").textContent = "Lançamentos no período";
     }
 
     document.getElementById("fourthMetricLabel").textContent = "Mês selecionado";
@@ -244,11 +244,6 @@ function atualizarIndicadores(lancamentos, grupos, relatorio) {
     document.getElementById("reportTypeValue").textContent = relatorio.titulo;
     document.getElementById("reportTypeDescription").textContent = "Período: " + nomeMes;
 
-    document.getElementById("recordsLabel").textContent = "Origem dos dados";
-    document.getElementById("recordsValue").textContent = "SQL Server";
-    document.getElementById("recordsDescription").textContent = relatorioAtual === "devolucoes"
-        ? "Valores e unidades consultados no histórico de devoluções"
-        : "Movimentos carregados do banco de dados";
 }
 
 function aplicarFiltros() {

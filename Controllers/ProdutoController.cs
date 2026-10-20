@@ -14,12 +14,13 @@ public class ProdutoController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    // CREATE: cadastra o produto e retorna o ID gerado pelo banco.
     public async Task<IActionResult> Cadastrar(Produto produto)
     {
         try
         {
             var id = await _repository.CadastrarProdutoAsync(produto);
-            TempData["Sucesso"] = $"Produto #{id} cadastrado no banco de dados.";
+            TempData["Sucesso"] = $"Produto #{id} cadastrado com sucesso.";
         }
         catch (InvalidOperationException ex) { TempData["Erro"] = ex.Message; }
         return RedirectToAction("Estoque", "Administrador");
@@ -27,12 +28,13 @@ public class ProdutoController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    // UPDATE: altera os campos do produto ativo identificado pelo código.
     public async Task<IActionResult> Editar(Produto produto)
     {
         try
         {
             if (!await _repository.AtualizarProdutoAsync(produto)) TempData["Erro"] = "Produto não encontrado ou já removido.";
-            else TempData["Sucesso"] = "Produto atualizado no banco de dados.";
+            else TempData["Sucesso"] = "Produto atualizado com sucesso.";
         }
         catch (InvalidOperationException ex) { TempData["Erro"] = ex.Message; }
         return RedirectToAction("Estoque", "Administrador");
@@ -40,6 +42,7 @@ public class ProdutoController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    // DELETE de negócio: registra devolução; não apaga o produto nem seu histórico.
     public async Task<IActionResult> RegistrarDevolucao(int produtoCodigo, int quantidade)
     {
         try
