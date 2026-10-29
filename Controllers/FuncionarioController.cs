@@ -6,8 +6,8 @@ namespace SIVAD.Controllers;
 
 public class FuncionarioController : Controller
 {
-    private readonly ISIVADRepository _repository;
-    public FuncionarioController(ISIVADRepository repository) => _repository = repository;
+    private readonly IRepositorioSIVAD _repository;
+    public FuncionarioController(IRepositorioSIVAD repository) => _repository = repository;
 
     [HttpGet]
     public IActionResult Index() => RedirectToAction(nameof(RegistrarPedido));

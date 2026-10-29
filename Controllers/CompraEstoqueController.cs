@@ -8,10 +8,10 @@ namespace SIVAD.Controllers;
 
 public class CompraEstoqueController : Controller
 {
-    private readonly ISIVADRepository _repository;
+    private readonly IRepositorioSIVAD _repository;
     private readonly TotalCompraEstoqueStrategy _totalStrategy;
 
-    public CompraEstoqueController(ISIVADRepository repository, TotalCompraEstoqueStrategy totalStrategy)
+    public CompraEstoqueController(IRepositorioSIVAD repository, TotalCompraEstoqueStrategy totalStrategy)
     {
         _repository = repository;
         _totalStrategy = totalStrategy;

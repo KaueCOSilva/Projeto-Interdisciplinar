@@ -3,7 +3,7 @@ using SIVAD.Models.ViewModels;
 
 namespace SIVAD.Repositories;
 
-public interface ISIVADRepository
+public interface IRepositorioSIVAD
 {
     // READ: consultas usadas pelo dashboard, estoque, usuários e relatórios.
     Task<List<Produto>> ListarProdutosAsync(bool somenteComEstoque = false, bool incluirInativos = false);

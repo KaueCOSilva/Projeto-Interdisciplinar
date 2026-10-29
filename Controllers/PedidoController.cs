@@ -9,9 +9,9 @@ public class PedidoController : Controller
     private const int StatusPendente = 0;
     private const int StatusFinalizado = 1;
     private const int StatusCancelado = 2;
-    private readonly ISIVADRepository _repository;
+    private readonly IRepositorioSIVAD _repository;
 
-    public PedidoController(ISIVADRepository repository) => _repository = repository;
+    public PedidoController(IRepositorioSIVAD repository) => _repository = repository;
 
     [HttpGet]
     public IActionResult Index() => RedirectToAction("RegistrarPedido", "Funcionario");

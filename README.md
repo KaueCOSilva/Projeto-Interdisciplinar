@@ -1,12 +1,24 @@
 # SIVAD
 
-Para preparar a apresentação, consulte o [Guia de apresentação dos CRUDs](GUIA_APRESENTACAO_CRUD.md), com o caminho da tela ao banco, regras de estoque e frases curtas para explicar cada operação.
+Para preparar a apresentação sobre a organização e os comandos SQL dos repositórios, consulte o [Guia de explicação dos repositórios](GUIA_EXPLICACAO_REPOSITORIOS.md).
 
-Aplicação acadêmica em **ASP.NET Core MVC + Repository + SQL Server**. O acesso a dados está concentrado em `Repositories/SqlServerRepository.cs`, usando `Microsoft.Data.SqlClient`. As views e estilos originais foram preservados; os indicadores e gráficos são alimentados por consultas ao banco.
+Aplicação acadêmica em **ASP.NET Core MVC + padrão Repositório + SQL Server**. O acesso a dados usa `Microsoft.Data.SqlClient` e está organizado por responsabilidade dentro de `Repositories/`. As telas e os estilos originais foram preservados; os indicadores e gráficos continuam sendo alimentados por consultas ao banco.
 
 ## Padrão de arquitetura
 
-Seguindo a separação do projeto de referência: `Program.cs` registra `ISIVADRepository` para `SqlServerRepository`; os controllers dependem apenas da interface; `SqlServerRepository` implementa as operações SQL; e `DataConnection` lê `DefaultConnection` de `appsettings.json` e cria conexões sob demanda. Diferente do exemplo do professor, cada operação abre e fecha sua própria conexão e a implementação é registrada como `Scoped`, em vez de manter uma conexão aberta compartilhada como `Singleton`.
+Seguindo a separação do projeto de referência: `Program.cs` registra `IRepositorioSIVAD` com a implementação `RepositorioSqlServer`; os controladores dependem apenas da interface; o repositório executa as operações SQL; e `DataConnection` lê `DefaultConnection` de `appsettings.json` e cria conexões sob demanda. Cada operação abre e fecha sua própria conexão; a implementação é registrada com escopo `Scoped` para cada requisição web.
+
+Para facilitar a manutenção sem mexer no comportamento que já está funcionando, `RepositorioSqlServer` é uma classe parcial (`partial`). A mesma classe e a mesma interface foram organizadas nestes arquivos, de acordo com cada área:
+
+- `RepositorioSqlServer.Consultas.cs`: consultas de produtos, funcionários, administradores, fornecedores e compras.
+- `RepositorioSqlServer.Painel.cs`: indicadores, gráficos, atividades, alertas e dados dos relatórios.
+- `RepositorioSqlServer.Pedidos.cs`: gravação e consulta de pedidos, atualização de status e leitura de itens.
+- `RepositorioSqlServer.ComprasEstoque.cs`: registro, edição, cancelamento e consulta de compras de estoque.
+- `RepositorioSqlServer.Cadastros.cs`: operações de produtos, devoluções, funcionários e categorias.
+- `RepositorioSqlServer.Diagnostico.cs`: consulta somente leitura para diagnóstico da conexão.
+- `RepositorioSqlServer.cs`: construtor e métodos auxiliares SQL compartilhados.
+
+Esta é a primeira etapa de organização. Foram mantidos os mesmos nomes e assinaturas das operações, as mesmas consultas SQL, a injeção de dependência e os controladores. As telas e os procedimentos armazenados não foram alterados; qualquer mudança nessas partes fica para uma etapa posterior, após a validação funcional desta versão.
 
 ## 1. Preparar o SQL Server
 
@@ -87,4 +99,4 @@ Não há tabela de credenciais; portanto, login por senha, recuperação/altera�
 
 ## 6. Testes realizados
 
-O projeto foi compilado em Release após as alterações (**0 avisos e 0 erros**); a formatação C# foi verificada; os JavaScripts externos e o script embutido do estoque passaram na verificação de sintaxe; e a página inicial, o CSS de estoque e o JavaScript de relatórios responderam HTTP 200. **Não foi possível executar os scripts SQL nem testes de integração com SQL Server nesta sandbox**, pois não há instância acessível em `127.0.0.1:1433`. A migração define explicitamente `USE [SQLVendas2026]`, conforme o catálogo atual do `appsettings.json`; se o catálogo da connection string mudar, atualizem esse nome no script. Antes de testar, executem `Database/AtualizarBanco.sql` para criar a tabela `Devolucoes`. Depois iniciem o site, registrem uma devolução pelo ícone da lixeira e confiram o estoque e a aba **Devoluções** nos relatórios (valor e unidades). Se aparecer erro de tabela `Devolucoes` inexistente, a migração foi executada em outro banco ou não foi executada.
+O projeto foi compilado em Release após a refatoração (**0 avisos e 0 erros**). A comparação com a versão recebida confirmou as mesmas 26 operações públicas e os mesmos 15 blocos SQL; nenhum corpo de consulta foi reescrito. O teste de inicialização HTTP verifica a página de login e arquivos estáticos. **Não foi possível executar operações de integração com SQL Server nesta sandbox**, pois não há instância acessível em `127.0.0.1:1433`. Antes de testar operações de banco, executem `Database/AtualizarBanco.sql` no catálogo configurado e validem as telas já existentes.

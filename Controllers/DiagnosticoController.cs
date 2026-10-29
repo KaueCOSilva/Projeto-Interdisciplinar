@@ -6,10 +6,10 @@ namespace SIVAD.Controllers;
 [Route("diagnostico/banco")]
 public sealed class DiagnosticoController : Controller
 {
-    private readonly ISIVADRepository _repository;
+    private readonly IRepositorioSIVAD _repository;
     private readonly IWebHostEnvironment _environment;
 
-    public DiagnosticoController(ISIVADRepository repository, IWebHostEnvironment environment)
+    public DiagnosticoController(IRepositorioSIVAD repository, IWebHostEnvironment environment)
     {
         _repository = repository;
         _environment = environment;

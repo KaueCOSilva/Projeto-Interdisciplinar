@@ -2,13 +2,13 @@ using WebApplication = Microsoft.AspNetCore.Builder.WebApplication;
 using SIVAD.Repositories;
 using SIVAD.Strategies;
 
-// Program.cs configura a aplicação; regras de negócio ficam nos controllers/repository.
+// Program.cs configura a aplicação; regras de negócio ficam nos controladores e repositórios.
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 
-// Acesso ao SQL Server pelo Microsoft.Data.SqlClient, concentrado no Repository.
-builder.Services.AddScoped<ISIVADRepository, SqlServerRepository>();
+// Acesso ao SQL Server pelo Microsoft.Data.SqlClient, concentrado no repositório.
+builder.Services.AddScoped<IRepositorioSIVAD, RepositorioSqlServer>();
 
 // Estratégias de cálculo usadas pelos fluxos de pedidos e compras.
 builder.Services.AddScoped<TotalPedidoStrategy>();

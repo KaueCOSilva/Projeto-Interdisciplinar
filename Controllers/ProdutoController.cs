@@ -6,8 +6,8 @@ namespace SIVAD.Controllers;
 
 public class ProdutoController : Controller
 {
-    private readonly ISIVADRepository _repository;
-    public ProdutoController(ISIVADRepository repository) => _repository = repository;
+    private readonly IRepositorioSIVAD _repository;
+    public ProdutoController(IRepositorioSIVAD repository) => _repository = repository;
 
     [HttpGet]
     public IActionResult Index() => RedirectToAction("Estoque", "Administrador");

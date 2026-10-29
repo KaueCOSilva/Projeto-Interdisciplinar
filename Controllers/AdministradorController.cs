@@ -6,14 +6,14 @@ namespace SIVAD.Controllers;
 
 public class AdministradorController : Controller
 {
-    private readonly ISIVADRepository _repository;
+    private readonly IRepositorioSIVAD _repository;
 
     private async Task DefinirContagemAlertasAsync()
     {
         ViewBag.AlertasEstoque = (await _repository.ListarProdutosEstoqueBaixoAsync()).Count;
     }
 
-    public AdministradorController(ISIVADRepository repository) => _repository = repository;
+    public AdministradorController(IRepositorioSIVAD repository) => _repository = repository;
 
     [HttpGet]
     // READ: carrega indicadores agregados para o painel administrativo.
