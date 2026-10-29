@@ -1231,11 +1231,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/home/kakesty/Documentos/GitHub/Ze_do_Pagode/Projeto-Interdisciplinar-alinhado-materia/Projeto-Interdisciplinar/SIVAD.csproj",
+      "projectUniqueName": "/home/kakesty/Documentos/GitHub/Projeto-Interdisciplinar/SIVAD.csproj",
       "projectName": "SIVAD",
-      "projectPath": "/home/kakesty/Documentos/GitHub/Ze_do_Pagode/Projeto-Interdisciplinar-alinhado-materia/Projeto-Interdisciplinar/SIVAD.csproj",
+      "projectPath": "/home/kakesty/Documentos/GitHub/Projeto-Interdisciplinar/SIVAD.csproj",
       "packagesPath": "/home/kakesty/.nuget/packages/",
-      "outputPath": "/home/kakesty/Documentos/GitHub/Ze_do_Pagode/Projeto-Interdisciplinar-alinhado-materia/Projeto-Interdisciplinar/obj/",
+      "outputPath": "/home/kakesty/Documentos/GitHub/Projeto-Interdisciplinar/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/home/kakesty/.nuget/NuGet/NuGet.Config"

@@ -125,3 +125,21 @@ Em cada etapa, manter uma só implementação ativa da regra, aplicar o script d
 - Foi retirada a dica `ROWLOCK`, que não alterava a regra de negócio. O `UPDLOCK` foi mantido no pedido porque protege contra duas finalizações concorrentes. A parte restante da gravação e as transações não foram reescritas.
 
 Essas mudanças simplificam construções da consulta sem alterar os dados que alimentam as telas. Views, procedures e triggers seguem reservados para uma etapa posterior, com testes e sem duplicar as regras de estoque.
+
+
+## 12. Comparação direta com o SistemaTarefas do professor
+
+O SIVAD segue o mesmo caminho estrutural do exemplo: o controlador recebe uma **interface de repositório**; `Program.cs` registra uma **implementação concreta**; o repositório SQL **herda da classe-base de conexão**; e a implementação usa `Microsoft.Data.SqlClient` para enviar comandos ao SQL Server.
+
+| SistemaTarefas do professor | SIVAD |
+|---|---|
+| `ITarefaRepository` | `IRepositorioSIVAD` |
+| `TarefaSqlRepository : DataConnection, ITarefaRepository` | `RepositorioSqlServer : DataConnection, IRepositorioSIVAD` |
+| `TarefaController` recebe `ITarefaRepository` no construtor | Os controladores, como `AdministradorController`, recebem `IRepositorioSIVAD` no construtor. |
+| `Program.cs` registra a implementação da interface | `Program.cs` também registra interface e implementação; usa `AddScoped` por requisição web. |
+| `Read`, `Create`, `Update`, `Delete` exemplificam CRUD de uma tabela | Os métodos têm nomes de domínio em português e cobrem cadastro, pedidos, compras e estoque. Uma venda não é um `INSERT` isolado: envolve cabeçalho, itens, status e saldo. |
+| `TarefaSqlRepository.cs` contém os métodos de uma classe | `RepositorioSqlServer` continua sendo uma só classe, separada em arquivos `partial` para localizar com facilidade consultas, painel, pedidos, compras, cadastros e diagnóstico. |
+
+Algumas escolhas do exemplo foram adaptadas de propósito, sem mudar o padrão ensinado. A cadeia de conexão do SIVAD fica em `appsettings.json`, em vez de fixa no código. `DataConnection` guarda a configuração e `CriarConexao()` abre uma conexão por operação; assim uma conexão não permanece aberta enquanto a aplicação web recebe várias requisições. A implementação é `Scoped`, e não uma instância compartilhada única. Além disso, as consultas selecionam as colunas necessárias e usam parâmetros tipados.
+
+Essas diferenças não substituem MVC + Repository; elas adaptam o mesmo desenho ao SIVAD e ao ciclo de vida de uma aplicação web. Para a apresentação, descrevam primeiro o padrão como está no exemplo do professor e depois expliquem essas adaptações como cuidados com configuração, conexão e operações de negócio que gravam várias tabelas.
