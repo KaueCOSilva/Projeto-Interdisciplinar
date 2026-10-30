@@ -192,4 +192,3 @@ INNER JOIN Produtos p
 INNER JOIN Categorias c
     ON c.categoria_codigo = p.categoria_codigo;
 --------------------------------------------------------------------------
-
