@@ -1,4 +1,4 @@
-@model List<SIVAD.Models.Produto>
+@model SIVAD.Models.ViewModels.CentralNotificacoesViewModel
 @{
     ViewData["Title"] = "Central de Notificações";
 }
@@ -30,17 +30,20 @@
                     <a class="notifications-bell-button" asp-controller="Administrador"
                         asp-action="Notificacoes" aria-label="Notificações">
                         <i class="bi bi-bell" aria-hidden="true"></i>
-                        @if (Model.Count > 0) { <span aria-label="@Model.Count alertas">@Model.Count</span> }
+                        @if (Model.TotalNotificacoes > 0) { <span aria-label="@Model.TotalNotificacoes notificações">@Model.TotalNotificacoes</span> }
                     </a>
                 </div>
             </header>
 
+            @if (TempData["Erro"] is string erro) { <div class="alert alert-danger m-3" role="alert">@erro</div> }
+            @if (TempData["Sucesso"] is string sucesso) { <div class="alert alert-success m-3" role="status">@sucesso</div> }
+
             <section class="notifications-list" aria-label="Notificações recentes">
-                @if (Model.Count == 0)
+                @if (Model.TotalNotificacoes == 0)
                 {
-                    <article class="notification-entry"><div class="notification-copy"><h2>Sem alertas de estoque</h2><p>Não há produtos com estoque igual ou inferior a 10 unidades.</p></div></article>
+                    <article class="notification-entry"><div class="notification-copy"><h2>Sem notificações pendentes</h2><p>Não há alertas de estoque nem solicitações de recuperação de senha.</p></div></article>
                 }
-                @foreach (var produto in Model)
+                @foreach (var produto in Model.ProdutosEstoqueBaixo)
                 {
                     var prioridade = produto.Estoque <= 5 ? "Alta" : produto.Estoque <= 10 ? "Média" : "Baixa";
                     var classe = produto.Estoque <= 5 ? "priority-high" : produto.Estoque <= 10 ? "priority-medium" : "priority-low";
@@ -53,6 +56,30 @@
                             <time>Código @produto.CodigoBarras</time>
                         </div>
                         <span class="notification-priority @classe">@prioridade</span>
+                    </article>
+                }
+                @foreach (var solicitacao in Model.RecuperacoesPendentes)
+                {
+                    <article class="notification-entry">
+                        <div class="notification-type-icon" aria-hidden="true"><i class="bi bi-person-lock"></i></div>
+                        <div class="notification-copy">
+                            <h2>Solicitação de recuperação de senha</h2>
+                            <span class="notification-category">Funcionário</span>
+                            <p>@solicitacao.Nome solicitou a redefinição da senha.</p>
+                            <time datetime="@solicitacao.DataSolicitacao.ToString("O")">UID @solicitacao.PessoaId · @solicitacao.DataSolicitacao.ToString("dd/MM/yyyy HH:mm")</time>
+                            <div class="d-flex gap-2 mt-2">
+                                <form asp-controller="Administrador" asp-action="AprovarSolicitacaoRecuperacaoSenha" method="post">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="solicitacaoId" value="@solicitacao.SolicitacaoId" />
+                                    <button type="submit" class="btn btn-primary btn-sm">Aprovar</button>
+                                </form>
+                                <form asp-controller="Administrador" asp-action="RejeitarSolicitacaoRecuperacaoSenha" method="post" onsubmit="return confirm('Rejeitar esta solicitação?');">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="solicitacaoId" value="@solicitacao.SolicitacaoId" />
+                                    <button type="submit" class="btn btn-outline-secondary btn-sm">Rejeitar</button>
+                                </form>
+                            </div>
+                        </div>
                     </article>
                 }
             </section>

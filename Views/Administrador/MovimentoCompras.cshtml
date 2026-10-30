@@ -34,7 +34,7 @@
                     <a class="purchase-notification" asp-controller="Administrador"
                         asp-action="Notificacoes" aria-label="Notificações">
                         <i class="bi bi-bell" aria-hidden="true"></i>
-                        @if (ViewBag.AlertasEstoque is int alertas && alertas > 0) { <span title="@alertas alertas de estoque" aria-label="@alertas alertas de estoque"></span> }
+                        @if (ViewBag.TotalNotificacoes is int alertas && alertas > 0) { <span title="@alertas notificações pendentes" aria-label="@alertas notificações pendentes"></span> }
                     </a>
                 </div>
             </header>

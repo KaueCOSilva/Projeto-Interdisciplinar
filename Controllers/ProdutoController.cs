@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
 using SIVAD.Models;
 using SIVAD.Repositories;
+using SIVAD.Filtros;
 
 namespace SIVAD.Controllers;
 
+[ExigirSessao("Administrador")]
 public class ProdutoController : Controller
 {
     private readonly IRepositorioSIVAD _repository;

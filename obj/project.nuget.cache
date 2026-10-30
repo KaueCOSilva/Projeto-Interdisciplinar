@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "89PsC66ok+s=",
+  "dgSpecHash": "4NxlctzJITU=",
   "success": true,
-  "projectFilePath": "/home/kakesty/Documentos/GitHub/Projeto-Interdisciplinar/SIVAD.csproj",
+  "projectFilePath": "/home/kakesty/Documentos/GitHub/Ze_do_Pagode/Projeto-Interdisciplinar-recuperacao-integrada/Projeto-Interdisciplinar/SIVAD.csproj",
   "expectedPackageFiles": [
     "/home/kakesty/.nuget/packages/microsoft.bcl.cryptography/9.0.18/microsoft.bcl.cryptography.9.0.18.nupkg.sha512",
     "/home/kakesty/.nuget/packages/microsoft.data.sqlclient/7.1.1/microsoft.data.sqlclient.7.1.1.nupkg.sha512",

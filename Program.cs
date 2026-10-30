@@ -5,6 +5,15 @@ using SIVAD.Strategies;
 // Program.cs configura a aplicação; regras de negócio ficam nos controladores e repositórios.
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(opcoes =>
+{
+    opcoes.IdleTimeout = TimeSpan.FromMinutes(60);
+    opcoes.Cookie.Name = ".SIVAD.Sessao";
+    opcoes.Cookie.HttpOnly = true;
+    opcoes.Cookie.IsEssential = true;
+});
+
 builder.Services.AddControllersWithViews();
 
 // Acesso ao SQL Server pelo Microsoft.Data.SqlClient, concentrado no repositório.
@@ -25,7 +34,7 @@ if (!app.Environment.IsDevelopment())
 
 app.UseStaticFiles();
 app.UseRouting();
-// O fluxo atual usa os endpoints MVC; autenticação real depende do schema de contas.
+app.UseSession();
 app.UseAuthorization();
 
 app.MapControllerRoute(

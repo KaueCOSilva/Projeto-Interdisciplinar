@@ -2,11 +2,13 @@
 
 Para preparar a apresentação sobre a organização e os comandos SQL dos repositórios, consulte o [Guia de explicação dos repositórios](GUIA_EXPLICACAO_REPOSITORIOS.md).
 
-Aplicação acadêmica em **ASP.NET Core MVC + padrão Repositório + SQL Server**. O acesso a dados usa `Microsoft.Data.SqlClient` e está organizado por responsabilidade dentro de `Repositories/`. As telas e os estilos originais foram preservados; os indicadores e gráficos continuam sendo alimentados por consultas ao banco.
+Para configurar o primeiro administrador, o login com sessão e a recuperação de senha aprovada pelo administrador, consulte o [Guia de login, sessão e recuperação](GUIA_LOGIN_SESSAO_RECUPERACAO.md).
+
+Aplicação acadêmica em **ASP.NET Core MVC + padrão Repositório + SQL Server**. O acesso a dados usa `Microsoft.Data.SqlClient` e está organizado por responsabilidade dentro de `Repositories/`. O CSS das telas existentes foi mantido; o login agora cria sessão real e a recuperação registra pedidos para análise administrativa.
 
 ## Padrão de arquitetura
 
-Seguindo a separação do projeto de referência: `Program.cs` registra `IRepositorioSIVAD` com a implementação `RepositorioSqlServer`; os controladores dependem apenas da interface; o repositório executa as operações SQL; e `DataConnection` lê `DefaultConnection` de `appsettings.json` e cria conexões sob demanda. Cada operação abre e fecha sua própria conexão; a implementação é registrada com escopo `Scoped` para cada requisição web.
+Seguindo a separação do projeto de referência: `Program.cs` registra `IRepositorioSIVAD` com a implementação `RepositorioSqlServer`; os controladores dependem apenas da interface; o repositório executa as operações SQL; e `DataConnection` lê `DefaultConnection` de `appsettings.json` e cria conexões sob demanda. Cada operação abre e fecha sua própria conexão; a implementação é registrada com escopo `Scoped`. A sessão MVC é mantida por até 60 minutos de inatividade.
 
 Para facilitar a manutenção sem mexer no comportamento que já está funcionando, `RepositorioSqlServer` é uma classe parcial (`partial`). A mesma classe e a mesma interface foram organizadas nestes arquivos, de acordo com cada área:
 
@@ -16,9 +18,10 @@ Para facilitar a manutenção sem mexer no comportamento que já está funcionan
 - `RepositorioSqlServer.ComprasEstoque.cs`: registro, edição, cancelamento e consulta de compras de estoque.
 - `RepositorioSqlServer.Cadastros.cs`: operações de produtos, devoluções, funcionários e categorias.
 - `RepositorioSqlServer.Diagnostico.cs`: consulta somente leitura para diagnóstico da conexão.
+- `RepositorioSqlServer.Autenticacao.cs`: login, provisionamento de credenciais e solicitações de recuperação.
 - `RepositorioSqlServer.cs`: construtor e métodos auxiliares SQL compartilhados.
 
-Esta é a primeira etapa de organização. Foram mantidos os mesmos nomes e assinaturas das operações, as mesmas consultas SQL, a injeção de dependência e os controladores. As telas e os procedimentos armazenados não foram alterados; qualquer mudança nessas partes fica para uma etapa posterior, após a validação funcional desta versão.
+As consultas de vendas, compras, gráficos e estoque permanecem organizadas nos mesmos arquivos. O fluxo de autenticação foi acrescentado em arquivo parcial próprio, com novos métodos parametrizados e tabelas de credenciais/recuperação; essas tabelas são instaladas pelo script de migração, não pelo Entity Framework.
 
 ## 1. Preparar o SQL Server
 
@@ -26,12 +29,12 @@ O SQL Server precisa estar iniciado e acessível pelo computador que executa o s
 
 Conectem ao servidor pelo SQL Client.
 
-- **Banco novo:** executem `Database/Banco.sql` uma vez. Ele cria `SQLVendas2026` e as tabelas, além de incluir um administrador e um funcionário fictícios para demonstração. Esses registros não são contas de login.
-- **Banco existente:** abram `Database/AtualizarBanco.sql` no SQL Client conectado ao servidor de vocês e executem. O script adiciona `data_pedido`, flags `ativo`, `fornecedor_nome`, as colunas `cor` de produto/itens e a tabela `Devolucoes` se estiverem ausentes; também permite `fornecedor_id` e `Pedidos.cliente_id` nulos. Inclui os registros demonstrativos se ainda não existirem. É uma migração aditiva; não apaga nem substitui registros. O site MVC não altera o schema automaticamente.
+- **Banco novo:** executem `Database/Banco.sql` uma vez e, em seguida, `Database/AtualizarBanco.sql` no banco criado. O primeiro cria `SQLVendas2026` e as tabelas-base; o segundo adiciona as atualizações da aplicação, incluindo as tabelas de acesso.
+- **Banco existente:** abram `Database/AtualizarBanco.sql` no SQL Client conectado ao servidor de vocês e executem. O script adiciona `data_pedido`, flags `ativo`, `fornecedor_nome`, as colunas `cor` de produto/itens, `Devolucoes`, `CredenciaisAcesso` e `SolicitacoesRecuperacaoSenha` se estiverem ausentes; também permite `fornecedor_id` e `Pedidos.cliente_id` nulos. Inclui registros demonstrativos se ainda não existirem. É uma migração aditiva; não apaga nem substitui registros. O site MVC não altera o schema automaticamente.
 
 Antes de executar a migração, confirme que o catálogo `SQLVendas2026` corresponde ao `Initial Catalog` de `ConnectionStrings:DefaultConnection`; o script seleciona esse banco explicitamente. Ele mostra o `banco_alvo`, recusa bancos sem as tabelas-base do SIVAD e, ao final, retorna o banco e as colunas verificadas. O campo textual `fornecedor_nome` é o nome digitado do **fornecedor**; não existe `funcionario_nome`: o nome do funcionário é armazenado em `Pessoas.nome` e ligado por `Funcionarios.pessoa_id`.
 
-Os scripts criam um administrador e um funcionário fictícios, mas não criam contas nem senhas. Também garantem a categoria **Vestuário** para testes; nas demais categorias e produtos, cadastrem o que for necessário antes de registrar operações. Fornecedores são informados por texto no lançamento de compra. O sistema não solicita nem processa CPF de cliente ao registrar pedidos, que são salvos sem associação a cliente.
+Os scripts criam um administrador e um funcionário fictícios, mas não criam contas nem senhas padrão. A primeira credencial administrativa é configurada uma vez usando UID, CPF e e-mail já cadastrados e uma chave local. Também garantem a categoria **Vestuário** para testes; nas demais categorias e produtos, cadastrem o que for necessário antes de registrar operações. Fornecedores são informados por texto no lançamento de compra. O sistema não solicita nem processa CPF de cliente ao registrar pedidos, que são salvos sem associação a cliente.
 
 ## 2. Configurar e executar no VS Code
 
@@ -93,10 +96,18 @@ A aplicação não apaga registros antigos automaticamente. Se a base já contin
 
 O Dashboard e os gráficos Google Charts consultam o banco: o gráfico mensal mantém vendas e compras recebidas do ano corrente, e um gráfico anual separado exibe compras recebidas de **todos os anos** (inclusive datas históricas como 2005). Atividades recentes combinam pedidos e compras recebidas. Edição de compra atualiza o total/data exibidos nos gráficos e relatórios; cancelamento reverte as unidades e exclui esse movimento dos totais (o registro permanece marcado como cancelado para auditoria). Ao registrar uma devolução, a operação guarda produto, quantidade, data e valor calculado pelo preço unitário vigente, além de somar as unidades ao estoque, em uma transação. A aba **Devoluções** consulta esses registros e mostra tanto o valor quanto o total de unidades devolvidas. **Fluxo de Caixa** considera compras de estoque e devoluções como saídas financeiras. O badge e a central de notificações usam produtos ativos com estoque igual ou inferior a 10 unidades, então as movimentações atualizam também os alertas.
 
-## 5. Limites do schema atual
+## 5. Login, sessão e recuperação de senha
 
-Não há tabela de credenciais; portanto, login por senha, recuperação/alteração de senha e autenticação real não podem ser persistidos pelo schema fornecido. O código não implementa hash de senha porque não existe fluxo de autenticação com senha armazenada. Os registros demonstrativos de administrador e funcionário são apenas entidades de negócio, não usuários autenticáveis. O cadastro de funcionário grava em `Pessoas`/`Funcionarios`, mas não cria uma conta de acesso. A coluna `Clientes.cpf` permanece no schema para compatibilidade com dados existentes, mas o fluxo atual de pedidos não a solicita, consulta nem grava.
+O UID de login é o ID de `Pessoas`. As credenciais ficam separadas dos dados de negócio; senhas são armazenadas como hash PBKDF2-SHA256 com salt aleatório, e não em texto simples. O login grava ID, nome e perfil na sessão; filtros impedem acesso direto a áreas sem sessão ou pelo perfil errado. O cadastro de funcionário cria as credenciais na mesma transação do registro da pessoa e do funcionário. Funcionários antigos podem receber acesso pela opção **Acesso** na tela de gerenciamento.
+
+**Esqueci minha senha** grava uma solicitação pendente depois de conferir nome, UID e e-mail do funcionário. Ela aparece junto aos demais alertas em **Notificações**. **Aprovar** abre o funcionário no gerenciamento; a solicitação só é finalizada quando o administrador informa a nova senha e salva. **Rejeitar** encerra o pedido e o remove da lista. Não há envio automático de e-mail ou configuração SMTP. Para o primeiro administrador, use `/Autenticacao/ConfigurarPrimeiroAdministrador` diretamente; a opção não aparece mais na tela de login.
+
+Se a configuração inicial falhar, execute `Database/DiagnosticoAutenticacao.sql` no SQL Client conectado ao mesmo banco da aplicação. O script é somente de leitura e não mostra dados pessoais.
+
+A coluna `Clientes.cpf` permanece no schema por compatibilidade, mas o fluxo atual de pedidos não a solicita, consulta nem grava.
 
 ## 6. Testes realizados
 
-O projeto foi compilado em Release após a refatoração (**0 avisos e 0 erros**). A comparação com a versão recebida confirmou as mesmas 26 operações públicas e os mesmos 15 blocos SQL; nenhum corpo de consulta foi reescrito. O teste de inicialização HTTP verifica a página de login e arquivos estáticos. **Não foi possível executar operações de integração com SQL Server nesta sandbox**, pois não há instância acessível em `127.0.0.1:1433`. Antes de testar operações de banco, executem `Database/AtualizarBanco.sql` no catálogo configurado e validem as telas já existentes.
+O build Release passou após a implementação. Foram verificados por HTTP o login, a recuperação e a configuração inicial (resposta 200 e token antifalsificação presente); as áreas administrativa e de funcionário redirecionam para o login sem sessão. O teste isolado de `GerenciadorSenhas` aceitou a senha correta, rejeitou senha errada e hash malformado e confirmou salts diferentes. Os 16 arquivos CSS foram comparados byte a byte com o ZIP-base e não mudaram. Também foi confirmado que o projeto não contém Docker, Compose ou `.env`.
+
+**Não foi possível testar gravação, login válido, migração nem recuperação ponta a ponta com SQL Server nesta sandbox**, pois não há instância acessível em `127.0.0.1:1433`. Para essa verificação, executem `Database/AtualizarBanco.sql` no computador conectado ao banco, configurem a chave local para o primeiro administrador e façam o roteiro descrito em `GUIA_LOGIN_SESSAO_RECUPERACAO.md`.

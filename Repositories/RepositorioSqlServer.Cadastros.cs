@@ -84,10 +84,12 @@ public sealed partial class RepositorioSqlServer
     // FUNCIONÁRIOS — INSERÇÃO (INSERT), ATUALIZAÇÃO (UPDATE) e exclusão lógica
     // ================================================================
     // INSERÇÃO grava Pessoa e Funcionário juntos; a pessoa é a entidade base do relacionamento.
-    public async Task<int> CadastrarFuncionarioAsync(string nome)
+    public async Task<int> CadastrarFuncionarioAsync(string nome, string email, string senhaHash)
     {
-        if (string.IsNullOrWhiteSpace(nome) || nome.Trim().Length > 150)
-            throw new InvalidOperationException("Informe um nome de funcionário (até 150 caracteres).");
+        if (string.IsNullOrWhiteSpace(nome) || nome.Trim().Length > 150 ||
+            string.IsNullOrWhiteSpace(email) || email.Trim().Length > 254 ||
+            string.IsNullOrWhiteSpace(senhaHash) || senhaHash.Length > 200)
+            throw new InvalidOperationException("Informe nome, e-mail válido e senha de pelo menos 8 caracteres.");
         await using var conexao = CriarConexao();
         await conexao.OpenAsync();
         await using var transacao = (SqlTransaction)await conexao.BeginTransactionAsync();
@@ -101,6 +103,21 @@ public sealed partial class RepositorioSqlServer
         {
             AdicionarInteiro(comandoInserirFuncionario, "@codigo", id);
             await comandoInserirFuncionario.ExecuteNonQueryAsync();
+        }
+        await using (var comandoInserirAcesso = new SqlCommand(
+            "INSERT INTO dbo.CredenciaisAcesso(pessoa_id,perfil,email,senha_hash,ativo) VALUES(@pessoaId,'Funcionario',@email,@senhaHash,1)", conexao, transacao))
+        {
+            AdicionarInteiro(comandoInserirAcesso, "@pessoaId", id);
+            comandoInserirAcesso.Parameters.Add("@email", SqlDbType.VarChar, 254).Value = email.Trim().ToLowerInvariant();
+            comandoInserirAcesso.Parameters.Add("@senhaHash", SqlDbType.VarChar, 200).Value = senhaHash;
+            try
+            {
+                await comandoInserirAcesso.ExecuteNonQueryAsync();
+            }
+            catch (SqlException ex) when (ex.Number is 2601 or 2627)
+            {
+                throw new InvalidOperationException("Esse e-mail já está associado a outra conta.", ex);
+            }
         }
         await transacao.CommitAsync();
         return id;
@@ -116,18 +133,57 @@ public sealed partial class RepositorioSqlServer
         return await comando.ExecuteNonQueryAsync() == 1;
     }
 
-    // ATUALIZAÇÃO do nome na tabela Pessoas, condicionado ao funcionário ainda estar ativo.
-    public async Task<bool> AtualizarFuncionarioAsync(int id, string nome)
+    // Atualiza dados do funcionário e finaliza uma recuperação sem separar as gravações.
+    public async Task<bool> AtualizarFuncionarioAsync(int id, string nome, string? senhaHash, int? solicitacaoId)
     {
         if (id <= 0 || string.IsNullOrWhiteSpace(nome) || nome.Trim().Length > 150)
             throw new InvalidOperationException("Informe um nome de funcionário (até 150 caracteres).");
+        if (senhaHash?.Length > 200)
+            throw new InvalidOperationException("A senha informada não possui um formato válido.");
+        if (solicitacaoId.HasValue && string.IsNullOrWhiteSpace(senhaHash))
+            throw new InvalidOperationException("Informe a nova senha para concluir a recuperação.");
+
         await using var conexao = CriarConexao();
         await conexao.OpenAsync();
-        const string sql = "UPDATE Pessoas SET nome=@nome FROM Pessoas INNER JOIN Funcionarios ON Funcionarios.pessoa_id=Pessoas.id WHERE Pessoas.id=@codigo AND Funcionarios.ativo=1";
-        await using var comando = new SqlCommand(sql, conexao);
-        comando.Parameters.Add("@nome", SqlDbType.VarChar, 150).Value = nome.Trim();
-        AdicionarInteiro(comando, "@codigo", id);
-        return await comando.ExecuteNonQueryAsync() == 1;
+        await using var transacao = (SqlTransaction)await conexao.BeginTransactionAsync();
+
+        if (solicitacaoId.HasValue)
+        {
+            const string verificarSql = "SELECT COUNT(*) FROM dbo.SolicitacoesRecuperacaoSenha WHERE solicitacao_id=@solicitacaoId AND pessoa_id=@id AND status='Pendente'";
+            await using var verificar = new SqlCommand(verificarSql, conexao, transacao);
+            AdicionarInteiro(verificar, "@solicitacaoId", solicitacaoId.Value);
+            AdicionarInteiro(verificar, "@id", id);
+            if (Convert.ToInt32(await verificar.ExecuteScalarAsync()) != 1) return false;
+        }
+
+        const string atualizarNomeSql = "UPDATE Pessoas SET nome=@nome FROM Pessoas INNER JOIN Funcionarios ON Funcionarios.pessoa_id=Pessoas.id WHERE Pessoas.id=@id AND Funcionarios.ativo=1";
+        await using (var atualizarNome = new SqlCommand(atualizarNomeSql, conexao, transacao))
+        {
+            atualizarNome.Parameters.Add("@nome", SqlDbType.VarChar, 150).Value = nome.Trim();
+            AdicionarInteiro(atualizarNome, "@id", id);
+            if (await atualizarNome.ExecuteNonQueryAsync() != 1) return false;
+        }
+
+        if (!string.IsNullOrWhiteSpace(senhaHash))
+        {
+            const string atualizarSenhaSql = "UPDATE dbo.CredenciaisAcesso SET senha_hash=@senhaHash WHERE pessoa_id=@id AND perfil='Funcionario' AND ativo=1";
+            await using var atualizarSenha = new SqlCommand(atualizarSenhaSql, conexao, transacao);
+            AdicionarInteiro(atualizarSenha, "@id", id);
+            atualizarSenha.Parameters.Add("@senhaHash", SqlDbType.VarChar, 200).Value = senhaHash;
+            if (await atualizarSenha.ExecuteNonQueryAsync() != 1) return false;
+        }
+
+        if (solicitacaoId.HasValue)
+        {
+            const string concluirSql = "UPDATE dbo.SolicitacoesRecuperacaoSenha SET status='Aprovada' WHERE solicitacao_id=@solicitacaoId AND pessoa_id=@id AND status='Pendente'";
+            await using var concluir = new SqlCommand(concluirSql, conexao, transacao);
+            AdicionarInteiro(concluir, "@solicitacaoId", solicitacaoId.Value);
+            AdicionarInteiro(concluir, "@id", id);
+            if (await concluir.ExecuteNonQueryAsync() != 1) return false;
+        }
+
+        await transacao.CommitAsync();
+        return true;
     }
 
     public async Task<List<Categoria>> ListarCategoriasAsync()

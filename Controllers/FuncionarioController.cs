@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
 using SIVAD.Models.ViewModels;
 using SIVAD.Repositories;
+using SIVAD.Filtros;
 
 namespace SIVAD.Controllers;
 
+[ExigirSessao("Funcionario")]
 public class FuncionarioController : Controller
 {
     private readonly IRepositorioSIVAD _repository;

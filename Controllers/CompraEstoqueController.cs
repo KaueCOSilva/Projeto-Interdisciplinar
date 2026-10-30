@@ -3,9 +3,11 @@ using SIVAD.Models;
 using SIVAD.Models.ViewModels;
 using SIVAD.Repositories;
 using SIVAD.Strategies;
+using SIVAD.Filtros;
 
 namespace SIVAD.Controllers;
 
+[ExigirSessao("Administrador")]
 public class CompraEstoqueController : Controller
 {
     private readonly IRepositorioSIVAD _repository;

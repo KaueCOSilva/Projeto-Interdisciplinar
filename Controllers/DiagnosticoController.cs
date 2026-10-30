@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
 using SIVAD.Repositories;
+using SIVAD.Filtros;
 
 namespace SIVAD.Controllers;
 
 [Route("diagnostico/banco")]
+[ExigirSessao("Administrador")]
 public sealed class DiagnosticoController : Controller
 {
     private readonly IRepositorioSIVAD _repository;

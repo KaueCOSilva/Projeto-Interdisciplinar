@@ -62,7 +62,7 @@
                             asp-action="Notificacoes">
                         <i class="bi bi-bell"></i>
 
-                        @if (ViewBag.AlertasEstoque is int alertas && alertas > 0) { <span class="notification-dot" title="@alertas alertas de estoque" aria-label="@alertas alertas de estoque"></span> }
+                        @if (ViewBag.TotalNotificacoes is int alertas && alertas > 0) { <span class="notification-dot" title="@alertas notificações pendentes" aria-label="@alertas notificações pendentes"></span> }
                     </a>
 
                 </div>

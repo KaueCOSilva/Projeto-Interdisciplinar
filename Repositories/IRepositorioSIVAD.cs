@@ -34,9 +34,15 @@ public interface IRepositorioSIVAD
     Task<int> RegistrarDevolucaoAsync(int produtoCodigo, int quantidade);
 
     // FUNCIONÁRIOS: CREATE, UPDATE e DELETE lógico por desativação.
-    Task<int> CadastrarFuncionarioAsync(string nome);
+    Task<int> CadastrarFuncionarioAsync(string nome, string email, string senhaHash);
     Task<bool> DesativarFuncionarioAsync(int id);
-    Task<bool> AtualizarFuncionarioAsync(int id, string nome);
+    Task<bool> AtualizarFuncionarioAsync(int id, string nome, string? senhaHash, int? solicitacaoId);
+    Task<CredencialAcesso?> ObterCredencialAcessoAsync(int pessoaId);
+    Task<bool> ConfigurarPrimeiroAdministradorAsync(int pessoaId, string cpf, string email, string senhaHash);
+    Task<bool> ConfigurarAcessoFuncionarioAsync(int pessoaId, string email, string senhaHash);
+    Task<bool> RegistrarSolicitacaoRecuperacaoSenhaAsync(int pessoaId, string nome, string email);
+    Task<List<SolicitacaoRecuperacaoSenhaViewModel>> ListarSolicitacoesRecuperacaoSenhaAsync();
+    Task<bool> RejeitarSolicitacaoRecuperacaoSenhaAsync(int solicitacaoId);
     Task<List<Categoria>> ListarCategoriasAsync();
     Task<int> CadastrarProdutoAsync(Produto produto);
     Task<DatabaseConnectionInfoViewModel> ObterDiagnosticoBancoAsync();

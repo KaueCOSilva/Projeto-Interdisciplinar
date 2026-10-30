@@ -30,7 +30,7 @@
                     <a class="user-management-notification" asp-controller="Administrador"
                         asp-action="Notificacoes" aria-label="Notificações">
                         <i class="bi bi-bell" aria-hidden="true"></i>
-                        @if (ViewBag.AlertasEstoque is int alertas && alertas > 0) { <span title="@alertas alertas de estoque" aria-label="@alertas alertas de estoque"></span> }
+                        @if (ViewBag.TotalNotificacoes is int alertas && alertas > 0) { <span title="@alertas notificações pendentes" aria-label="@alertas notificações pendentes"></span> }
                     </a>
                 </div>
             </header>
@@ -38,12 +38,13 @@
             <div class="user-management-content">
                 <section class="user-management-intro" aria-labelledby="user-management-heading">
                     <h2 id="user-management-heading">Gerenciamento de Funcionários</h2>
-                    <p>Gerencie os funcionários cadastrados e atualize seus nomes</p>
+                    <p>Gerencie os funcionários cadastrados e atualize seus dados de acesso</p>
                 </section>
 
                 @if (TempData["Erro"] is string erro) { <div class="alert alert-danger" role="alert">@erro</div> }
                 @if (TempData["Sucesso"] is string sucesso) { <div class="alert alert-success" role="status">@sucesso</div> }
-                <div class="alert alert-info" role="status">A lista abaixo vem da tabela Funcionarios. Remover desativa o funcionário, preservando pedidos antigos. O schema ainda não armazena senhas de acesso.</div>
+                @if (TempData["Aviso"] is string aviso) { <div class="alert alert-info" role="status">@aviso</div> }
+                <div class="alert alert-info" role="status">A lista abaixo vem da tabela Funcionarios. O acesso é mantido separadamente, com senha em hash; remover desativa o funcionário e preserva pedidos antigos.</div>
 
                 <section class="user-management-panel employee-edit-panel" aria-labelledby="employee-edit-heading">
                     <div class="user-management-panel-heading">
@@ -56,6 +57,10 @@
                     <form id="employeeEditForm" class="employee-edit-form" asp-controller="Administrador" asp-action="EditarFuncionario" method="post" autocomplete="off">
                         @Html.AntiForgeryToken()
                         <input id="editEmployeeId" type="hidden" name="id" value="@Model.FuncionarioEmEdicaoId" />
+                        @if (Model.SolicitacaoRecuperacaoId.HasValue)
+                        {
+                            <input type="hidden" name="solicitacaoId" value="@Model.SolicitacaoRecuperacaoId" />
+                        }
                         <div class="employee-edit-fields">
                             <div class="user-management-field">
                                 <label for="editEmployeeName">Nome do Funcionário</label>
@@ -64,6 +69,10 @@
                             <div class="user-management-field">
                                 <label for="editEmployeeIdDisplay">ID do Funcionário</label>
                                 <input id="editEmployeeIdDisplay" class="form-control user-management-input" type="text" value="@Model.FuncionarioEmEdicaoId" placeholder="Selecione um funcionário" readonly />
+                            </div>
+                            <div class="user-management-field">
+                                <label for="editEmployeePassword">@(Model.SolicitacaoRecuperacaoId.HasValue ? "Nova senha do funcionário" : "Nova senha (opcional)")</label>
+                                <input id="editEmployeePassword" class="form-control user-management-input" type="password" name="novaSenha" placeholder="Digite a nova senha" minlength="8" autocomplete="new-password" required="@Model.SolicitacaoRecuperacaoId.HasValue" />
                             </div>
                         </div>
                         @if (Model.FuncionarioEmEdicaoId.HasValue)
@@ -100,6 +109,7 @@
                                         <input type="hidden" name="editarId" value="@funcionario.Id" />
                                         <button class="registered-user-edit" type="submit" aria-label="Editar @funcionario.Nome">Editar</button>
                                     </form>
+                                    <a class="registered-user-edit" asp-controller="Administrador" asp-action="ConfigurarAcessoFuncionario" asp-route-id="@funcionario.Id" aria-label="Configurar acesso de @funcionario.Nome">Acesso</a>
                                     <form asp-controller="Administrador" asp-action="ExcluirUsuario" method="post" onsubmit="return confirm('Remover este funcionário da lista? Os pedidos históricos serão preservados.');">
                                         @Html.AntiForgeryToken()
                                         <input type="hidden" name="id" value="@funcionario.Id" />

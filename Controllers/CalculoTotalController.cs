@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
 using SIVAD.Repositories;
 using SIVAD.Strategies;
+using SIVAD.Filtros;
 
 namespace SIVAD.Controllers
 {
+    [ExigirSessao]
     public class CalculoTotalController : Controller
     {
         private readonly IRepositorioSIVAD _repository;

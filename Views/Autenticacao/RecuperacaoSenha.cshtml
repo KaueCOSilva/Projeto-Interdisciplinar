@@ -51,10 +51,14 @@
                 Preencha os dados abaixo para solicitar recuperação
             </p>
 
+            @if (TempData["Sucesso"] is string sucesso) { <div class="alert alert-success" role="status">@sucesso</div> }
+            @if (!ViewData.ModelState.IsValid) { @Html.ValidationSummary(false, "", new { @class = "alert alert-danger" }) }
+
             <!-- Formulário -->
             <form asp-controller="Autenticacao"
                     asp-action="RecuperacaoSenha"
                     method="post">
+                @Html.AntiForgeryToken()
 
                 <!-- Nome do usuário -->
                 <div class="form-group">
@@ -68,6 +72,7 @@
                             name="nomeUsuario"
                             class="form-control"
                             placeholder="Digite o Nome de Usuário"
+                            value="@ViewBag.NomeUsuario"
                             autocomplete="username"
                             required />
 
@@ -85,6 +90,7 @@
                             name="uid"
                             class="form-control"
                             placeholder="Digite seu UID"
+                            value="@ViewBag.Uid"
                             required />
 
                 </div>
@@ -93,7 +99,7 @@
                 <div class="form-group">
 
                     <label for="email" class="form-label">
-                        E-mail de envio de redefinição de senha*
+                        E-mail cadastrado para conferência*
                     </label>
 
                     <input type="email"
@@ -101,6 +107,7 @@
                             name="email"
                             class="form-control"
                             placeholder="seuemail@exemplo.com"
+                            value="@ViewBag.Email"
                             autocomplete="email"
                             required />
 
@@ -120,8 +127,7 @@
                 <i class="bi bi-info-circle"></i>
 
                 <span>
-                    A solicitação será enviada ao administrador do
-                    sistema para análise e aprovação.
+                    A solicitação será analisada pelo administrador. Nenhum e-mail automático será enviado.
                 </span>
 
             </div>

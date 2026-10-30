@@ -45,6 +45,7 @@
             </div>
 
             <form method="post">
+                @Html.AntiForgeryToken()
 
                 <div>
                     <label for="uid" class="form-label">
@@ -56,6 +57,7 @@
                             name="uid"
                             class="form-control"
                             placeholder="Digite seu UID"
+                            value="@ViewBag.Uid"
                             autocomplete="username"
                             required />
                 </div>
@@ -89,20 +91,15 @@
 
             </form>
 
-            <div class="mt-3 d-grid gap-2" aria-label="Acessos de demonstração">
+            @if (!ViewData.ModelState.IsValid)
+            {
+                @Html.ValidationSummary(false, "", new { @class = "alert alert-danger" })
+            }
+
+            <div class="mt-3 d-grid gap-2" aria-label="Atalhos de acesso">
                 <p class="text-center small text-muted mb-1">
-                    Acesso de demonstração — sem autenticação nesta etapa
+                    Acesso protegido — entre antes de abrir uma área
                 </p>
-                <a class="btn btn-outline-primary btn-sm"
-                    asp-controller="Administrador"
-                    asp-action="Dashboard">
-                    Área administrativa
-                </a>
-                <a class="btn btn-outline-secondary btn-sm"
-                    asp-controller="Funcionario"
-                    asp-action="RegistrarPedido">
-                    Área do funcionário
-                </a>
             </div>
 
         </div>
