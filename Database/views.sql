@@ -194,3 +194,73 @@ INNER JOIN Produtos p
 INNER JOIN Categorias c
     ON c.categoria_codigo = p.categoria_codigo;
 --------------------------------------------------------------------------
+--view compra estoque detalhada
+GO
+CREATE VIEW vw_ComprasEstoqueDetalhadas
+AS
+SELECT
+    c.numero,
+    c.data_compra,
+    c.total,
+    c.status,
+    c.administrador_id,
+    c.fornecedor_id,
+    COALESCE(
+        c.fornecedor_nome, p.nome,   '') AS fornecedor_nome
+FROM CompraEstoque AS c
+LEFT JOIN Fornecedores AS f
+    ON f.pessoa_id = c.fornecedor_id
+LEFT JOIN Pessoas AS p
+    ON p.pessoa_id = f.pessoa_id;
+GO
+--------------------------------------------------------------------------
+--view vw_VendasComprasMensais
+GO
+CREATE VIEW vw_VendasComprasMensais
+AS
+WITH Meses(Mes) AS
+(
+    SELECT Mes
+    FROM
+    (
+        VALUES
+            (1), (2), (3), (4), (5), (6),
+            (7), (8), (9), (10), (11), (12)
+    ) AS Lista(Mes)
+),
+Vendas AS
+(
+    SELECT
+        MONTH(data_pedido) AS Mes,
+        SUM(valor_total) AS Total
+    FROM Pedidos
+    WHERE
+        status = 1
+        AND YEAR(data_pedido) = YEAR(GETDATE())
+    GROUP BY
+        MONTH(data_pedido)
+),
+Compras AS
+(
+    SELECT
+        MONTH(data_compra) AS Mes,
+        SUM(total) AS Total
+    FROM CompraEstoque
+    WHERE
+        status = 1
+        AND YEAR(data_compra) = YEAR(GETDATE())
+    GROUP BY
+        MONTH(data_compra)
+)
+SELECT
+    Meses.Mes,
+    COALESCE(Vendas.Total, 0) AS TotalVendas,
+    COALESCE(Compras.Total, 0) AS TotalCompras
+FROM Meses
+LEFT JOIN Vendas
+    ON Vendas.Mes = Meses.Mes
+LEFT JOIN Compras
+    ON Compras.Mes = Meses.Mes;
+
+GO
+--------------------------------------------------------------------------
