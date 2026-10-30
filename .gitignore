@@ -1,7 +1,3 @@
-# Regras existentes do projeto
-DataBase/
-*.sql
-
 # Artefatos gerados pelo .NET
 bin/
 obj/
