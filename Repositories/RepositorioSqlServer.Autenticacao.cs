@@ -8,6 +8,15 @@ namespace SIVAD.Repositories;
 /// <summary>Consultas e gravações de acesso e recuperação de senha.</summary>
 public sealed partial class RepositorioSqlServer
 {
+    public async Task<bool> ExisteAdministradorConfiguradoAsync()
+    {
+        const string sql = "SELECT COUNT(*) FROM dbo.CredenciaisAcesso WHERE perfil='Administrador'";
+        await using var conexao = CriarConexao();
+        await conexao.OpenAsync();
+        await using var comando = new SqlCommand(sql, conexao);
+        return Convert.ToInt32(await comando.ExecuteScalarAsync()) > 0;
+    }
+
     public async Task<CredencialAcesso?> ObterCredencialAcessoAsync(int pessoaId)
     {
         if (pessoaId <= 0) return null;

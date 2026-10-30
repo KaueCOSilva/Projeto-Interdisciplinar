@@ -29,7 +29,7 @@ FROM dbo.Administradores a
 INNER JOIN dbo.Pessoas p ON p.id = a.pessoa_id;
 ```
 
-Com a migração aplicada e o site iniciado, abra `/Autenticacao/ConfigurarPrimeiroAdministrador`, informe UID, CPF e e-mail exatamente como constam no banco, a chave local e uma senha nova de pelo menos 8 caracteres. A senha é gravada como hash. Depois de configurar a primeira conta de administrador, remova a chave dos User Secrets (`dotnet user-secrets remove "Autenticacao:ChaveConfiguracaoInicial" --project SIVAD.csproj`). A rota de primeiro acesso não cria uma segunda conta administrativa inicial.
+Com a migração aplicada e o site iniciado, o link **Configurar o primeiro administrador** aparece na tela de login enquanto ainda não houver credencial de administrador. Ele leva à rota `/Autenticacao/ConfigurarPrimeiroAdministrador`. Informe UID, CPF e e-mail exatamente como constam no banco, a chave local e uma senha nova de pelo menos 8 caracteres. A senha é gravada como hash. Depois de configurar a primeira conta de administrador, o link some do login; a verificação no repositório também impede criar uma segunda conta administrativa inicial. Remova a chave dos User Secrets (`dotnet user-secrets remove "Autenticacao:ChaveConfiguracaoInicial" --project SIVAD.csproj`).
 
 Esse cadastro inicial usa uma transação `Serializable` para impedir que duas configurações simultâneas passem pela verificação de “primeiro administrador”. É a única operação de autenticação com esse nível de isolamento; os demais fluxos usam transações simples apenas para manter juntas gravações que formam uma única operação lógica.
 
@@ -49,7 +49,7 @@ Na tela **Esqueci minha senha**, informe nome cadastrado, UID e o e-mail já ass
 
 O pedido aparece na central **Notificações**, junto aos alertas de estoque. **Rejeitar** muda o estado para `Rejeitada` e o pedido desaparece da lista. **Aprovar** encaminha para **Funcionários → Gerenciamento de Funcionários**, com o funcionário e seu ID carregados; o ID continua somente leitura. O administrador digita a nova senha (mínimo de 8 caracteres) no campo de senha e clica **Salvar alterações**. A atualização do nome/senha e a mudança do pedido para `Aprovada` acontecem na mesma transação. A solicitação continua pendente até a gravação terminar com sucesso.
 
-Como o projeto não tem serviço SMTP e a pessoa usuária confirmou que não deseja envio automático, o administrador deve informar a senha aprovada ao funcionário por um canal externo seguro. Não há menu nem página separada de solicitações. A configuração do primeiro administrador continua disponível pela rota `/Autenticacao/ConfigurarPrimeiroAdministrador`, mas o link foi removido da parte inferior do login.
+Como o projeto não tem serviço SMTP e a pessoa usuária confirmou que não deseja envio automático, o administrador deve informar a senha aprovada ao funcionário por um canal externo seguro. Não há menu nem página separada de solicitações.
 
 ## Etapa 6 — verificação
 

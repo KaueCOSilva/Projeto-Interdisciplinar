@@ -26,8 +26,27 @@ public sealed class AutenticacaoController : Controller
         _ambiente = ambiente;
     }
 
+    private async Task PrepararLoginAsync()
+    {
+        try
+        {
+            ViewBag.PodeConfigurarPrimeiroAdministrador =
+                !await _repositorio.ExisteAdministradorConfiguradoAsync();
+        }
+        catch (SqlException ex)
+        {
+            _registro.LogWarning(ex, "Não foi possível consultar se a configuração inicial do administrador já foi concluída.");
+            // O link fica visível quando o banco não pode ser consultado; a gravação continua protegida no repositório.
+            ViewBag.PodeConfigurarPrimeiroAdministrador = true;
+        }
+    }
+
     [HttpGet]
-    public IActionResult Login() => View();
+    public async Task<IActionResult> Login()
+    {
+        await PrepararLoginAsync();
+        return View();
+    }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -37,6 +56,7 @@ public sealed class AutenticacaoController : Controller
         if (!int.TryParse(uid, out var pessoaId) || pessoaId <= 0 || string.IsNullOrWhiteSpace(senha))
         {
             ModelState.AddModelError(string.Empty, "Informe o UID numérico e a senha.");
+            await PrepararLoginAsync();
             return View();
         }
 
@@ -46,6 +66,7 @@ public sealed class AutenticacaoController : Controller
             if (credencial is null || !GerenciadorSenhas.VerificarSenha(senha, credencial.SenhaHash))
             {
                 ModelState.AddModelError(string.Empty, "UID ou senha inválidos.");
+                await PrepararLoginAsync();
                 return View();
             }
 
@@ -60,6 +81,7 @@ public sealed class AutenticacaoController : Controller
         catch (SqlException ex)
         {
             _registro.LogError(ex, "Erro SQL ao validar credenciais. Código {CodigoSql}, estado {EstadoSql}.", ex.Number, ex.State);
+            ViewBag.PodeConfigurarPrimeiroAdministrador = true;
             ModelState.AddModelError(string.Empty, _ambiente.IsDevelopment()
                 ? $"Falha SQL {ex.Number} (estado {ex.State}). Consulte a saída do terminal e confirme a conexão e a migração."
                 : "Não foi possível acessar as credenciais. Verifique a conexão e execute Database/AtualizarBanco.sql.");

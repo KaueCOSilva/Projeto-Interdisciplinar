@@ -38,6 +38,7 @@ public interface IRepositorioSIVAD
     Task<bool> DesativarFuncionarioAsync(int id);
     Task<bool> AtualizarFuncionarioAsync(int id, string nome, string? senhaHash, int? solicitacaoId);
     Task<CredencialAcesso?> ObterCredencialAcessoAsync(int pessoaId);
+    Task<bool> ExisteAdministradorConfiguradoAsync();
     Task<bool> ConfigurarPrimeiroAdministradorAsync(int pessoaId, string cpf, string email, string senhaHash);
     Task<bool> ConfigurarAcessoFuncionarioAsync(int pessoaId, string email, string senhaHash);
     Task<bool> RegistrarSolicitacaoRecuperacaoSenhaAsync(int pessoaId, string nome, string email);

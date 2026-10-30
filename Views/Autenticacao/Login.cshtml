@@ -97,9 +97,12 @@
             }
 
             <div class="mt-3 d-grid gap-2" aria-label="Atalhos de acesso">
-                <p class="text-center small text-muted mb-1">
-                    Acesso protegido — entre antes de abrir uma área
-                </p>
+                @if (ViewBag.PodeConfigurarPrimeiroAdministrador is true)
+                {
+                    <a asp-controller="Autenticacao" asp-action="ConfigurarPrimeiroAdministrador" class="text-center small text-decoration-none">
+                        Configurar o primeiro administrador
+                    </a>
+                }
             </div>
 
         </div>
