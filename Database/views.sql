@@ -120,7 +120,9 @@ OUTER APPLY
         ON ce.numero = ice.compra_numero
         AND ce.status = 1
     WHERE ice.produto_codigo = p.produto_codigo
-
+ORDER BY
+    ce.data_compra DESC,
+    ce.numero DESC
 ) ultimaCompra
 -------------------------------------------------------------------------
 ------------------------View Funcionário Ativo---------------------------
