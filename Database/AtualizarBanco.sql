@@ -131,41 +131,6 @@ BEGIN
 END;
 GO
 
--- Credenciais separadas dos dados de funcionário/administrador.
--- UID de login corresponde a Pessoas.id; a aplicação grava apenas hash de senha.
-IF OBJECT_ID(N'dbo.CredenciaisAcesso', N'U') IS NULL
-BEGIN
-    CREATE TABLE dbo.CredenciaisAcesso (
-        pessoa_id INT NOT NULL,
-        perfil VARCHAR(20) NOT NULL,
-        email VARCHAR(254) NOT NULL,
-        senha_hash VARCHAR(200) NOT NULL,
-        ativo BIT NOT NULL CONSTRAINT DF_CredenciaisAcesso_Ativo DEFAULT (1),
-        data_criacao DATETIME2 NOT NULL CONSTRAINT DF_CredenciaisAcesso_Data DEFAULT (SYSDATETIME()),
-        CONSTRAINT PK_CredenciaisAcesso PRIMARY KEY (pessoa_id),
-        CONSTRAINT FK_CredenciaisAcesso_Pessoas FOREIGN KEY (pessoa_id) REFERENCES dbo.Pessoas(id),
-        CONSTRAINT CK_CredenciaisAcesso_Perfil CHECK (perfil IN ('Administrador', 'Funcionario'))
-    );
-    CREATE UNIQUE INDEX UX_CredenciaisAcesso_Email ON dbo.CredenciaisAcesso(email);
-END;
-GO
-
--- O administrador analisa a solicitação e define uma nova senha; nenhum e-mail é enviado.
-IF OBJECT_ID(N'dbo.SolicitacoesRecuperacaoSenha', N'U') IS NULL
-BEGIN
-    CREATE TABLE dbo.SolicitacoesRecuperacaoSenha (
-        solicitacao_id INT IDENTITY(1,1) NOT NULL,
-        pessoa_id INT NOT NULL,
-        data_solicitacao DATETIME2 NOT NULL CONSTRAINT DF_SolicitacoesSenha_Data DEFAULT (SYSDATETIME()),
-        status VARCHAR(12) NOT NULL CONSTRAINT DF_SolicitacoesSenha_Status DEFAULT ('Pendente'),
-        CONSTRAINT PK_SolicitacoesRecuperacaoSenha PRIMARY KEY (solicitacao_id),
-        CONSTRAINT FK_SolicitacoesSenha_Credenciais FOREIGN KEY (pessoa_id) REFERENCES dbo.CredenciaisAcesso(pessoa_id),
-        CONSTRAINT CK_SolicitacoesSenha_Status CHECK (status IN ('Pendente', 'Aprovada', 'Rejeitada'))
-    );
-    CREATE INDEX IX_SolicitacoesSenha_Status_Data ON dbo.SolicitacoesRecuperacaoSenha(status, data_solicitacao);
-END;
-GO
-
 -- Todos os campos abaixo devem retornar um valor diferente de NULL.
 SELECT DB_NAME() AS banco_migrado,
        COL_LENGTH('dbo.Pedidos', 'data_pedido') AS data_pedido,
@@ -174,6 +139,4 @@ SELECT DB_NAME() AS banco_migrado,
        COL_LENGTH('dbo.CompraEstoque', 'fornecedor_nome') AS fornecedor_nome,
        COL_LENGTH('dbo.Produtos', 'cor') AS produto_cor,
        COL_LENGTH('dbo.Itens_CompraEstoque', 'cor') AS item_compra_cor,
-       COL_LENGTH('dbo.Devolucoes', 'numero') AS devolucoes,
-       OBJECT_ID(N'dbo.CredenciaisAcesso', N'U') AS credenciais_acesso,
-       OBJECT_ID(N'dbo.SolicitacoesRecuperacaoSenha', N'U') AS solicitacoes_senha;
+       COL_LENGTH('dbo.Devolucoes', 'numero') AS devolucoes;
