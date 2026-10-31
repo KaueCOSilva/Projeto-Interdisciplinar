@@ -103,19 +103,13 @@ O programa também precisa de recursos de integração C# que não são comandos
 
 As transações e as verificações de estoque não foram removidas para encurtar o código. Uma venda ou compra grava mais de uma tabela; sem a transação, um erro entre os comandos poderia deixar o cabeçalho, os itens e o saldo divergentes. O princípio é o mesmo de atomicidade discutido no PDF de transações.
 
-## 10. Etapas recomendadas para Views e Procedures
+## 10. Views e Procedures no projeto atual
 
-Neste momento, não criamos views, funções, procedures ou triggers no banco: o pedido indica que essa migração será uma etapa posterior. O SQL permanece explícito no repositório, que permite acompanhar cada comando enquanto vocês aprendem o fluxo.
+O banco possui as Views e Procedures previstas no documento, criadas pelos scripts `Database/Views.sql` e `Database/Procedures.sql`. As Views apoiam consultas e relatórios; as Procedures apresentam operações parametrizadas de cadastro e movimentação.
 
-Quando a turma estiver pronta, a mudança pode ser feita sem uma reescrita geral:
+A aplicação MVC continua usando o Repository para manter explícitas as consultas, validações e transações de estoque. Assim, existe uma única implementação ativa das regras de negócio no fluxo da aplicação, sem duplicação por triggers. As Views e Procedures permanecem disponíveis para consulta e demonstração no SQL Client.
 
-1. Criar primeiro uma **view somente de leitura** para um relatório, conferir os mesmos dados no SQL Server e na tela e comparar os resultados.
-2. Migrar uma **consulta do repositório** para essa view, mantendo a interface MVC e os filtros/parâmetros necessários.
-3. Escolher uma gravação pequena e criar uma **procedure** com parâmetros; testar valores válidos e inválidos antes de trocar a chamada C#.
-4. Migrar as gravações transacionais maiores uma por vez, testando `COMMIT`, `ROLLBACK`, chaves estrangeiras e o saldo de estoque.
-5. Avaliar **triggers** somente depois de decidir se a baixa/entrada de estoque pertence ao repositório ou ao banco. Hoje o repositório já atualiza o estoque; adicionar trigger com a mesma regra agora executaria a movimentação duas vezes.
-
-Em cada etapa, manter uma só implementação ativa da regra, aplicar o script de banco, compilar o projeto e comparar a tela com consultas `SELECT` feitas diretamente no SQL Server. Assim o código continua explicável e cada mudança tem uma verificação objetiva.
+As Procedures devem ser executadas somente com parâmetros de teste válidos e de forma controlada, pois algumas alteram dados. A criação dos objetos usa `CREATE OR ALTER`, permitindo reaplicar o script sem precisar apagar as Views ou Procedures existentes.
 
 
 ## 11. Simplificações aplicadas com base no material enviado
@@ -124,7 +118,7 @@ Em cada etapa, manter uma só implementação ativa da regra, aplicar o script d
 - O gráfico de vendas/compras mensais usava uma CTE e uma tabela de meses construída no SQL. Agora o SQL faz dois `SELECT` com `GROUP BY`, reunidos por `UNION ALL`, que retorna os totais de cada movimento. O C# cria os 12 meses e começa os totais em zero; por isso os meses sem registros continuam aparecendo no gráfico como zero, sem precisar da CTE.
 - Foi retirada a dica `ROWLOCK`, que não alterava a regra de negócio. O `UPDLOCK` foi mantido no pedido porque protege contra duas finalizações concorrentes. A parte restante da gravação e as transações não foram reescritas.
 
-Essas mudanças simplificam construções da consulta sem alterar os dados que alimentam as telas. Views, procedures e triggers seguem reservados para uma etapa posterior, com testes e sem duplicar as regras de estoque.
+Essas mudanças simplificam construções da consulta sem alterar os dados que alimentam as telas. As Views e Procedures já fazem parte do banco atual; triggers continuam fora do escopo para evitar duplicar as regras de estoque mantidas no Repository.
 
 
 ## 12. Comparação direta com o SistemaTarefas do professor

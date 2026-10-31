@@ -109,7 +109,6 @@
                                         <input type="hidden" name="editarId" value="@funcionario.Id" />
                                         <button class="registered-user-edit" type="submit" aria-label="Editar @funcionario.Nome">Editar</button>
                                     </form>
-                                    <a class="registered-user-edit" asp-controller="Administrador" asp-action="ConfigurarAcessoFuncionario" asp-route-id="@funcionario.Id" aria-label="Configurar acesso de @funcionario.Nome">Acesso</a>
                                     <form asp-controller="Administrador" asp-action="ExcluirUsuario" method="post" onsubmit="return confirm('Remover este funcionário da lista? Os pedidos históricos serão preservados.');">
                                         @Html.AntiForgeryToken()
                                         <input type="hidden" name="id" value="@funcionario.Id" />

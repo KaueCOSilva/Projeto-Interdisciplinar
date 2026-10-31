@@ -49,8 +49,8 @@ body.notifications-page .notifications-topbar-actions {
 body.notifications-page .notifications-bell-button {
     position: relative;
     display: inline-flex;
-    width: 21px;
-    height: 27px;
+    width: 22px;
+    height: 28px;
     align-items: center;
     justify-content: center;
     padding: 0;
@@ -58,7 +58,7 @@ body.notifications-page .notifications-bell-button {
     background: transparent;
     color: #697180;
     cursor: pointer;
-    font-size: 15px;
+    font-size: 17px;
 }
 
 body.notifications-page .notifications-bell-button span {

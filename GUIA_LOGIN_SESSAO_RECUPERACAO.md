@@ -10,7 +10,7 @@ As senhas não são armazenadas em texto simples como no exemplo de aula. `Geren
 
 No SQL Client, conecte ao banco que a aplicação usa e execute `Database/AtualizarBanco.sql`. O script é idempotente e adiciona `CredenciaisAcesso` e `SolicitacoesRecuperacaoSenha`, sem apagar dados existentes. Em banco novo, execute primeiro `Database/Banco.sql` e depois `Database/AtualizarBanco.sql`.
 
-A conta fica ligada a `Pessoas.id`, guarda perfil, e-mail, hash e estado ativo. A solicitação de recuperação fica ligada à conta e tem estado `Pendente`, `Aprovada` ou `Rejeitada`. Os registros demonstrativos que já existiam não ganham uma senha padrão.
+A conta fica ligada a `Pessoas.id`, guarda perfil, e-mail, hash e estado ativo. A solicitação de recuperação fica ligada à conta e tem estado `Pendente`, `Aprovada` ou `Rejeitada`. A carga demonstrativa do projeto fornece credenciais de apresentação com senhas conhecidas apenas para teste; as senhas continuam armazenadas somente como hash.
 
 ## Etapa 2 — preparar o primeiro administrador
 

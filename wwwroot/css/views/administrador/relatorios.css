@@ -68,14 +68,14 @@ body.reports-page .top-actions {
 body.reports-page .notification {
     position: relative;
 
-    width: 24px;
-    height: 24px;
+    width: 22px;
+    height: 28px;
 
     display: flex;
     align-items: center;
     justify-content: center;
 
-    color: #566170;
+    color: #697180;
 
     font-size: 17px;
 }
@@ -83,15 +83,16 @@ body.reports-page .notification {
 body.reports-page .notification-dot {
     position: absolute;
 
-    width: 5px;
-    height: 5px;
+    width: 6px;
+    height: 6px;
 
-    background: #f45151;
+    background: #ef4444;
 
     border-radius: 50%;
 
-    top: 3px;
-    right: 3px;
+    top: 4px;
+    right: 1px;
+    border: 1px solid #fff;
 }
 
 
