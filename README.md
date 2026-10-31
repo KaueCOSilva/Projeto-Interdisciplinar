@@ -29,12 +29,14 @@ O SQL Server precisa estar iniciado e acessível pelo computador que executa o s
 
 Conectem ao servidor pelo SQL Client.
 
-- **Banco novo:** executem `Database/Banco.sql` uma vez e, em seguida, `Database/AtualizarBanco.sql` no banco criado. O primeiro cria `SQLVendas2026` e as tabelas-base; o segundo adiciona as atualizações da aplicação, incluindo as tabelas de acesso.
-- **Banco existente:** abram `Database/AtualizarBanco.sql` no SQL Client conectado ao servidor de vocês e executem. O script adiciona `data_pedido`, flags `ativo`, `fornecedor_nome`, as colunas `cor` de produto/itens, `Devolucoes`, `CredenciaisAcesso` e `SolicitacoesRecuperacaoSenha` se estiverem ausentes; também permite `fornecedor_id` e `Pedidos.cliente_id` nulos. Inclui registros demonstrativos se ainda não existirem. É uma migração aditiva; não apaga nem substitui registros. O site MVC não altera o schema automaticamente.
+- **Banco novo:** executem `Database/Banco.sql` uma vez e, em seguida, `Database/AtualizarBanco.sql`, `Database/Insercoes.sql`, `Database/Views.sql` e `Database/Procedures.sql`, nessa ordem. O primeiro cria as 14 tabelas do modelo; a migração confere/atualiza bases antigas; `Insercoes.sql` carrega os dados do documento; `Views.sql` cria as 20 Views; e `Procedures.sql` cria as 26 Procedures sem executar testes destrutivos.
+- **Banco existente:** executem `Database/AtualizarBanco.sql` no SQL Client conectado ao servidor. Depois, se desejarem a carga demonstrativa do documento, executem `Database/Insercoes.sql`; por fim executem `Database/Views.sql` e `Database/Procedures.sql`. A migração é aditiva: adiciona colunas/tabelas ausentes, não apaga nem substitui registros e não insere mais dados de demonstração automaticamente.
 
 Antes de executar a migração, confirme que o catálogo `SQLVendas2026` corresponde ao `Initial Catalog` de `ConnectionStrings:DefaultConnection`; o script seleciona esse banco explicitamente. Ele mostra o `banco_alvo`, recusa bancos sem as tabelas-base do SIVAD e, ao final, retorna o banco e as colunas verificadas. O campo textual `fornecedor_nome` é o nome digitado do **fornecedor**; não existe `funcionario_nome`: o nome do funcionário é armazenado em `Pessoas.nome` e ligado por `Funcionarios.pessoa_id`.
 
-Os scripts criam um administrador e um funcionário fictícios, mas não criam contas nem senhas padrão. A primeira credencial administrativa é configurada uma vez usando UID, CPF e e-mail já cadastrados e uma chave local. Também garantem a categoria **Vestuário** para testes; nas demais categorias e produtos, cadastrem o que for necessário antes de registrar operações. Fornecedores são informados por texto no lançamento de compra. O sistema não solicita nem processa CPF de cliente ao registrar pedidos, que são salvos sem associação a cliente.
+O arquivo `Insercoes.sql` contém os administradores, funcionários, clientes, fornecedores, categorias, produtos, credenciais, compras, pedidos, devoluções e solicitações de recuperação descritos no documento. A carga é idempotente e pode ser executada novamente sem duplicar esses registros. As Procedures ficam disponíveis para demonstração no SQL Client; o site MVC continua usando o Repository, preservando as transações e validações da aplicação.
+
+Para a apresentação, a carga cria credenciais conhecidas: Ana usa o e-mail `admin1@example.invalid` e a senha `Sivad@2026!`; João usa o e-mail `funcionario1@example.invalid` e a senha `Funcionario@2026!`. O UID é o `Pessoas.id` e pode ser consultado no banco. Se a carga antiga já tiver sido executada, rode `Database/RedefinirCredenciaisDemonstracao.sql` para atualizar essas duas senhas sem gravá-las em texto claro.
 
 ## 2. Configurar e executar no VS Code
 
@@ -73,7 +75,7 @@ Os seis resultados devem ser diferentes de `NULL`. Pedidos antigos sem data rece
 
 Em ambiente `Development`, abram `/diagnostico/banco` na mesma origem do site. A resposta mostra o nome do servidor, o banco conectado e contagens de produtos, funcionários ativos, pedidos e compras, sem mostrar a senha. Confiram que o banco e os registros são os esperados.
 
-A aplicação não apaga registros antigos automaticamente. Se a base já continha dados de teste de versões anteriores, eles continuam nela até serem removidos deliberadamente pelo SQL Client. Os scripts atuais inserem os registros fictícios de administrador e funcionário e garantem a categoria **Vestuário**; não inserem amostras de clientes ou produtos.
+A aplicação não apaga registros antigos automaticamente. Se a base já continha dados de teste de versões anteriores, eles continuam nela até serem removidos deliberadamente pelo SQL Client. Para uma base limpa e igual ao documento, executem os cinco scripts na ordem indicada acima.
 
 ## 4. Funcionalidades conectadas
 

@@ -1,4 +1,5 @@
 using WebApplication = Microsoft.AspNetCore.Builder.WebApplication;
+using SIVAD.Infrastructure;
 using SIVAD.Repositories;
 using SIVAD.Strategies;
 
@@ -14,7 +15,12 @@ builder.Services.AddSession(opcoes =>
     opcoes.Cookie.IsEssential = true;
 });
 
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews(opcoes =>
+{
+    // O navegador envia type="number" com ponto, enquanto o usuário brasileiro
+    // também pode digitar vírgula. Normalize antes do model binding decimal.
+    opcoes.ModelBinderProviders.Insert(0, new DecimalModelBinderProvider());
+});
 
 // Acesso ao SQL Server pelo Microsoft.Data.SqlClient, concentrado no repositório.
 builder.Services.AddScoped<IRepositorioSIVAD, RepositorioSqlServer>();

@@ -210,47 +210,39 @@ CREATE TABLE Devolucoes (
 );
 
 
--- Registros fictícios para demonstração. Não são contas de login.
-IF NOT EXISTS (
-    SELECT 1
-    FROM dbo.Administradores
-    WHERE cpf = '000.000.000-00'
-)
+-- 6. TABELAS DE AUTENTICAÇÃO E RECUPERAÇÃO DE ACESSO
+-- As credenciais ficam separadas dos dados de negócio e guardam apenas hash.
+IF OBJECT_ID(N'dbo.CredenciaisAcesso', N'U') IS NULL
 BEGIN
-    INSERT INTO dbo.Pessoas (nome)
-    VALUES ('Administrador de Demonstração');
-
-    DECLARE @AdministradorDemoId INT = CONVERT(INT, SCOPE_IDENTITY());
-
-    INSERT INTO dbo.Administradores (pessoa_id, cpf, email)
-    VALUES (@AdministradorDemoId, '000.000.000-00', 'admin.demo@example.invalid');
+    CREATE TABLE dbo.CredenciaisAcesso (
+        pessoa_id INT NOT NULL,
+        perfil VARCHAR(20) NOT NULL,
+        email VARCHAR(254) NOT NULL,
+        senha_hash VARCHAR(200) NOT NULL,
+        ativo BIT NOT NULL CONSTRAINT DF_CredenciaisAcesso_Ativo DEFAULT (1),
+        data_criacao DATETIME2 NOT NULL CONSTRAINT DF_CredenciaisAcesso_Data DEFAULT (SYSDATETIME()),
+        CONSTRAINT PK_CredenciaisAcesso PRIMARY KEY (pessoa_id),
+        CONSTRAINT FK_CredenciaisAcesso_Pessoas FOREIGN KEY (pessoa_id)
+            REFERENCES dbo.Pessoas(id),
+        CONSTRAINT CK_CredenciaisAcesso_Perfil CHECK (perfil IN ('Administrador', 'Funcionario'))
+    );
+    CREATE UNIQUE INDEX UX_CredenciaisAcesso_Email ON dbo.CredenciaisAcesso(email);
 END;
 GO
 
-IF NOT EXISTS (
-    SELECT 1
-    FROM dbo.Funcionarios f
-    INNER JOIN dbo.Pessoas p ON p.id = f.pessoa_id
-    WHERE p.nome = 'Funcionário de Demonstração'
-      AND f.ativo = 1
-)
+IF OBJECT_ID(N'dbo.SolicitacoesRecuperacaoSenha', N'U') IS NULL
 BEGIN
-    INSERT INTO dbo.Pessoas (nome)
-    VALUES ('Funcionário de Demonstração');
-
-    DECLARE @FuncionarioDemoId INT = CONVERT(INT, SCOPE_IDENTITY());
-
-    INSERT INTO dbo.Funcionarios (pessoa_id)
-    VALUES (@FuncionarioDemoId);
-END;
-GO
-IF NOT EXISTS (
-    SELECT 1
-    FROM dbo.Categorias
-    WHERE nome = N'Vestuário'
-)
-BEGIN
-    INSERT INTO dbo.Categorias (nome)
-    VALUES (N'Vestuário');
+    CREATE TABLE dbo.SolicitacoesRecuperacaoSenha (
+        solicitacao_id INT IDENTITY(1,1) NOT NULL,
+        pessoa_id INT NOT NULL,
+        data_solicitacao DATETIME2 NOT NULL CONSTRAINT DF_SolicitacoesSenha_Data DEFAULT (SYSDATETIME()),
+        status VARCHAR(12) NOT NULL CONSTRAINT DF_SolicitacoesSenha_Status DEFAULT ('Pendente'),
+        CONSTRAINT PK_SolicitacoesRecuperacaoSenha PRIMARY KEY (solicitacao_id),
+        CONSTRAINT FK_SolicitacoesSenha_Credenciais FOREIGN KEY (pessoa_id)
+            REFERENCES dbo.CredenciaisAcesso(pessoa_id),
+        CONSTRAINT CK_SolicitacoesSenha_Status CHECK (status IN ('Pendente', 'Aprovada', 'Rejeitada'))
+    );
+    CREATE INDEX IX_SolicitacoesSenha_Status_Data
+        ON dbo.SolicitacoesRecuperacaoSenha(status, data_solicitacao);
 END;
 GO

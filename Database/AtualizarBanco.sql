@@ -112,51 +112,8 @@ BEGIN
 END;
 GO
 
--- Registros fictícios para demonstração. Não são contas de login.
-IF NOT EXISTS (
-    SELECT 1
-    FROM dbo.Administradores
-    WHERE cpf = '000.000.000-00'
-)
-BEGIN
-    INSERT INTO dbo.Pessoas (nome)
-    VALUES ('Administrador de Demonstração');
-
-    DECLARE @AdministradorDemoId INT = CONVERT(INT, SCOPE_IDENTITY());
-
-    INSERT INTO dbo.Administradores (pessoa_id, cpf, email)
-    VALUES (@AdministradorDemoId, '000.000.000-00', 'admin.demo@example.invalid');
-END;
-GO
-
-IF NOT EXISTS (
-    SELECT 1
-    FROM dbo.Funcionarios f
-    INNER JOIN dbo.Pessoas p ON p.id = f.pessoa_id
-    WHERE p.nome = 'Funcionário de Demonstração'
-      AND f.ativo = 1
-)
-BEGIN
-    INSERT INTO dbo.Pessoas (nome)
-    VALUES ('Funcionário de Demonstração');
-
-    DECLARE @FuncionarioDemoId INT = CONVERT(INT, SCOPE_IDENTITY());
-
-    INSERT INTO dbo.Funcionarios (pessoa_id)
-    VALUES (@FuncionarioDemoId);
-END;
-GO
-
-IF NOT EXISTS (
-    SELECT 1
-    FROM dbo.Categorias
-    WHERE nome = N'Vestuário'
-)
-BEGIN
-    INSERT INTO dbo.Categorias (nome)
-    VALUES (N'Vestuário');
-END;
-GO
+-- A migração altera somente a estrutura. A carga demonstrativa do documento
+-- fica isolada em Database/Insercoes.sql para não misturar schema e dados.
 
 IF OBJECT_ID(N'dbo.Devolucoes', N'U') IS NULL
 BEGIN
