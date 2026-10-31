@@ -108,9 +108,10 @@ public sealed partial class RepositorioSqlServer
             var itens = await LerItensPedidoNaTransacaoAsync(conexao, transacao, codigo);
             foreach (var item in itens)
             {
-                await using var atualizacao = new SqlCommand("UPDATE Produtos SET estoque=estoque+@quantidade WHERE codigo=@produtoCodigo", conexao, transacao);
+                await using var atualizacao = new SqlCommand("UPDATE Produtos SET estoque=estoque+@quantidade WHERE codigo=@produtoCodigo AND estoque<=2147483647-@quantidade", conexao, transacao);
                 AdicionarInteiro(atualizacao, "@quantidade", item.Qtd); AdicionarInteiro(atualizacao, "@produtoCodigo", item.ProdutoCodigo);
-                await atualizacao.ExecuteNonQueryAsync();
+                if (await atualizacao.ExecuteNonQueryAsync() == 0)
+                    throw new InvalidOperationException($"Não foi possível restaurar o estoque do produto {item.ProdutoCodigo}: o limite máximo seria excedido.");
             }
         }
         await using (var atualizacao = new SqlCommand("UPDATE Pedidos SET status=@status WHERE codigo=@codigo", conexao, transacao))
@@ -159,11 +160,14 @@ public sealed partial class RepositorioSqlServer
         return codigo.HasValue ? await ObterPedidoAsync(codigo.Value) : null;
     }
 
-    public async Task<Pedido?> ObterUltimoPedidoPendenteAsync()
+    public async Task<Pedido?> ObterUltimoPedidoPendenteAsync(int funcionarioId)
     {
+        if (funcionarioId <= 0) return null;
         await using var conexao = CriarConexao();
         await conexao.OpenAsync();
-        var resultado = await new SqlCommand("SELECT TOP (1) codigo FROM Pedidos WHERE status=0 ORDER BY codigo DESC", conexao).ExecuteScalarAsync();
+        await using var comando = new SqlCommand("SELECT TOP (1) codigo FROM Pedidos WHERE status=0 AND funcionario_id=@funcionarioId ORDER BY codigo DESC", conexao);
+        AdicionarInteiro(comando, "@funcionarioId", funcionarioId);
+        var resultado = await comando.ExecuteScalarAsync();
         return resultado is null || resultado is DBNull ? null : await ObterPedidoAsync(Convert.ToInt32(resultado));
     }
 

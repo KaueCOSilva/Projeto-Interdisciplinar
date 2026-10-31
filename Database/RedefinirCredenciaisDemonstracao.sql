@@ -52,3 +52,4 @@ FROM dbo.Pessoas p
 INNER JOIN dbo.CredenciaisAcesso c ON c.pessoa_id = p.id
 WHERE p.nome IN ('Ana Administradora', 'Joao Funcionario');
 GO
+

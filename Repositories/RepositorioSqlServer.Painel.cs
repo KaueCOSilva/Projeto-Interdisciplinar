@@ -66,7 +66,7 @@ public sealed partial class RepositorioSqlServer
         }
         var cultura = System.Globalization.CultureInfo.GetCultureInfo("pt-BR");
         for (var mes = 1; mes <= 12; mes++)
-            modelo.VendasPorMes.Add(new MonthlySalesViewModel
+            modelo.VendasPorMes.Add(new VendaMensalViewModel
             {
                 Label = cultura.DateTimeFormat.GetAbbreviatedMonthName(mes),
                 Total = vendasPorMes[mes - 1],
@@ -78,7 +78,7 @@ public sealed partial class RepositorioSqlServer
         await using (var leitor = await comando.ExecuteReaderAsync())
         {
             while (await leitor.ReadAsync())
-                modelo.ComprasPorAno.Add(new AnnualPurchaseViewModel
+                modelo.ComprasPorAno.Add(new CompraAnualViewModel
                 {
                     Ano = leitor.GetInt32(0),
                     Total = leitor.GetDecimal(1)
@@ -95,7 +95,7 @@ public sealed partial class RepositorioSqlServer
             """;
         await using (var comando = new SqlCommand(sqlCategorias, conexao))
         await using (var leitor = await comando.ExecuteReaderAsync())
-            while (await leitor.ReadAsync()) modelo.VendasPorCategoria.Add(new CategorySalesViewModel { Categoria = leitor.GetString(0), Quantidade = leitor.GetInt32(1) });
+            while (await leitor.ReadAsync()) modelo.VendasPorCategoria.Add(new VendaPorCategoriaViewModel { Categoria = leitor.GetString(0), Quantidade = leitor.GetInt32(1) });
 
         const string sqlAtividades = """
             SELECT TOP (5) Descricao, DataMovimento, Tipo
@@ -118,7 +118,7 @@ public sealed partial class RepositorioSqlServer
         {
             while (await leitor.ReadAsync())
             {
-                modelo.Atividades.Add(new ActivityViewModel
+                modelo.Atividades.Add(new AtividadeViewModel
                 {
                     Descricao = leitor.GetString(0),
                     Data = leitor.GetDateTime(1),
@@ -148,7 +148,7 @@ public sealed partial class RepositorioSqlServer
         return modelo;
     }
 
-    public async Task<List<ReportMovementViewModel>> ListarMovimentosRelatorioAsync()
+    public async Task<List<MovimentoRelatorioViewModel>> ListarMovimentosRelatorioAsync()
     {
         const string sql = """
             SELECT data_pedido AS data_movimento, 'venda' AS tipo, valor_total AS valor, CAST(0 AS int) AS quantidade
@@ -159,12 +159,12 @@ public sealed partial class RepositorioSqlServer
             SELECT data_devolucao, 'devolucao', valor_total, quantidade FROM Devolucoes
             ORDER BY data_movimento;
             """;
-        var movimentos = new List<ReportMovementViewModel>();
+        var movimentos = new List<MovimentoRelatorioViewModel>();
         await using var conexao = CriarConexao();
         await conexao.OpenAsync();
         await using var comando = new SqlCommand(sql, conexao);
         await using var leitor = await comando.ExecuteReaderAsync();
-        while (await leitor.ReadAsync()) movimentos.Add(new ReportMovementViewModel
+        while (await leitor.ReadAsync()) movimentos.Add(new MovimentoRelatorioViewModel
         {
             Data = leitor.GetDateTime(0),
             Tipo = leitor.GetString(1),

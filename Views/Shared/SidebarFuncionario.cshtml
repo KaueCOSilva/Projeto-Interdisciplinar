@@ -36,15 +36,16 @@
             </span>
         </div>
 
-        <a asp-controller="Autenticacao"
-            asp-action="Sair"
-            class="logout">
+        <form asp-controller="Autenticacao" asp-action="Sair" method="post" class="logout-form">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="logout">
 
             <i class="bi bi-box-arrow-right"></i>
 
             <span>Sair</span>
 
-        </a>
+            </button>
+        </form>
 
     </div>
 </aside>

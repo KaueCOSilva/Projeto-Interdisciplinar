@@ -20,11 +20,28 @@ public class PedidoController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    // CREATE: valida itens, calcula no servidor e grava pedido + itens.
+    // CREATE: valida itens, usa o funcionário da sessão e grava pedido + itens.
     public async Task<IActionResult> Registrar(Pedido pedido)
     {
+        if (!ModelState.IsValid)
+        {
+            TempData["Erro"] = "Revise os dados e as quantidades do pedido.";
+            return RedirectToAction("RegistrarPedido", "Funcionario");
+        }
+
         pedido.ClienteId = null;
-        pedido.Itens = pedido.Itens.Where(item => item.Qtd > 0).ToList();
+        pedido.Itens = (pedido.Itens ?? new List<ItemPedido>())
+            .Where(item => item.Qtd > 0)
+            .ToList();
+
+        if (HttpContext.Session.GetString("perfil") == "Funcionario")
+        {
+            var funcionarioSessao = HttpContext.Session.GetInt32("id");
+            if (funcionarioSessao is null) return Unauthorized();
+            // Não confiamos no FuncionarioId recebido do formulário.
+            pedido.FuncionarioId = funcionarioSessao.Value;
+        }
+
         if (pedido.FuncionarioId <= 0 || pedido.Itens.Count == 0)
         {
             TempData["Erro"] = "Selecione o funcionário e informe pelo menos um produto com quantidade positiva.";
@@ -46,17 +63,19 @@ public class PedidoController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    // UPDATE: finaliza o pedido e baixa o estoque na mesma transação.
+    // UPDATE: somente o funcionário proprietário ou um administrador pode finalizar.
     public async Task<IActionResult> Finalizar(int id)
     {
         if (id <= 0) return BadRequest();
         try
         {
+            var pedidoExistente = await _repository.ObterPedidoAsync(id);
+            if (pedidoExistente is null) return NotFound();
+            if (!PodeGerenciarPedido(pedidoExistente)) return Forbid();
+
             var atualizado = await _repository.AtualizarStatusPedidoAsync(id, StatusFinalizado);
             if (!atualizado)
             {
-                var pedidoExistente = await _repository.ObterPedidoAsync(id);
-                if (pedidoExistente is null) return NotFound();
                 if (pedidoExistente.Status == StatusFinalizado)
                 {
                     TempData["Sucesso"] = "Este pedido já havia sido contabilizado. O resumo foi encerrado e o histórico foi preservado.";
@@ -79,9 +98,34 @@ public class PedidoController : Controller
     // DELETE de negócio: cancela o pedido e preserva seu histórico.
     public async Task<IActionResult> Cancelar(int id)
     {
-        var atualizado = await _repository.AtualizarStatusPedidoAsync(id, StatusCancelado);
-        if (!atualizado) return NotFound();
-        TempData["Sucesso"] = "Pedido cancelado; estoque restaurado quando necessário.";
-        return RedirectToAction("Relatorios", "Administrador");
+        if (id <= 0) return BadRequest();
+        try
+        {
+            var pedidoExistente = await _repository.ObterPedidoAsync(id);
+            if (pedidoExistente is null) return NotFound();
+            if (!PodeGerenciarPedido(pedidoExistente)) return Forbid();
+
+            var atualizado = await _repository.AtualizarStatusPedidoAsync(id, StatusCancelado);
+            if (!atualizado) return NotFound();
+            TempData["Sucesso"] = "Pedido cancelado; estoque restaurado quando necessário.";
+            return RedirecionarAposCancelamento();
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["Erro"] = ex.Message;
+            return RedirecionarAposCancelamento();
+        }
     }
+
+    private bool PodeGerenciarPedido(Pedido pedido)
+    {
+        var perfil = HttpContext.Session.GetString("perfil");
+        return perfil == "Administrador"
+            || (perfil == "Funcionario" && HttpContext.Session.GetInt32("id") == pedido.FuncionarioId);
+    }
+
+    private IActionResult RedirecionarAposCancelamento() =>
+        HttpContext.Session.GetString("perfil") == "Administrador"
+            ? RedirectToAction("Relatorios", "Administrador")
+            : RedirectToAction("RegistrarPedido", "Funcionario");
 }

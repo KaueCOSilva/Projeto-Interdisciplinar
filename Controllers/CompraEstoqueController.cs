@@ -27,6 +27,11 @@ public class CompraEstoqueController : Controller
     // CREATE: grava compra + itens e aumenta o estoque dentro de transação.
     public async Task<IActionResult> Registrar(CompraEstoque compraEstoque)
     {
+        if (!ModelState.IsValid)
+        {
+            TempData["Erro"] = "Revise os valores informados e tente novamente.";
+            return RedirectToAction("MovimentoCompras", "Administrador");
+        }
         compraEstoque.Itens = (compraEstoque.Itens ?? []).Where(item => item.Quantidade > 0).ToList();
         if (compraEstoque.AdministradorId <= 0 || string.IsNullOrWhiteSpace(compraEstoque.FornecedorNome) || compraEstoque.Itens.Count == 0)
         {
@@ -42,7 +47,7 @@ public class CompraEstoqueController : Controller
         }
 
         foreach (var item in compraEstoque.Itens)
-            item.Valor = item.PrecoUnitario * item.Quantidade;
+            item.Valor = decimal.Round(item.PrecoUnitario * item.Quantidade, 2, MidpointRounding.AwayFromZero);
         compraEstoque.Total = _totalStrategy.CalcularTotal(compraEstoque);
         try
         {
@@ -73,8 +78,10 @@ public class CompraEstoqueController : Controller
             return RedirectToAction("MovimentoCompras", "Administrador");
         }
 
-        ViewBag.AlertasEstoque = (await _repository.ListarProdutosEstoqueBaixoAsync()).Count;
-        var model = new StockPurchaseViewModel
+        var totalNotificacoes = (await _repository.ListarProdutosEstoqueBaixoAsync()).Count;
+        ViewBag.AlertasEstoque = totalNotificacoes;
+        ViewBag.TotalNotificacoes = totalNotificacoes;
+        var model = new CompraEstoqueViewModel
         {
             Produtos = await _repository.ListarProdutosAsync(incluirInativos: true),
             Administradores = await _repository.ListarAdministradoresAsync(),
@@ -89,6 +96,13 @@ public class CompraEstoqueController : Controller
     // UPDATE: recompõe o estoque antigo antes de aplicar os novos itens.
     public async Task<IActionResult> Editar(CompraEstoque compraEstoque)
     {
+        if (!ModelState.IsValid)
+        {
+            TempData["Erro"] = "Revise os valores informados e tente novamente.";
+            return compraEstoque.Numero > 0
+                ? RedirectToAction(nameof(Editar), new { numero = compraEstoque.Numero })
+                : RedirectToAction("MovimentoCompras", "Administrador");
+        }
         compraEstoque.Itens = (compraEstoque.Itens ?? []).Where(item => item.Quantidade > 0).ToList();
         compraEstoque.FornecedorNome = (compraEstoque.FornecedorNome ?? string.Empty).Trim();
         if (compraEstoque.Numero <= 0 || compraEstoque.FornecedorNome.Length == 0 || compraEstoque.FornecedorNome.Length > 150 || compraEstoque.Itens.Count == 0)

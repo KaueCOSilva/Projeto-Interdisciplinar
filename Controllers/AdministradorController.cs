@@ -39,7 +39,7 @@ public class AdministradorController : Controller
     {
         ViewBag.Periodo = periodo;
         await DefinirContagemAlertasAsync();
-        return View(new ReportViewModel { Movimentos = await _repository.ListarMovimentosRelatorioAsync() });
+        return View(new RelatorioViewModel { Movimentos = await _repository.ListarMovimentosRelatorioAsync() });
     }
 
     [HttpGet]
@@ -47,7 +47,7 @@ public class AdministradorController : Controller
     public async Task<IActionResult> Estoque()
     {
         await DefinirContagemAlertasAsync();
-        return View(new SIVAD.Models.ViewModels.StockViewModel
+        return View(new SIVAD.Models.ViewModels.EstoqueViewModel
         {
             Produtos = await _repository.ListarProdutosAsync(),
             Categorias = await _repository.ListarCategoriasAsync()
@@ -58,7 +58,7 @@ public class AdministradorController : Controller
     public async Task<IActionResult> MovimentoCompras()
     {
         await DefinirContagemAlertasAsync();
-        var model = new StockPurchaseViewModel
+        var model = new CompraEstoqueViewModel
         {
             Produtos = await _repository.ListarProdutosAsync(),
             Administradores = await _repository.ListarAdministradoresAsync(),
@@ -140,7 +140,7 @@ public class AdministradorController : Controller
         if (editarId.HasValue && funcionario is null)
             TempData["Erro"] = "Funcionário não encontrado ou inativo.";
 
-        return View(new EmployeeManagementViewModel
+        return View(new GerenciamentoFuncionariosViewModel
         {
             Funcionarios = funcionarios,
             FuncionarioEmEdicaoId = funcionario?.Id,

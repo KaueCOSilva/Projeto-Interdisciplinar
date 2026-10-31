@@ -13,14 +13,14 @@ public interface IRepositorioSIVAD
     Task<List<Produto>> ListarProdutosEstoqueBaixoAsync();
     Task<List<CompraEstoque>> ListarComprasAsync();
     Task<DashboardViewModel> ObterDashboardAsync();
-    Task<List<ReportMovementViewModel>> ListarMovimentosRelatorioAsync();
+    Task<List<MovimentoRelatorioViewModel>> ListarMovimentosRelatorioAsync();
 
     // PEDIDOS: CREATE do cabeçalho/itens e UPDATE do status com efeito no estoque.
     Task<int> RegistrarPedidoAsync(Pedido pedido);
     Task<bool> AtualizarStatusPedidoAsync(int codigo, int status);
     Task<Pedido?> ObterPedidoAsync(int codigo);
     Task<Pedido?> ObterPrimeiroPedidoAsync();
-    Task<Pedido?> ObterUltimoPedidoPendenteAsync();
+    Task<Pedido?> ObterUltimoPedidoPendenteAsync(int funcionarioId);
 
     // COMPRAS: CREATE, READ, UPDATE e cancelamento com atualização transacional do estoque.
     Task<int> RegistrarCompraEstoqueAsync(CompraEstoque compra);
@@ -46,5 +46,5 @@ public interface IRepositorioSIVAD
     Task<bool> RejeitarSolicitacaoRecuperacaoSenhaAsync(int solicitacaoId);
     Task<List<Categoria>> ListarCategoriasAsync();
     Task<int> CadastrarProdutoAsync(Produto produto);
-    Task<DatabaseConnectionInfoViewModel> ObterDiagnosticoBancoAsync();
+    Task<InformacaoConexaoBancoViewModel> ObterDiagnosticoBancoAsync();
 }

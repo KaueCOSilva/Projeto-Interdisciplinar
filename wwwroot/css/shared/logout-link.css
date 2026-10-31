@@ -21,6 +21,25 @@
     color: #fff;
 }
 
+.logout-form {
+    margin: 0;
+}
+
+.logout-form .logout {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 100%;
+    padding: 0 0 0 5px;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+    font: inherit;
+    font-size: 10px;
+    text-align: left;
+    cursor: pointer;
+}
+
+
 @media (max-width: 720px) {
     .logout span {
         display: none;
@@ -33,5 +52,10 @@
 
     .logout i {
         margin: 0;
+    }
+
+    .logout-form .logout {
+        justify-content: center;
+        padding: 0;
     }
 }

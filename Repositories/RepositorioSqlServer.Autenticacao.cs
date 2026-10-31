@@ -165,15 +165,18 @@ WHERE c.pessoa_id = @pessoaId
   AND EXISTS (
       SELECT 1 FROM dbo.Funcionarios f WHERE f.pessoa_id = c.pessoa_id AND f.ativo = 1)
   AND NOT EXISTS (
-      SELECT 1 FROM dbo.SolicitacoesRecuperacaoSenha s
+      SELECT 1 FROM dbo.SolicitacoesRecuperacaoSenha s WITH (UPDLOCK,HOLDLOCK)
       WHERE s.pessoa_id = c.pessoa_id AND s.status = 'Pendente')";
         await using var conexao = CriarConexao();
         await conexao.OpenAsync();
-        await using var comando = new SqlCommand(sql, conexao);
+        await using var transacao = (SqlTransaction)await conexao.BeginTransactionAsync(IsolationLevel.Serializable);
+        await using var comando = new SqlCommand(sql, conexao, transacao);
         AdicionarInteiro(comando, "@pessoaId", pessoaId);
         comando.Parameters.Add("@nome", SqlDbType.VarChar, 150).Value = nome.Trim();
         comando.Parameters.Add("@email", SqlDbType.VarChar, 254).Value = email.Trim();
-        return await comando.ExecuteNonQueryAsync() == 1;
+        var registrada = await comando.ExecuteNonQueryAsync() == 1;
+        await transacao.CommitAsync();
+        return registrada;
     }
 
     public async Task<List<SolicitacaoRecuperacaoSenhaViewModel>> ListarSolicitacoesRecuperacaoSenhaAsync()

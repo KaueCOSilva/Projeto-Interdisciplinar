@@ -20,11 +20,13 @@ public sealed partial class RepositorioSqlServer
             throw new InvalidOperationException("Informe um administrador, ao menos um item, quantidade positiva e preço válido.");
         if (compra.Itens.GroupBy(item => item.ProdutoCodigo).Any(group => group.Count() > 1))
             throw new InvalidOperationException("Cada produto deve aparecer uma única vez na compra.");
+        foreach (var item in compra.Itens)
+            item.Valor = decimal.Round(item.PrecoUnitario * item.Quantidade, 2, MidpointRounding.AwayFromZero);
         await using var conexao = CriarConexao();
         await conexao.OpenAsync();
         await using var transacao = (SqlTransaction)await conexao.BeginTransactionAsync();
         // O total é calculado no servidor a partir de preço unitário x quantidade.
-        var total = compra.Itens.Sum(item => item.PrecoUnitario * item.Quantidade);
+        var total = compra.Itens.Sum(item => item.Valor);
         const string sqlInserirPedido = """
             INSERT INTO CompraEstoque(data_compra,total,status,administrador_id,fornecedor_id,fornecedor_nome)
             OUTPUT INSERTED.numero VALUES(COALESCE(@data,GETDATE()),@total,1,@administradorCodigo,NULL,@nomeFornecedor);
@@ -38,15 +40,15 @@ public sealed partial class RepositorioSqlServer
         }
         foreach (var item in compra.Itens)
         {
-            var totalLinha = item.PrecoUnitario * item.Quantidade;
+            var totalLinha = item.Valor;
             var corInformada = string.IsNullOrWhiteSpace(item.Cor) ? string.Empty : item.Cor.Trim();
             if (corInformada.Length > 60) throw new InvalidOperationException("A cor do produto deve ter até 60 caracteres.");
-            await using (var atualizacao = new SqlCommand("UPDATE Produtos SET estoque=estoque+@quantidade,cor=CASE WHEN @cor='' THEN cor ELSE @cor END OUTPUT INSERTED.cor WHERE codigo=@produtoCodigo AND ativo=1", conexao, transacao))
+            await using (var atualizacao = new SqlCommand("UPDATE Produtos SET estoque=estoque+@quantidade,cor=CASE WHEN @cor='' THEN cor ELSE @cor END OUTPUT INSERTED.cor WHERE codigo=@produtoCodigo AND ativo=1 AND estoque<=2147483647-@quantidade", conexao, transacao))
             {
                 AdicionarInteiro(atualizacao, "@quantidade", item.Quantidade); AdicionarInteiro(atualizacao, "@produtoCodigo", item.ProdutoCodigo);
                 atualizacao.Parameters.Add("@cor", SqlDbType.VarChar, 60).Value = corInformada;
                 var corSalva = await atualizacao.ExecuteScalarAsync();
-                if (corSalva is null || corSalva is DBNull) throw new InvalidOperationException($"O produto {item.ProdutoCodigo} não existe ou está inativo.");
+                if (corSalva is null || corSalva is DBNull) throw new InvalidOperationException($"Não foi possível atualizar o produto {item.ProdutoCodigo}: confira se está ativo e se a quantidade não excede o limite de estoque.");
                 item.Cor = Convert.ToString(corSalva) ?? "Não informada";
             }
             await using var comandoInserirItem = new SqlCommand("INSERT INTO Itens_CompraEstoque(compra_numero,produto_codigo,cor,quantidade,valor) VALUES(@numeroCompra,@produtoCodigo,@cor,@quantidade,@total)", conexao, transacao);
@@ -153,7 +155,7 @@ public sealed partial class RepositorioSqlServer
             var adicionar = diferenca > 0;
             var quantidade = Math.Abs(diferenca);
             var sqlEstoque = adicionar
-                ? "UPDATE Produtos SET estoque=estoque+@quantidade WHERE codigo=@produtoCodigo AND ativo=1"
+                ? "UPDATE Produtos SET estoque=estoque+@quantidade WHERE codigo=@produtoCodigo AND ativo=1 AND estoque<=2147483647-@quantidade"
                 : "UPDATE Produtos SET estoque=estoque-@quantidade WHERE codigo=@produtoCodigo AND estoque>=@quantidade";
             await using var atualizarEstoque = new SqlCommand(sqlEstoque, conexao, transacao);
             AdicionarInteiro(atualizarEstoque, "@quantidade", quantidade);

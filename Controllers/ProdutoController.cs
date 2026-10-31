@@ -19,6 +19,11 @@ public class ProdutoController : Controller
     // CREATE: cadastra o produto e retorna o ID gerado pelo banco.
     public async Task<IActionResult> Cadastrar(Produto produto)
     {
+        if (!ModelState.IsValid)
+        {
+            TempData["Erro"] = "Confira os valores informados para o produto e tente novamente.";
+            return RedirectToAction("Estoque", "Administrador");
+        }
         try
         {
             var id = await _repository.CadastrarProdutoAsync(produto);
@@ -33,6 +38,11 @@ public class ProdutoController : Controller
     // UPDATE: altera os campos do produto ativo identificado pelo código.
     public async Task<IActionResult> Editar(Produto produto)
     {
+        if (!ModelState.IsValid)
+        {
+            TempData["Erro"] = "Confira os valores informados para o produto e tente novamente.";
+            return RedirectToAction("Estoque", "Administrador");
+        }
         try
         {
             if (!await _repository.AtualizarProdutoAsync(produto)) TempData["Erro"] = "Produto não encontrado ou já removido.";

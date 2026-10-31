@@ -176,7 +176,8 @@ public sealed class AutenticacaoController : Controller
         }
     }
 
-    [HttpGet]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
     public IActionResult Sair()
     {
         HttpContext.Session.Clear();

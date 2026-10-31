@@ -145,11 +145,11 @@ public sealed partial class RepositorioSqlServer
 
         await using var conexao = CriarConexao();
         await conexao.OpenAsync();
-        await using var transacao = (SqlTransaction)await conexao.BeginTransactionAsync();
+        await using var transacao = (SqlTransaction)await conexao.BeginTransactionAsync(IsolationLevel.Serializable);
 
         if (solicitacaoId.HasValue)
         {
-            const string verificarSql = "SELECT COUNT(*) FROM dbo.SolicitacoesRecuperacaoSenha WHERE solicitacao_id=@solicitacaoId AND pessoa_id=@id AND status='Pendente'";
+            const string verificarSql = "SELECT COUNT(*) FROM dbo.SolicitacoesRecuperacaoSenha WITH (UPDLOCK,HOLDLOCK) WHERE solicitacao_id=@solicitacaoId AND pessoa_id=@id AND status='Pendente'";
             await using var verificar = new SqlCommand(verificarSql, conexao, transacao);
             AdicionarInteiro(verificar, "@solicitacaoId", solicitacaoId.Value);
             AdicionarInteiro(verificar, "@id", id);

@@ -1,6 +1,6 @@
 namespace SIVAD.Models.ViewModels;
 
-public sealed class DatabaseConnectionInfoViewModel
+public sealed class InformacaoConexaoBancoViewModel
 {
     public string Servidor { get; set; } = string.Empty;
     public string Banco { get; set; } = string.Empty;

@@ -9,7 +9,7 @@ namespace SIVAD.Repositories;
 public sealed partial class RepositorioSqlServer
 {
     // Diagnóstico somente leitura, usado em Development para confirmar servidor e banco ativos.
-    public async Task<DatabaseConnectionInfoViewModel> ObterDiagnosticoBancoAsync()
+    public async Task<InformacaoConexaoBancoViewModel> ObterDiagnosticoBancoAsync()
     {
         await using var conexao = CriarConexao();
         await conexao.OpenAsync();
@@ -17,7 +17,7 @@ public sealed partial class RepositorioSqlServer
         await using var comando = new SqlCommand(sql, conexao);
         await using var leitor = await comando.ExecuteReaderAsync();
         if (!await leitor.ReadAsync()) throw new InvalidOperationException("O SQL Server não retornou informações do banco conectado.");
-        return new DatabaseConnectionInfoViewModel
+        return new InformacaoConexaoBancoViewModel
         {
             Servidor = leitor.GetString(0),
             Banco = leitor.GetString(1),

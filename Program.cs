@@ -1,4 +1,3 @@
-using WebApplication = Microsoft.AspNetCore.Builder.WebApplication;
 using SIVAD.Infrastructure;
 using SIVAD.Repositories;
 using SIVAD.Strategies;
@@ -13,6 +12,8 @@ builder.Services.AddSession(opcoes =>
     opcoes.Cookie.Name = ".SIVAD.Sessao";
     opcoes.Cookie.HttpOnly = true;
     opcoes.Cookie.IsEssential = true;
+    opcoes.Cookie.SameSite = SameSiteMode.Lax;
+    opcoes.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
 });
 
 builder.Services.AddControllersWithViews(opcoes =>
