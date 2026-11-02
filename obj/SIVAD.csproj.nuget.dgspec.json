@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/home/kakesty/Documentos/GitHub/Ze_do_Pagode/Projeto-Interdisciplinar-testado (1)/Projeto-Interdisciplinar/SIVAD.csproj": {}
+    "/home/kakesty/Documentos/GitHub/Ze_do_Pagode/Alinhado/Teste/Projeto-Interdisciplinar/SIVAD.csproj": {}
   },
   "projects": {
-    "/home/kakesty/Documentos/GitHub/Ze_do_Pagode/Projeto-Interdisciplinar-testado (1)/Projeto-Interdisciplinar/SIVAD.csproj": {
+    "/home/kakesty/Documentos/GitHub/Ze_do_Pagode/Alinhado/Teste/Projeto-Interdisciplinar/SIVAD.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/kakesty/Documentos/GitHub/Ze_do_Pagode/Projeto-Interdisciplinar-testado (1)/Projeto-Interdisciplinar/SIVAD.csproj",
+        "projectUniqueName": "/home/kakesty/Documentos/GitHub/Ze_do_Pagode/Alinhado/Teste/Projeto-Interdisciplinar/SIVAD.csproj",
         "projectName": "SIVAD",
-        "projectPath": "/home/kakesty/Documentos/GitHub/Ze_do_Pagode/Projeto-Interdisciplinar-testado (1)/Projeto-Interdisciplinar/SIVAD.csproj",
+        "projectPath": "/home/kakesty/Documentos/GitHub/Ze_do_Pagode/Alinhado/Teste/Projeto-Interdisciplinar/SIVAD.csproj",
         "packagesPath": "/home/kakesty/.nuget/packages/",
-        "outputPath": "/home/kakesty/Documentos/GitHub/Ze_do_Pagode/Projeto-Interdisciplinar-testado (1)/Projeto-Interdisciplinar/obj/",
+        "outputPath": "/home/kakesty/Documentos/GitHub/Ze_do_Pagode/Alinhado/Teste/Projeto-Interdisciplinar/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/home/kakesty/.nuget/NuGet/NuGet.Config"
@@ -67,7 +67,7 @@
           "downloadDependencies": [
             {
               "name": "Microsoft.AspNetCore.App.Ref",
-              "version": "[10.0.13, 10.0.13]"
+              "version": "[10.0.14, 10.0.14]"
             }
           ],
           "frameworkReferences": {
@@ -78,7 +78,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/10.0.113/PortableRuntimeIdentifierGraph.json",
+          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/10.0.114/PortableRuntimeIdentifierGraph.json",
           "packagesToPrune": {
             "Microsoft.CSharp": "(,4.7.32767]",
             "Microsoft.VisualBasic": "(,10.4.32767]",

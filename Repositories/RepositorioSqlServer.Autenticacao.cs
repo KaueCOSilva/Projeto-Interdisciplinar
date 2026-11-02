@@ -183,13 +183,17 @@ WHERE c.pessoa_id = @pessoaId
     {
         var lista = new List<SolicitacaoRecuperacaoSenhaViewModel>();
         const string sql = @"
-SELECT s.solicitacao_id, s.pessoa_id, p.nome, c.email, s.data_solicitacao
-FROM dbo.SolicitacoesRecuperacaoSenha s
-INNER JOIN dbo.Pessoas p ON p.id = s.pessoa_id
-INNER JOIN dbo.CredenciaisAcesso c ON c.pessoa_id = s.pessoa_id AND c.perfil = 'Funcionario' AND c.ativo = 1
-INNER JOIN dbo.Funcionarios f ON f.pessoa_id = s.pessoa_id AND f.ativo = 1
-WHERE s.status = 'Pendente'
-ORDER BY s.data_solicitacao";
+	SELECT s.solicitacao_id, s.pessoa_id, s.pessoa_nome, s.email, s.data_solicitacao
+	FROM dbo.vw_SolicitacoesRecuperacaoSenha s
+	INNER JOIN dbo.Funcionarios f ON f.pessoa_id = s.pessoa_id AND f.ativo = 1
+	WHERE s.status = 'Pendente'
+	  AND EXISTS (
+	      SELECT 1
+	      FROM dbo.CredenciaisAcesso c
+	      WHERE c.pessoa_id = s.pessoa_id
+	        AND c.perfil = 'Funcionario'
+	        AND c.ativo = 1)
+	ORDER BY s.data_solicitacao";
         await using var conexao = CriarConexao();
         await conexao.OpenAsync();
         await using var comando = new SqlCommand(sql, conexao);

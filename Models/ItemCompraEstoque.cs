@@ -1,11 +1,15 @@
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+
 namespace SIVAD.Models
 {
     public class ItemCompraEstoque
     {
         public int CompraNumero { get; set; }
+        [ValidateNever]
         public CompraEstoque CompraEstoque { get; set; } = null!;
 
         public int ProdutoCodigo { get; set; }
+        [ValidateNever]
         public Produto Produto { get; set; } = null!;
 
         public int Quantidade { get; set; }

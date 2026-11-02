@@ -116,22 +116,22 @@
                                         <tbody>
                                             @if (editando)
                                             {
-                                                @foreach (var item in Model.CompraEmEdicao!.Itens)
+                                                @foreach (var (item, indiceItem) in Model.CompraEmEdicao!.Itens.Select((item, indice) => (item, indice)))
                                                 {
                                                     var produtoAtual = Model.Produtos.FirstOrDefault(produto => produto.Codigo == item.ProdutoCodigo);
                                                     <tr>
                                                         <td><span class="purchase-sku">@(produtoAtual?.CodigoBarras ?? "—")</span></td>
-                                                        <td><select class="purchase-product">
+                                                        <td><select class="purchase-product" name="Itens[@indiceItem].ProdutoCodigo">
                                                             <option value="">Selecione produto...</option>
                                                             @foreach (var produto in Model.Produtos)
                                                             {
                                                                 var selecionado = produto.Codigo == item.ProdutoCodigo;
-                                                                <option value="@produto.Codigo" data-sku="@produto.CodigoBarras" data-cor="@produto.Cor" selected="@selecionado" disabled="@(!produto.Ativo && !selecionado)">@produto.Nome@(produto.Ativo ? "" : " (inativo)")</option>
+                                                                <option value="@produto.Codigo" data-sku="@produto.CodigoBarras" data-cor="@produto.Cor" selected="@(selecionado ? "selected" : null)" disabled="@(!produto.Ativo && !selecionado)">@produto.Nome@(produto.Ativo ? "" : " (inativo)")</option>
                                                             }
                                                         </select></td>
-                                                        <td><input class="purchase-item-color" type="text" value="@item.Cor" maxlength="60" placeholder="Cor" /></td>
-                                                        <td><input class="purchase-quantity" type="number" value="@item.Quantidade" min="0" /></td>
-                                                        <td><input class="purchase-unit-price" type="number" value="@item.PrecoUnitario.ToString("0.############", System.Globalization.CultureInfo.InvariantCulture)" min="0" step="any" /></td>
+                                                        <td><input class="purchase-item-color" name="Itens[@indiceItem].Cor" type="text" value="@item.Cor" maxlength="60" placeholder="Cor" /></td>
+                                                        <td><input class="purchase-quantity" name="Itens[@indiceItem].Quantidade" type="number" value="@item.Quantidade" min="0" /></td>
+                                                        <td><input class="purchase-unit-price" name="Itens[@indiceItem].PrecoUnitario" type="number" value="@item.PrecoUnitario.ToString("0.############", System.Globalization.CultureInfo.InvariantCulture)" min="0" step="any" /></td>
                                                         <td class="purchase-item-total">@item.Valor.ToString("C2", System.Globalization.CultureInfo.GetCultureInfo("pt-BR"))</td>
                                                         <td class="purchase-item-action"><button type="button" aria-label="Remover item"><i class="bi bi-trash3"></i></button></td>
                                                     </tr>

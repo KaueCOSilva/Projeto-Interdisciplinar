@@ -174,9 +174,11 @@ public sealed partial class RepositorioSqlServer
     private static async Task<List<ItemPedido>> LerItensPedidoAsync(SqlConnection conexao, int codigo)
     {
         const string sql = """
-            SELECT i.pedido_codigo,i.produto_codigo,i.qtd,i.preco_total,p.nome,p.codigo_barras,p.estoque,p.categoria_codigo,c.nome
-            FROM Itens_Pedidos i INNER JOIN Produtos p ON p.codigo=i.produto_codigo
-            INNER JOIN Categorias c ON c.codigo=p.categoria_codigo WHERE i.pedido_codigo=@codigo ORDER BY p.nome;
+            SELECT pedido_codigo, produto_codigo, qtd, preco_total,
+                   produto_nome, codigo_barras, estoque, categoria_codigo, categoria_nome
+            FROM dbo.vw_ItensPedidosDetalhados
+            WHERE pedido_codigo=@codigo
+            ORDER BY produto_nome;
             """;
         var itens = new List<ItemPedido>();
         await using var comando = new SqlCommand(sql, conexao); AdicionarInteiro(comando, "@codigo", codigo);
