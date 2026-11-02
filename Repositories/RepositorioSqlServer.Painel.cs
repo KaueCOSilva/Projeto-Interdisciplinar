@@ -37,16 +37,9 @@ public sealed partial class RepositorioSqlServer
         }
 
         const string sqlVendas = """
-            SELECT MONTH(data_pedido) AS Mes, 1 AS Tipo, SUM(valor_total) AS Total
-            FROM Pedidos
-            WHERE status=1 AND YEAR(data_pedido)=YEAR(GETDATE())
-            GROUP BY MONTH(data_pedido)
-            UNION ALL
-            SELECT MONTH(data_compra), 2, SUM(total)
-            FROM CompraEstoque
-            WHERE status=1 AND YEAR(data_compra)=YEAR(GETDATE())
-            GROUP BY MONTH(data_compra)
-            ORDER BY Mes, Tipo;
+            SELECT Mes, TotalVendas, TotalCompras
+            FROM dbo.vw_VendasComprasMensais
+            ORDER BY Mes;
             """;
         // O SQL devolve totais agrupados. Os valores iniciais zero preservam
         // os meses sem movimento para que o gráfico sempre mostre o ano inteiro.
@@ -58,10 +51,8 @@ public sealed partial class RepositorioSqlServer
             while (await leitor.ReadAsync())
             {
                 var mes = leitor.GetInt32(0);
-                var tipo = leitor.GetInt32(1);
-                var total = leitor.GetDecimal(2);
-                if (tipo == 1) vendasPorMes[mes - 1] = total;
-                else comprasPorMes[mes - 1] = total;
+                vendasPorMes[mes - 1] = leitor.GetDecimal(1);
+                comprasPorMes[mes - 1] = leitor.GetDecimal(2);
             }
         }
         var cultura = System.Globalization.CultureInfo.GetCultureInfo("pt-BR");
@@ -86,12 +77,9 @@ public sealed partial class RepositorioSqlServer
         }
 
         const string sqlCategorias = """
-            SELECT c.nome, SUM(ip.qtd) AS unidades
-            FROM Itens_Pedidos ip
-            INNER JOIN Pedidos pe ON pe.codigo=ip.pedido_codigo AND pe.status=1
-            INNER JOIN Produtos pr ON pr.codigo=ip.produto_codigo
-            INNER JOIN Categorias c ON c.codigo=pr.categoria_codigo
-            GROUP BY c.nome ORDER BY unidades DESC;
+            SELECT categoria_nome, unidades
+            FROM dbo.vw_VendasPorCategoria
+            ORDER BY unidades DESC;
             """;
         await using (var comando = new SqlCommand(sqlCategorias, conexao))
         await using (var leitor = await comando.ExecuteReaderAsync())
@@ -127,9 +115,10 @@ public sealed partial class RepositorioSqlServer
             }
         }
         const string sqlEstoqueBaixo = """
-            SELECT TOP (5) p.codigo, p.codigo_barras, p.nome, p.preco_unit, p.estoque, p.categoria_codigo, c.nome
-            FROM Produtos p INNER JOIN Categorias c ON c.codigo=p.categoria_codigo
-            WHERE p.ativo = 1 AND p.estoque <= 10 ORDER BY p.estoque, p.nome;
+            SELECT TOP (5) produto_codigo AS codigo, codigo_barras, nome, preco_unit,
+                   estoque, categoria_codigo, categoria_nome
+            FROM dbo.vw_estoque_baixo
+            ORDER BY estoque, nome;
             """;
         await using (var comando = new SqlCommand(sqlEstoqueBaixo, conexao))
         await using (var leitor = await comando.ExecuteReaderAsync())

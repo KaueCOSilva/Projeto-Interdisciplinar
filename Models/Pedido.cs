@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace SIVAD.Models
 {
@@ -12,6 +13,7 @@ namespace SIVAD.Models
         public Cliente? Cliente { get; set; }
 
         public int FuncionarioId { get; set; }
+        [ValidateNever]
         public Funcionario Funcionario { get; set; } = null!;
 
         public ICollection<ItemPedido> Itens { get; set; } = new List<ItemPedido>();

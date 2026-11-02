@@ -63,8 +63,9 @@ public sealed partial class RepositorioSqlServer
     public async Task<List<Funcionario>> ListarFuncionariosAsync()
     {
         const string sql = """
-            SELECT p.id, p.nome FROM Pessoas p
-            INNER JOIN Funcionarios f ON f.pessoa_id = p.id WHERE f.ativo = 1 ORDER BY p.nome;
+            SELECT pessoa_id, nome
+            FROM dbo.vw_funcionarios_ativos
+            ORDER BY nome;
             """;
         var lista = new List<Funcionario>();
         await using var conexao = CriarConexao();
@@ -78,8 +79,9 @@ public sealed partial class RepositorioSqlServer
     public async Task<List<Administrador>> ListarAdministradoresAsync()
     {
         const string sql = """
-            SELECT p.id, p.nome FROM Pessoas p
-            INNER JOIN Administradores a ON a.pessoa_id = p.id ORDER BY p.nome;
+            SELECT pessoa_id, nome
+            FROM dbo.vw_Administradores
+            ORDER BY nome;
             """;
         var lista = new List<Administrador>();
         await using var conexao = CriarConexao();
@@ -93,8 +95,9 @@ public sealed partial class RepositorioSqlServer
     public async Task<List<Fornecedor>> ListarFornecedoresAsync()
     {
         const string sql = """
-            SELECT p.id, p.nome, f.cnpj FROM Pessoas p
-            INNER JOIN Fornecedores f ON f.pessoa_id = p.id ORDER BY p.nome;
+            SELECT pessoa_id, nome, cnpj
+            FROM dbo.vw_fornecedores
+            ORDER BY nome;
             """;
         var lista = new List<Fornecedor>();
         await using var conexao = CriarConexao();
@@ -108,11 +111,10 @@ public sealed partial class RepositorioSqlServer
     public async Task<List<Produto>> ListarProdutosEstoqueBaixoAsync()
     {
         const string sql = """
-            SELECT p.codigo, p.codigo_barras, p.nome, p.preco_unit, p.estoque,
-                   p.categoria_codigo, c.nome
-            FROM Produtos p INNER JOIN Categorias c ON c.codigo = p.categoria_codigo
-            WHERE p.ativo = 1 AND p.estoque <= 10
-            ORDER BY p.estoque, p.nome;
+            SELECT produto_codigo AS codigo, codigo_barras, nome, preco_unit, estoque,
+                   categoria_codigo, categoria_nome
+            FROM dbo.vw_estoque_baixo
+            ORDER BY estoque, nome;
             """;
         var lista = new List<Produto>();
         await using var conexao = CriarConexao();

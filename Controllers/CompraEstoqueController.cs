@@ -19,6 +19,36 @@ public class CompraEstoqueController : Controller
         _totalStrategy = totalStrategy;
     }
 
+    private void RemoverErrosDeRelacionamentosDoModelState()
+    {
+        // São objetos carregados pelo banco, não campos dos formulários.
+        var chavesIgnoradas = ModelState.Keys
+            .Where(chave => chave is "Administrador" or "Fornecedor"
+                || chave.EndsWith(".Administrador", StringComparison.Ordinal)
+                || chave.EndsWith(".Fornecedor", StringComparison.Ordinal)
+                || chave.EndsWith(".Produto", StringComparison.Ordinal)
+                || chave.EndsWith(".CompraEstoque", StringComparison.Ordinal))
+            .ToList();
+
+        foreach (var chave in chavesIgnoradas)
+            ModelState.Remove(chave);
+    }
+
+    private string ObterMensagemDeValidacaoDaCompra()
+    {
+        var erros = ModelState
+            .Where(item => item.Value?.Errors.Count > 0)
+            .SelectMany(item => item.Value!.Errors.Select(erro =>
+                string.IsNullOrWhiteSpace(erro.ErrorMessage)
+                    ? $"{item.Key}: valor inválido"
+                    : $"{item.Key}: {erro.ErrorMessage}"))
+            .ToList();
+
+        return erros.Count == 0
+            ? "Revise os valores informados e tente novamente."
+            : string.Join(" | ", erros);
+    }
+
     [HttpGet]
     public IActionResult Index() => RedirectToAction("MovimentoCompras", "Administrador");
 
@@ -27,9 +57,10 @@ public class CompraEstoqueController : Controller
     // CREATE: grava compra + itens e aumenta o estoque dentro de transação.
     public async Task<IActionResult> Registrar(CompraEstoque compraEstoque)
     {
+        RemoverErrosDeRelacionamentosDoModelState();
         if (!ModelState.IsValid)
         {
-            TempData["Erro"] = "Revise os valores informados e tente novamente.";
+            TempData["Erro"] = ObterMensagemDeValidacaoDaCompra();
             return RedirectToAction("MovimentoCompras", "Administrador");
         }
         compraEstoque.Itens = (compraEstoque.Itens ?? []).Where(item => item.Quantidade > 0).ToList();
@@ -96,9 +127,10 @@ public class CompraEstoqueController : Controller
     // UPDATE: recompõe o estoque antigo antes de aplicar os novos itens.
     public async Task<IActionResult> Editar(CompraEstoque compraEstoque)
     {
+        RemoverErrosDeRelacionamentosDoModelState();
         if (!ModelState.IsValid)
         {
-            TempData["Erro"] = "Revise os valores informados e tente novamente.";
+            TempData["Erro"] = ObterMensagemDeValidacaoDaCompra();
             return compraEstoque.Numero > 0
                 ? RedirectToAction(nameof(Editar), new { numero = compraEstoque.Numero })
                 : RedirectToAction("MovimentoCompras", "Administrador");
