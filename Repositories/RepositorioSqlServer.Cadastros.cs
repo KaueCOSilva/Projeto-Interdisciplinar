@@ -200,26 +200,52 @@ public sealed partial class RepositorioSqlServer
     // INSERÇÃO de produto: INSERT parametrizado e OUTPUT do código gerado.
     public async Task<int> CadastrarProdutoAsync(Produto produto)
     {
-        if (string.IsNullOrWhiteSpace(produto.CodigoBarras) || string.IsNullOrWhiteSpace(produto.Nome) || produto.PrecoUnit < 0 || produto.Estoque < 0 || produto.CategoriaCodigo <= 0 || (produto.Cor?.Trim().Length ?? 0) > 60)
-            throw new InvalidOperationException("Informe código de barras, nome, cor (até 60 caracteres), preço, quantidade e categoria válidos.");
-        produto.Cor = string.IsNullOrWhiteSpace(produto.Cor) ? "Não informada" : produto.Cor.Trim();
+        if (string.IsNullOrWhiteSpace(produto.CodigoBarras) ||
+            string.IsNullOrWhiteSpace(produto.Nome) ||
+            produto.PrecoUnit < 0 ||
+            produto.Estoque < 0 ||
+            produto.CategoriaCodigo <= 0 ||
+            (produto.Cor?.Trim().Length ?? 0) > 60)
+        {
+            throw new InvalidOperationException(
+                "Informe código de barras, nome, cor (até 60 caracteres), preço, quantidade e categoria válidos.");
+        }
+
+        produto.Cor = string.IsNullOrWhiteSpace(produto.Cor)
+            ? "Não informada"
+            : produto.Cor.Trim();
+
         await using var conexao = CriarConexao();
         await conexao.OpenAsync();
-        const string sql = "INSERT INTO Produtos(codigo_barras,nome,cor,preco_unit,estoque,categoria_codigo) OUTPUT INSERTED.codigo VALUES(@codigoBarras,@nome,@cor,@precoUnitario,@estoque,@categoriaCodigo)";
-        await using var comando = new SqlCommand(sql, conexao);
-        comando.Parameters.Add("@codigoBarras", SqlDbType.VarChar, 50).Value = produto.CodigoBarras.Trim();
-        comando.Parameters.Add("@nome", SqlDbType.VarChar, 150).Value = produto.Nome.Trim();
-        comando.Parameters.Add("@cor", SqlDbType.VarChar, 60).Value = produto.Cor;
-        AdicionarValorMonetario(comando, "@precoUnitario", produto.PrecoUnit);
+
+        await using var comando = new SqlCommand("dbo.prodAdd", conexao)
+        {
+            CommandType = CommandType.StoredProcedure
+        };
+
+        comando.Parameters.Add("@codigo_barras", SqlDbType.VarChar, 50).Value =
+            produto.CodigoBarras.Trim();
+
+        comando.Parameters.Add("@nome", SqlDbType.VarChar, 150).Value =
+            produto.Nome.Trim();
+
+        comando.Parameters.Add("@cor", SqlDbType.VarChar, 60).Value =
+            produto.Cor;
+
+        AdicionarValorMonetario(comando, "@preco_unit", produto.PrecoUnit);
         AdicionarInteiro(comando, "@estoque", produto.Estoque);
-        AdicionarInteiro(comando, "@categoriaCodigo", produto.CategoriaCodigo);
+        AdicionarInteiro(comando, "@categoria_codigo", produto.CategoriaCodigo);
+
+        comando.Parameters.Add("@ativo", SqlDbType.Bit).Value = true;
+
         try
         {
             return Convert.ToInt32(await comando.ExecuteScalarAsync());
         }
         catch (SqlException ex) when (ex.Number is 2601 or 2627)
         {
-            throw new InvalidOperationException("Já existe um produto com esse código de barras.", ex);
+            throw new InvalidOperationException(
+                "Já existe um produto com esse código de barras.", ex);
         }
     }
 }
