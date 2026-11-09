@@ -20,6 +20,7 @@ BEGIN
     SELECT @pessoa_id AS pessoa_id;
 END;
 GO
+
 CREATE OR ALTER PROCEDURE dbo.admUpdate
     @pessoa_id INT, @nome VARCHAR(150), @cpf VARCHAR(14), @email VARCHAR(100)
 AS
@@ -43,6 +44,7 @@ BEGIN
     SELECT @pessoa_id AS pessoa_id;
 END;
 GO
+
 CREATE OR ALTER PROCEDURE dbo.funcUpdate
     @pessoa_id INT, @nome VARCHAR(150), @ativo BIT
 AS
@@ -66,6 +68,7 @@ BEGIN
     SELECT @pessoa_id AS pessoa_id;
 END;
 GO
+
 CREATE OR ALTER PROCEDURE dbo.cliUpdate
     @pessoa_id INT, @nome VARCHAR(150), @cpf VARCHAR(14)
 AS
@@ -89,6 +92,7 @@ BEGIN
     SELECT @pessoa_id AS pessoa_id;
 END;
 GO
+
 CREATE OR ALTER PROCEDURE dbo.fornUpdate
     @pessoa_id INT, @nome VARCHAR(150), @cnpj VARCHAR(18)
 AS
@@ -108,6 +112,7 @@ BEGIN
     SELECT CONVERT(INT,SCOPE_IDENTITY()) AS categoria_codigo;
 END;
 GO
+
 CREATE OR ALTER PROCEDURE dbo.catUpdate
     @categoria_codigo INT, @nome VARCHAR(100)
 AS
@@ -128,6 +133,7 @@ BEGIN
     SELECT CONVERT(INT,SCOPE_IDENTITY()) AS produto_codigo;
 END;
 GO
+
 CREATE OR ALTER PROCEDURE dbo.prodUpdate
     @produto_codigo INT, @codigo_barras VARCHAR(50), @nome VARCHAR(150), @cor VARCHAR(60),
     @preco_unit DECIMAL(10,2), @estoque INT, @categoria_codigo INT, @ativo BIT
@@ -151,6 +157,7 @@ BEGIN
     SELECT CONVERT(INT,SCOPE_IDENTITY()) AS compra_numero;
 END;
 GO
+
 CREATE OR ALTER PROCEDURE dbo.compraEstoqueUpdate
     @numero INT, @data_compra DATETIME, @total DECIMAL(10,2), @status INT,
     @administrador_id INT, @fornecedor_nome VARCHAR(150), @fornecedor_id INT = NULL
@@ -174,6 +181,7 @@ BEGIN
     SELECT CONVERT(INT,SCOPE_IDENTITY()) AS pedido_codigo;
 END;
 GO
+
 CREATE OR ALTER PROCEDURE dbo.pedidoUpdate
     @pedido_codigo INT, @status INT, @valor_total DECIMAL(10,2), @funcionario_id INT,
     @cliente_id INT = NULL, @data_pedido DATETIME = NULL
@@ -195,6 +203,7 @@ BEGIN
     VALUES (@compra_numero,@produto_codigo,@cor,@quantidade,@valor);
 END;
 GO
+
 CREATE OR ALTER PROCEDURE dbo.itemCompraUpdate
     @compra_numero INT, @produto_codigo INT, @cor VARCHAR(60), @quantidade INT, @valor DECIMAL(10,2)
 AS
@@ -204,6 +213,7 @@ BEGIN
     WHERE compra_numero=@compra_numero AND produto_codigo=@produto_codigo;
 END;
 GO
+
 CREATE OR ALTER PROCEDURE dbo.itemPedidoAdd
     @pedido_codigo INT, @produto_codigo INT, @qtd INT, @preco_total DECIMAL(10,2)
 AS
@@ -213,6 +223,7 @@ BEGIN
     VALUES (@pedido_codigo,@produto_codigo,@qtd,@preco_total);
 END;
 GO
+
 CREATE OR ALTER PROCEDURE dbo.itemPedidoUpdate
     @pedido_codigo INT, @produto_codigo INT, @qtd INT, @preco_total DECIMAL(10,2)
 AS
@@ -233,6 +244,7 @@ BEGIN
     SELECT CONVERT(INT,SCOPE_IDENTITY()) AS devolucao_numero;
 END;
 GO
+
 CREATE OR ALTER PROCEDURE dbo.devolucaoUpdate
     @numero INT, @produto_codigo INT, @quantidade INT, @valor_total DECIMAL(10,2), @data_devolucao DATETIME
 AS
@@ -252,6 +264,7 @@ BEGIN
     VALUES (@pessoa_id,@perfil,@email,@senha_hash,@ativo);
 END;
 GO
+
 CREATE OR ALTER PROCEDURE dbo.credencialUpdate
     @pessoa_id INT, @perfil VARCHAR(20), @email VARCHAR(254), @senha_hash VARCHAR(200), @ativo BIT
 AS
@@ -272,6 +285,7 @@ BEGIN
     SELECT CONVERT(INT,SCOPE_IDENTITY()) AS solicitacao_id;
 END;
 GO
+
 CREATE OR ALTER PROCEDURE dbo.solicitacaoRecuperacaoUpdate
     @solicitacao_id INT, @status VARCHAR(12)
 AS

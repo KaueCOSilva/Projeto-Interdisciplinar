@@ -29,7 +29,7 @@ body.recovery-page .back-link {
     align-items: center;
     gap: 5px;
     color: #777f8c;
-    font-size: 11px;
+    font-size: 12px;
     text-decoration: none;
     margin-bottom: 19px;
 }
@@ -39,7 +39,7 @@ body.recovery-page .back-link:hover {
 }
 
 body.recovery-page .back-link i {
-    font-size: 12px;
+    font-size: 13px;
 }
 
 body.recovery-page .recovery-icon {
@@ -69,7 +69,7 @@ body.recovery-page .recovery-title {
 
 body.recovery-page .recovery-subtitle {
     color: #8a8f98;
-    font-size: 10px;
+    font-size: 11px;
     text-align: center;
     margin-bottom: 27px;
 }
@@ -81,7 +81,7 @@ body.recovery-page .form-group {
 body.recovery-page .form-label {
     display: block;
     color: #555b65;
-    font-size: 11px;
+    font-size: 12px;
     margin-bottom: 5px;
 }
 
@@ -90,7 +90,7 @@ body.recovery-page .form-control {
     border: 1px solid #dce0e5;
     border-radius: 8px;
     color: #555;
-    font-size: 11px;
+    font-size: 12px;
     padding: 7px 11px;
 }
 
@@ -138,7 +138,7 @@ body.recovery-page .information-box i {
 
 body.recovery-page .information-box span {
     color: #6280b5;
-    font-size: 10px;
+    font-size: 11px;
     line-height: 1.35;
 }
 

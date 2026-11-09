@@ -49,7 +49,7 @@
 
     color: #a0a5ad;
 
-    font-size: 8px;
+    font-size: 10px;
 }
 
 .topbar-right {
@@ -86,7 +86,7 @@
     justify-content: center;
     border-radius: 10px;
     color: #fff;
-    font-size: 8px;
+    font-size: 10px;
     line-height: 1;
 
     background: #ef4444;
@@ -153,7 +153,7 @@
 
     color: #8d949e;
 
-    font-size: 8px;
+    font-size: 10px;
 
     margin-bottom: 4px;
 }
@@ -174,7 +174,7 @@
 
     margin-top: 7px;
 
-    font-size: 7px;
+    font-size: 10px;
 }
 
 .stat-change.positive {
@@ -276,7 +276,7 @@
 
     color: #2c3541;
 
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 700;
 }
 
@@ -329,14 +329,14 @@
 .activity-title {
     color: #464e59;
 
-    font-size: 8px;
+    font-size: 10px;
     font-weight: 500;
 }
 
 .activity-time {
     color: #9ba1aa;
 
-    font-size: 7px;
+    font-size: 10px;
 
     margin-top: 4px;
 }
@@ -364,7 +364,7 @@
     align-items: center;
     justify-content: center;
     color: #9ca3af;
-    font-size: 11px;
+    font-size: 12px;
 }
 
 /* =========================================================
@@ -420,12 +420,12 @@
 }
 
 .important-title {
-    font-size: 8px;
+    font-size: 10px;
     font-weight: 600;
 }
 
 .important-description {
-    font-size: 7px;
+    font-size: 10px;
 
     margin-top: 3px;
 }
@@ -463,4 +463,39 @@
     .stats {
         grid-template-columns: 1fr;
     }
+}
+/* Aparência única do sininho e do contador em todas as telas administrativas. */
+body.dashboard-page a.app-bell-link {
+    position: relative;
+    display: inline-flex;
+    width: 22px;
+    height: 28px;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #697180;
+    text-decoration: none;
+    font-size: 17px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+body.dashboard-page a.app-bell-link .app-bell-count {
+    position: absolute;
+    top: -5px;
+    right: -6px;
+    display: inline-flex;
+    min-width: 15px;
+    height: 15px;
+    align-items: center;
+    justify-content: center;
+    padding: 0 3px;
+    border: 1px solid #fff;
+    border-radius: 10px;
+    background: #ef4444;
+    color: #fff;
+    font-size: 11px;
+    line-height: 1;
 }

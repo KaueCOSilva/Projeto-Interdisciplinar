@@ -59,7 +59,7 @@ body.employee-purchase-summary-page .employee-sidebar-brand-copy strong {
 body.employee-purchase-summary-page .employee-sidebar-brand-copy small {
     margin-top: 3px;
     color: #8994a8;
-    font-size: 9px;
+    font-size: 11px;
     line-height: 1.2;
     white-space: nowrap;
 }
@@ -76,7 +76,7 @@ body.employee-purchase-summary-page .employee-sidebar-link {
     border-radius: 8px;
     background: transparent;
     color: #c8cfdb;
-    font-size: 11px;
+    font-size: 12px;
     line-height: 1.2;
     text-align: left;
     text-decoration: none;
@@ -122,18 +122,18 @@ body.employee-purchase-summary-page .employee-sidebar-user-avatar {
     border-radius: 50%;
     background: #344258;
     color: #f1f3f7;
-    font-size: 10px;
+    font-size: 11px;
 }
 body.employee-purchase-summary-page .employee-sidebar-user-copy strong {
     color: #f2f4f8;
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 600;
     line-height: 1.25;
 }
 body.employee-purchase-summary-page .employee-sidebar-user-copy small {
     margin-top: 2px;
     color: #8d97a9;
-    font-size: 8px;
+    font-size: 10px;
     line-height: 1.2;
 }
 body.employee-purchase-summary-page .employee-sidebar-logout {
@@ -141,7 +141,7 @@ body.employee-purchase-summary-page .employee-sidebar-logout {
     align-items: center;
     padding-left: 4px;
     color: #b9c1ce;
-    font-size: 10px;
+    font-size: 11px;
 }
 body.employee-purchase-summary-page .employee-sidebar-logout > i {
     margin-right: 6px;
@@ -171,7 +171,7 @@ body.employee-purchase-summary-page .employee-summary-topbar-title h1 {
 body.employee-purchase-summary-page .employee-summary-topbar-title p {
     margin: 2px 0 0;
     color: #a0a5ad;
-    font-size: 8px;
+    font-size: 10px;
     line-height: 1.2;
 }
 body.employee-purchase-summary-page .employee-summary-content {
@@ -207,7 +207,7 @@ body.employee-purchase-summary-page .employee-summary-intro h2 {
 body.employee-purchase-summary-page .employee-summary-intro p {
     margin: 8px 0 0;
     color: #9aa1ab;
-    font-size: 11px;
+    font-size: 12px;
     line-height: 1.3;
 }
 body.employee-purchase-summary-page .employee-summary-card {
@@ -231,14 +231,14 @@ body.employee-purchase-summary-page .employee-summary-table {
     min-width: 680px;
     border-collapse: collapse;
     color: #4e545d;
-    font-size: 11px;
+    font-size: 12px;
 }
 body.employee-purchase-summary-page .employee-summary-table th {
     height: 33px;
     padding: 0 17px;
     background: #f7f8fa;
     color: #747b85;
-    font-size: 9px;
+    font-size: 11px;
     font-weight: 700;
     text-align: left;
     text-transform: uppercase;
@@ -283,7 +283,7 @@ body.employee-purchase-summary-page .employee-summary-count {
 body.employee-purchase-summary-page .employee-summary-count p {
     margin: 0;
     color: #8e959f;
-    font-size: 11px;
+    font-size: 12px;
     line-height: 1.3;
 }
 body.employee-purchase-summary-page .employee-summary-count strong {
@@ -296,7 +296,7 @@ body.employee-purchase-summary-page .employee-summary-count strong {
 body.employee-purchase-summary-page .employee-summary-count span {
     margin-top: 5px;
     color: #9aa1ab;
-    font-size: 11px;
+    font-size: 12px;
     line-height: 1.3;
 }
 body.employee-purchase-summary-page .employee-summary-actions {

@@ -41,7 +41,7 @@ body.stock-page .stock-page-title h1 {
 body.stock-page .stock-page-title p {
     margin: 2px 0 0;
     color: #a0a5ad;
-    font-size: 8px;
+    font-size: 10px;
     line-height: 10px;
 }
 
@@ -100,7 +100,7 @@ body.stock-page .stock-heading-row h2 {
 body.stock-page .stock-heading-row p {
     margin: 4px 0 0;
     color: #8f969f;
-    font-size: 10px;
+    font-size: 11px;
 }
 
 body.stock-page .stock-add-button {
@@ -115,7 +115,7 @@ body.stock-page .stock-add-button {
     background: #2160dc;
     box-shadow: 0 2px 5px rgba(33, 96, 220, 0.2);
     color: #ffffff;
-    font-size: 11px;
+    font-size: 12px;
     text-decoration: none;
     transition:
         background-color 0.2s ease,
@@ -129,7 +129,7 @@ body.stock-page .stock-add-button:hover {
 }
 
 body.stock-page .stock-add-button i {
-    font-size: 12px;
+    font-size: 13px;
 }
 
 body.stock-page .stock-table-card {
@@ -175,7 +175,7 @@ body.stock-page .stock-search {
     border-radius: 8px;
     outline: none;
     color: #45505d;
-    font-size: 11px;
+    font-size: 12px;
 }
 
 body.stock-page .stock-search::placeholder {
@@ -204,7 +204,7 @@ body.stock-page .stock-table th {
     padding: 0 18px;
     border-bottom: 1px solid #e9ebee;
     color: #65707c;
-    font-size: 9px;
+    font-size: 11px;
     font-weight: 700;
     letter-spacing: 0.02em;
     text-align: left;
@@ -216,7 +216,7 @@ body.stock-page .stock-table td {
     padding: 0 18px;
     border-bottom: 1px solid #edf0f2;
     color: #555e69;
-    font-size: 10px;
+    font-size: 11px;
     vertical-align: middle;
 }
 
@@ -270,14 +270,14 @@ body.stock-page .stock-product-name {
 
 body.stock-page .stock-id {
     color: #8d96a0 !important;
-    font-size: 9px !important;
+    font-size: 11px !important;
 }
 
 body.stock-page .stock-quantity {
     display: inline-block;
     padding: 3px 8px;
     border-radius: 9px;
-    font-size: 9px;
+    font-size: 11px;
     line-height: 12px;
     white-space: nowrap;
 }
@@ -312,7 +312,7 @@ body.stock-page .stock-actions a {
     display: inline-block;
     margin: 0 7px;
     color: #8d959d;
-    font-size: 13px;
+    font-size: 14px;
     text-decoration: none;
     transition:
         color 0.2s ease,
@@ -326,7 +326,7 @@ body.stock-page .stock-actions button {
     border: 0;
     background: transparent;
     color: #8d959d;
-    font-size: 13px;
+    font-size: 14px;
     cursor: pointer;
     transition: color 0.2s ease, transform 0.2s ease;
 }
@@ -383,7 +383,7 @@ body.stock-page .return-product-name,
 body.stock-page .return-current-stock {
     margin: 0 0 8px;
     color: #697482;
-    font-size: 13px;
+    font-size: 14px;
 }
 
 body.stock-page .return-product-name strong {
@@ -394,7 +394,7 @@ body.stock-page .stock-return-form label {
     display: block;
     margin: 18px 0 6px;
     color: #45505d;
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 600;
 }
 
@@ -436,4 +436,57 @@ body.stock-page .return-dialog-actions {
         flex-direction: column;
     }
 
+}
+/* Contador numérico compartilhado do sino de notificações. */
+.notification-count {
+    position: absolute;
+    min-width: 15px;
+    height: 15px;
+    padding: 0 3px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    color: #fff;
+    font-size: 10px;
+    line-height: 1;
+    background: #ef4444;
+    right: -6px;
+    top: -5px;
+    border: 1px solid #ffffff;
+}
+/* Aparência única do sininho e do contador em todas as telas administrativas. */
+body.stock-page a.app-bell-link {
+    position: relative;
+    display: inline-flex;
+    width: 22px;
+    height: 28px;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #697180;
+    text-decoration: none;
+    font-size: 17px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+body.stock-page a.app-bell-link .app-bell-count {
+    position: absolute;
+    top: -5px;
+    right: -6px;
+    display: inline-flex;
+    min-width: 15px;
+    height: 15px;
+    align-items: center;
+    justify-content: center;
+    padding: 0 3px;
+    border: 1px solid #fff;
+    border-radius: 10px;
+    background: #ef4444;
+    color: #fff;
+    font-size: 11px;
+    line-height: 1;
 }

@@ -13,11 +13,11 @@
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
-    <link rel="stylesheet" href="/css/base.css?v=1" />
-    <link rel="stylesheet" href="/css/shared/sidebar-admin.css?v=1" />
-    <link rel="stylesheet" href="/css/shared/logout-link.css?v=1" />
-    <link rel="stylesheet" href="/css/views/administrador/movimento-compras.css?v=2" />
-    <link rel="stylesheet" href="/css/shared/profile-avatars.css?v=1" />
+    <link rel="stylesheet" href="/css/base.css?v=readable1" />
+    <link rel="stylesheet" href="/css/shared/sidebar-admin.css?v=readable1" />
+    <link rel="stylesheet" href="/css/shared/logout-link.css?v=readable1" />
+    <link rel="stylesheet" href="/css/views/administrador/movimento-compras.css?v=select1" />
+    <link rel="stylesheet" href="/css/shared/profile-avatars.css?v=readable1" />
 </head>
 <body class="purchase-page">
     <div class="erp-layout">
@@ -31,10 +31,10 @@
                 </div>
 
                 <div class="purchase-topbar-actions">
-                    <a class="purchase-notification" asp-controller="Administrador"
+                    <a class="purchase-notification app-bell-link" asp-controller="Administrador"
                         asp-action="Notificacoes" aria-label="Notificações">
                         <i class="bi bi-bell" aria-hidden="true"></i>
-                        @if (ViewBag.TotalNotificacoes is int alertas && alertas > 0) { <span title="@alertas notificações pendentes" aria-label="@alertas notificações pendentes"></span> }
+                        @if (ViewBag.TotalNotificacoes is int alertas && alertas > 0) { <span class="app-bell-count" title="@alertas notificações pendentes" aria-label="@alertas notificações pendentes">@alertas</span> }
                     </a>
                 </div>
             </header>
@@ -206,7 +206,6 @@
                                 var statusText = compra.Status == 1 ? "Recebida" : compra.Status == 2 ? "Cancelada" : "Pendente";
                                 <article class="recent-purchase">
                                     <div class="recent-purchase-top"><strong>@compra.FornecedorNome</strong><span class="purchase-status @statusClass">@statusText</span></div>
-                                    <small>CP@compra.Numero</small>
                                     <b>@compra.Total.ToString("C2", System.Globalization.CultureInfo.GetCultureInfo("pt-BR"))</b>
                                     <div class="recent-purchase-bottom"><time>@compra.DataCompra.ToString("dd/MM/yyyy")</time><i class="bi bi-database"></i></div>
                                     @if (compra.Status == 1)

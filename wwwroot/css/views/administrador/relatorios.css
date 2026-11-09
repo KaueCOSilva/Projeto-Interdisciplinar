@@ -53,7 +53,7 @@ body.reports-page .page-title h1 {
 body.reports-page .page-title span {
     margin-top: 1px;
 
-    font-size: 9px;
+    font-size: 11px;
 
     color: #89909b;
 }
@@ -132,7 +132,7 @@ body.reports-page .report-tab {
 
     color: #667080;
 
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 600;
 
     display: flex;
@@ -212,7 +212,7 @@ body.reports-page .stat-info {
 }
 
 body.reports-page .stat-label {
-    font-size: 10px;
+    font-size: 11px;
 
     color: #78818e;
 
@@ -232,7 +232,7 @@ body.reports-page .stat-value {
 body.reports-page .stat-change {
     margin-top: 6px;
 
-    font-size: 9px;
+    font-size: 11px;
 
     color: #34a86c;
 
@@ -314,7 +314,7 @@ body.reports-page .panel-header {
 
     padding: 0 18px;
 
-    font-size: 13px;
+    font-size: 14px;
 
     font-weight: 600;
 
@@ -389,7 +389,7 @@ body.reports-page .bar-row {
 body.reports-page .report-empty-message {
     margin: auto;
     color: #8c95a1;
-    font-size: 11px;
+    font-size: 12px;
     text-align: center;
 }
 
@@ -402,7 +402,7 @@ body.reports-page .month-label {
 
     text-align: right;
 
-    font-size: 9px;
+    font-size: 11px;
 
     color: #4b5563;
 }
@@ -448,7 +448,7 @@ body.reports-page .x-axis {
 }
 
 body.reports-page .x-axis span {
-    font-size: 8px;
+    font-size: 10px;
 
     color: #9aa1aa;
 }
@@ -468,7 +468,7 @@ body.reports-page .filter-content {
 body.reports-page .filter-label {
     display: block;
 
-    font-size: 9px;
+    font-size: 11px;
 
     color: #707987;
 
@@ -490,7 +490,7 @@ body.reports-page .month-select {
 
     padding: 0 11px;
 
-    font-size: 10px;
+    font-size: 11px;
 
     appearance: none;
 
@@ -537,7 +537,7 @@ body.reports-page .filter-box.purple-box {
 }
 
 body.reports-page .filter-box-title {
-    font-size: 9px;
+    font-size: 11px;
 
     margin-bottom: 3px;
 
@@ -557,7 +557,7 @@ body.reports-page .filter-box.purple-box .filter-box-title {
 }
 
 body.reports-page .filter-box-value {
-    font-size: 10px;
+    font-size: 11px;
 
     font-weight: 700;
 
@@ -609,7 +609,7 @@ body.reports-page .bottom-card:hover {
 }
 
 body.reports-page .bottom-title {
-    font-size: 10px;
+    font-size: 11px;
 
     color: #737c88;
 
@@ -629,7 +629,7 @@ body.reports-page .bottom-value {
 body.reports-page .bottom-description {
     margin-top: 7px;
 
-    font-size: 9px;
+    font-size: 11px;
 
     font-weight: 600;
 }
@@ -710,4 +710,57 @@ body.reports-page .description-purple {
     body.reports-page .x-axis {
         left: 65px;
     }
+}
+/* Contador numérico compartilhado do sino de notificações. */
+.notification-count {
+    position: absolute;
+    min-width: 15px;
+    height: 15px;
+    padding: 0 3px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    color: #fff;
+    font-size: 10px;
+    line-height: 1;
+    background: #ef4444;
+    right: -6px;
+    top: -5px;
+    border: 1px solid #ffffff;
+}
+/* Aparência única do sininho e do contador em todas as telas administrativas. */
+body.reports-page a.app-bell-link {
+    position: relative;
+    display: inline-flex;
+    width: 22px;
+    height: 28px;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #697180;
+    text-decoration: none;
+    font-size: 17px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+body.reports-page a.app-bell-link .app-bell-count {
+    position: absolute;
+    top: -5px;
+    right: -6px;
+    display: inline-flex;
+    min-width: 15px;
+    height: 15px;
+    align-items: center;
+    justify-content: center;
+    padding: 0 3px;
+    border: 1px solid #fff;
+    border-radius: 10px;
+    background: #ef4444;
+    color: #fff;
+    font-size: 11px;
+    line-height: 1;
 }

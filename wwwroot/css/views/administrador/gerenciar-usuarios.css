@@ -37,7 +37,7 @@ body.user-management-page .user-management-topbar-title h1 {
 body.user-management-page .user-management-topbar-title p {
     margin: 2px 0 0;
     color: #a0a5ad;
-    font-size: 9px;
+    font-size: 11px;
 }
 
 body.user-management-page .user-management-topbar-actions {
@@ -61,15 +61,22 @@ body.user-management-page .user-management-notification {
     font-size: 17px;
 }
 
-body.user-management-page .user-management-notification span {
+body.user-management-page .user-management-notification .notification-count {
     position: absolute;
-    top: 4px;
-    right: 1px;
-    width: 6px;
-    height: 6px;
-    border: 1px solid #fff;
-    border-radius: 50%;
+    min-width: 15px;
+    height: 15px;
+    padding: 0 3px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    color: #fff;
+    font-size: 10px;
+    line-height: 1;
     background: #ef4444;
+    right: -6px;
+    top: -5px;
+    border: 1px solid #ffffff;
 }
 
 
@@ -93,7 +100,7 @@ body.user-management-page .user-management-intro h2 {
 body.user-management-page .user-management-intro p {
     margin: 4px 0 0;
     color: #9299a2;
-    font-size: 11px;
+    font-size: 12px;
 }
 
 body.user-management-page .user-management-panel {
@@ -153,7 +160,7 @@ body.user-management-page .user-management-field label {
     display: block;
     margin-bottom: 5px;
     color: #68717c;
-    font-size: 10px;
+    font-size: 11px;
 }
 
 body.user-management-page .user-management-field .user-management-input {
@@ -165,7 +172,7 @@ body.user-management-page .user-management-field .user-management-input {
     background: #fff;
     color: #404955;
     font-family: inherit;
-    font-size: 12px;
+    font-size: 13px;
 }
 
 body.user-management-page
@@ -191,7 +198,7 @@ body.user-management-page .employee-edit-submit {
     color: #fff;
     cursor: pointer;
     font-family: inherit;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 500;
     transition: background-color 0.15s ease;
 }
@@ -218,7 +225,7 @@ body.user-management-page .registered-users-heading {
 }
 
 body.user-management-page .registered-users-heading h3 {
-    font-size: 13px;
+    font-size: 14px;
 }
 
 body.user-management-page .registered-users-list {
@@ -256,7 +263,7 @@ body.user-management-page .registered-user-avatar {
     border-radius: 50%;
     background: #2160dc;
     color: #fff;
-    font-size: 10px;
+    font-size: 11px;
 }
 
 body.user-management-page .registered-user-details {
@@ -269,7 +276,7 @@ body.user-management-page .registered-user-details {
 body.user-management-page .registered-user-details strong {
     overflow: hidden;
     color: #4b535e;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 600;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -277,7 +284,7 @@ body.user-management-page .registered-user-details strong {
 
 body.user-management-page .registered-user-details small {
     color: #969da6;
-    font-size: 9px;
+    font-size: 11px;
 }
 
 body.user-management-page .registered-user-details small span {
@@ -298,7 +305,7 @@ body.user-management-page .registered-user-actions button {
     border-radius: 7px;
     cursor: pointer;
     font-family: inherit;
-    font-size: 10px;
+    font-size: 11px;
 }
 
 body.user-management-page .registered-user-edit {
@@ -371,4 +378,57 @@ body.user-management-page .registered-user-remove:hover {
     body.user-management-page .registered-user-actions button {
         min-width: 61px;
     }
+}
+/* Contador numérico compartilhado do sino de notificações. */
+.notification-count {
+    position: absolute;
+    min-width: 15px;
+    height: 15px;
+    padding: 0 3px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    color: #fff;
+    font-size: 10px;
+    line-height: 1;
+    background: #ef4444;
+    right: -6px;
+    top: -5px;
+    border: 1px solid #ffffff;
+}
+/* Aparência única do sininho e do contador em todas as telas administrativas. */
+body.user-management-page a.app-bell-link {
+    position: relative;
+    display: inline-flex;
+    width: 22px;
+    height: 28px;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #697180;
+    text-decoration: none;
+    font-size: 17px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+body.user-management-page a.app-bell-link .app-bell-count {
+    position: absolute;
+    top: -5px;
+    right: -6px;
+    display: inline-flex;
+    min-width: 15px;
+    height: 15px;
+    align-items: center;
+    justify-content: center;
+    padding: 0 3px;
+    border: 1px solid #fff;
+    border-radius: 10px;
+    background: #ef4444;
+    color: #fff;
+    font-size: 11px;
+    line-height: 1;
 }

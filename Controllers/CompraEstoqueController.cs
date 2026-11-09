@@ -109,9 +109,10 @@ public class CompraEstoqueController : Controller
             return RedirectToAction("MovimentoCompras", "Administrador");
         }
 
-        var totalNotificacoes = (await _repository.ListarProdutosEstoqueBaixoAsync()).Count;
-        ViewBag.AlertasEstoque = totalNotificacoes;
-        ViewBag.TotalNotificacoes = totalNotificacoes;
+        var totalAlertasEstoque = (await _repository.ListarProdutosEstoqueBaixoAsync()).Count;
+        var recuperacoesPendentes = (await _repository.ListarSolicitacoesRecuperacaoSenhaAsync()).Count;
+        ViewBag.AlertasEstoque = totalAlertasEstoque;
+        ViewBag.TotalNotificacoes = totalAlertasEstoque + recuperacoesPendentes;
         var model = new CompraEstoqueViewModel
         {
             Produtos = await _repository.ListarProdutosAsync(incluirInativos: true),

@@ -3,7 +3,7 @@
 
     text-decoration: none;
 
-    font-size: 10px;
+    font-size: 11px;
 
     display: flex;
     align-items: center;
@@ -34,7 +34,7 @@
     background: transparent;
     box-shadow: none;
     font: inherit;
-    font-size: 10px;
+    font-size: 11px;
     text-align: left;
     cursor: pointer;
 }

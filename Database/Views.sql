@@ -6,41 +6,51 @@ CREATE OR ALTER VIEW dbo.vw_Administradores AS
 SELECT a.pessoa_id, p.nome, a.cpf, a.email
 FROM dbo.Administradores a INNER JOIN dbo.Pessoas p ON p.id = a.pessoa_id;
 GO
+
 CREATE OR ALTER VIEW dbo.vw_Funcionarios AS
 SELECT f.pessoa_id, p.nome, f.ativo
 FROM dbo.Funcionarios f INNER JOIN dbo.Pessoas p ON p.id = f.pessoa_id;
 GO
+
 CREATE OR ALTER VIEW dbo.vw_clientes AS
 SELECT c.pessoa_id, p.nome, c.cpf
 FROM dbo.Clientes c INNER JOIN dbo.Pessoas p ON p.id = c.pessoa_id;
 GO
+
 CREATE OR ALTER VIEW dbo.vw_fornecedores AS
 SELECT f.pessoa_id, p.nome, f.cnpj
 FROM dbo.Fornecedores f INNER JOIN dbo.Pessoas p ON p.id = f.pessoa_id;
 GO
+
 CREATE OR ALTER VIEW dbo.vw_categorias AS
 SELECT codigo, nome FROM dbo.Categorias;
 GO
+
 CREATE OR ALTER VIEW dbo.vw_produtos AS
 SELECT codigo, codigo_barras, nome, cor, preco_unit, estoque, categoria_codigo, ativo
 FROM dbo.Produtos;
 GO
+
 CREATE OR ALTER VIEW dbo.vw_compraEstoque AS
 SELECT numero, data_compra, total, status, administrador_id, fornecedor_id, fornecedor_nome
 FROM dbo.CompraEstoque;
 GO
+
 CREATE OR ALTER VIEW dbo.vw_pedidos AS
 SELECT codigo, status, valor_total, data_pedido, cliente_id, funcionario_id
 FROM dbo.Pedidos;
 GO
+
 CREATE OR ALTER VIEW dbo.vw_item_compraEstoque AS
 SELECT compra_numero, produto_codigo, cor, quantidade, valor
 FROM dbo.Itens_CompraEstoque;
 GO
+
 CREATE OR ALTER VIEW dbo.vw_itensPedido AS
 SELECT pedido_codigo, produto_codigo, qtd, preco_total
 FROM dbo.Itens_Pedidos;
 GO
+
 CREATE OR ALTER VIEW dbo.vw_devolucoes AS
 SELECT numero, data_devolucao, produto_codigo, quantidade, valor_total
 FROM dbo.Devolucoes;
@@ -66,6 +76,7 @@ SELECT p.id AS pessoa_id, p.nome
 FROM dbo.Pessoas p INNER JOIN dbo.Funcionarios f ON f.pessoa_id = p.id
 WHERE f.ativo = 1;
 GO
+
 CREATE OR ALTER VIEW dbo.vw_estoque_baixo AS
 SELECT p.codigo AS produto_codigo, p.codigo_barras, p.nome, p.preco_unit,
        p.estoque, p.categoria_codigo, c.nome AS categoria_nome
@@ -81,6 +92,7 @@ INNER JOIN dbo.Produtos pr ON pr.codigo = ip.produto_codigo
 INNER JOIN dbo.Categorias c ON c.codigo = pr.categoria_codigo
 GROUP BY c.nome;
 GO
+
 CREATE OR ALTER VIEW dbo.vw_ItensPedidosDetalhados AS
 SELECT i.pedido_codigo, i.produto_codigo, i.qtd, i.preco_total,
        p.nome AS produto_nome, p.codigo_barras, p.estoque,
@@ -89,6 +101,7 @@ FROM dbo.Itens_Pedidos i
 INNER JOIN dbo.Produtos p ON p.codigo = i.produto_codigo
 INNER JOIN dbo.Categorias c ON c.codigo = p.categoria_codigo;
 GO
+
 CREATE OR ALTER VIEW dbo.vw_ComprasEstoqueDetalhadas AS
 SELECT c.numero, c.data_compra, c.total, c.status, c.administrador_id,
        c.fornecedor_id, COALESCE(c.fornecedor_nome, p.nome, '') AS fornecedor_nome

@@ -14,3 +14,84 @@ body {
     overflow-x: hidden;
 }
 
+
+/* Base comum para manter a mesma leitura em todas as telas. */
+html {
+    font-size: 100%;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+}
+
+body {
+    color: #1f2937;
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+button,
+input,
+select,
+textarea {
+    font: inherit;
+}
+
+button,
+[type="button"],
+[type="submit"],
+[type="reset"] {
+    cursor: pointer;
+}
+
+img,
+svg,
+canvas,
+iframe {
+    max-width: 100%;
+}
+
+:focus-visible {
+    outline: 3px solid #2563eb;
+    outline-offset: 2px;
+}
+
+/* Controles e textos auxiliares permanecem legíveis na escala padrão. */
+label,
+th,
+td,
+input,
+select,
+textarea,
+button,
+.btn,
+small {
+    font-size: max(0.875rem, 1em);
+}
+
+table {
+    max-width: 100%;
+}
+
+@media (max-width: 768px) {
+    img,
+    canvas,
+    iframe {
+        height: auto;
+    }
+
+    table {
+        display: block;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}

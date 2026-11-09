@@ -41,7 +41,7 @@ body.purchase-page .purchase-page-title h1 {
 body.purchase-page .purchase-page-title p {
     margin: 2px 0 0;
     color: #a0a5ad;
-    font-size: 8px;
+    font-size: 10px;
 }
 
 body.purchase-page .purchase-topbar-actions {
@@ -65,15 +65,22 @@ body.purchase-page .purchase-notification {
     font-size: 17px;
 }
 
-body.purchase-page .purchase-notification span {
+body.purchase-page .purchase-notification .notification-count {
     position: absolute;
-    top: 4px;
-    right: 1px;
-    width: 6px;
-    height: 6px;
-    border: 1px solid #fff;
-    border-radius: 50%;
+    min-width: 15px;
+    height: 15px;
+    padding: 0 3px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    color: #fff;
+    font-size: 10px;
+    line-height: 1;
     background: #ef4444;
+    right: -6px;
+    top: -5px;
+    border: 1px solid #ffffff;
 }
 
 
@@ -133,7 +140,7 @@ body.purchase-page .purchase-field label {
     display: block;
     margin-bottom: 5px;
     color: #58616c;
-    font-size: 10px;
+    font-size: 11px;
 }
 
 body.purchase-page .purchase-field input {
@@ -144,7 +151,7 @@ body.purchase-page .purchase-field input {
     border-radius: 8px;
     outline: none;
     color: #4d5763;
-    font-size: 11px;
+    font-size: 12px;
 }
 
 body.purchase-page .purchase-field input::placeholder {
@@ -175,7 +182,7 @@ body.purchase-page .purchase-add-item {
     background: #2160dc;
     color: #fff;
     cursor: pointer;
-    font-size: 10px;
+    font-size: 11px;
 }
 
 body.purchase-page .purchase-add-item:hover,
@@ -200,7 +207,7 @@ body.purchase-page .purchase-items-table th {
     padding: 0 8px;
     background: #fafbfc;
     color: #68727d;
-    font-size: 8px;
+    font-size: 10px;
     font-weight: 700;
     text-align: left;
     text-transform: uppercase;
@@ -210,7 +217,7 @@ body.purchase-page .purchase-items-table td {
     height: 49px;
     padding: 7px 8px;
     color: #5b6570;
-    font-size: 10px;
+    font-size: 11px;
     vertical-align: middle;
 }
 
@@ -251,7 +258,7 @@ body.purchase-page .purchase-items-table input {
     border-radius: 5px;
     outline: none;
     color: #67717c;
-    font-size: 10px;
+    font-size: 11px;
 }
 
 body.purchase-page .purchase-items-table input:focus {
@@ -265,7 +272,7 @@ body.purchase-page .purchase-items-table input::placeholder {
 
 body.purchase-page .purchase-item-total {
     color: #515b67;
-    font-size: 10px;
+    font-size: 11px;
     line-height: 14px;
 }
 
@@ -279,7 +286,7 @@ body.purchase-page .purchase-item-action button {
     background: transparent;
     color: #e9727b;
     cursor: pointer;
-    font-size: 13px;
+    font-size: 14px;
 }
 
 body.purchase-page .purchase-summary-panel {
@@ -292,12 +299,12 @@ body.purchase-page .purchase-summary-line {
     align-items: center;
     justify-content: space-between;
     color: #69737e;
-    font-size: 10px;
+    font-size: 11px;
 }
 
 body.purchase-page .purchase-summary-line strong {
     color: #65707a;
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 500;
 }
 
@@ -314,7 +321,7 @@ body.purchase-page .purchase-summary-total {
     padding: 0 18px;
     border-top: 1px solid #eceef1;
     color: #28313d;
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 700;
 }
 
@@ -336,7 +343,7 @@ body.purchase-page .purchase-finish-button {
     border: 0;
     border-radius: 7px;
     cursor: pointer;
-    font-size: 11px;
+    font-size: 12px;
 }
 
 body.purchase-page .purchase-cancel-button {
@@ -380,21 +387,21 @@ body.purchase-page .recent-purchase-bottom {
 
 body.purchase-page .recent-purchase-top strong {
     color: #444e59;
-    font-size: 11px;
+    font-size: 12px;
 }
 
 body.purchase-page .recent-purchase small {
     display: block;
     margin-top: 5px;
     color: #949ca5;
-    font-size: 9px;
+    font-size: 11px;
 }
 
 body.purchase-page .recent-purchase b {
     display: block;
     margin-top: 10px;
     color: #3f4853;
-    font-size: 11px;
+    font-size: 12px;
 }
 
 body.purchase-page .recent-purchase-bottom {
@@ -403,18 +410,18 @@ body.purchase-page .recent-purchase-bottom {
 
 body.purchase-page .recent-purchase time {
     color: #9ca3ac;
-    font-size: 9px;
+    font-size: 11px;
 }
 
 body.purchase-page .recent-purchase-bottom i {
     color: #8d959d;
-    font-size: 12px;
+    font-size: 13px;
 }
 
 body.purchase-page .purchase-status {
     padding: 3px 8px;
     border-radius: 9px;
-    font-size: 8px;
+    font-size: 10px;
 }
 
 body.purchase-page .status-paid {
@@ -456,4 +463,100 @@ body.purchase-page .status-canceled {
     body.purchase-page .purchase-footer-actions {
         grid-template-columns: 1fr;
     }
+}
+/* Contador numérico compartilhado do sino de notificações. */
+.notification-count {
+    position: absolute;
+    min-width: 15px;
+    height: 15px;
+    padding: 0 3px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    color: #fff;
+    font-size: 10px;
+    line-height: 1;
+    background: #ef4444;
+    right: -6px;
+    top: -5px;
+    border: 1px solid #ffffff;
+}
+/* Aparência única do sininho e do contador em todas as telas administrativas. */
+body.purchase-page a.app-bell-link {
+    position: relative;
+    display: inline-flex;
+    width: 22px;
+    height: 28px;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #697180;
+    text-decoration: none;
+    font-size: 17px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+body.purchase-page a.app-bell-link .app-bell-count {
+    position: absolute;
+    top: -5px;
+    right: -6px;
+    display: inline-flex;
+    min-width: 15px;
+    height: 15px;
+    align-items: center;
+    justify-content: center;
+    padding: 0 3px;
+    border: 1px solid #fff;
+    border-radius: 10px;
+    background: #ef4444;
+    color: #fff;
+    font-size: 11px;
+    line-height: 1;
+}
+
+/* Selects de Produto e Administrador seguem o visual do filtro de mês. */
+body.purchase-page .purchase-field select,
+body.purchase-page .purchase-items-table select.purchase-product {
+    width: 100%;
+    border: 1px solid #e2e6eb;
+    border-radius: 8px;
+    background-color: #fff;
+    color: #9ca4af;
+    padding: 0 30px 0 11px;
+    font: inherit;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: linear-gradient(45deg, transparent 50%, #adb5bf 50%),
+        linear-gradient(135deg, #adb5bf 50%, transparent 50%);
+    background-position: calc(100% - 14px) 15px, calc(100% - 10px) 15px;
+    background-size: 5px 5px, 5px 5px;
+    background-repeat: no-repeat;
+}
+
+body.purchase-page .purchase-field select {
+    height: 37px;
+    font-size: 12px;
+}
+
+body.purchase-page .purchase-items-table select.purchase-product {
+    min-height: 32px;
+    font-size: 11px;
+    background-position: calc(100% - 12px) 13px, calc(100% - 8px) 13px;
+}
+
+body.purchase-page .purchase-field select:focus,
+body.purchase-page .purchase-items-table select.purchase-product:focus {
+    border-color: #2160dc;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(33, 96, 220, 0.12);
+}
+
+body.purchase-page .purchase-field select option,
+body.purchase-page .purchase-items-table select.purchase-product option {
+    color: #4d5763;
+    background: #fff;
 }
