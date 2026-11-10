@@ -64,80 +64,131 @@ Os totais dos pedidos são calculados no servidor com base nos preços armazenad
 
 ### Pré-requisitos
 
-- .NET 10 SDK instalado (`dotnet --version` deve indicar uma versão 10.x).
-- Uma instância do SQL Server ativa e acessível pela máquina que executará a aplicação.
-- SQL Server Management Studio (SSMS), Azure Data Studio ou outro cliente que execute scripts T-SQL e reconheça o separador `GO`.
-- Git, caso o projeto seja clonado do repositório.
+- Windows com o serviço da instância do SQL Server instalado e iniciado. O SQL Server Express também pode ser usado.
+- Uma instância do SQL Server e uma forma de autenticação configurada. Para usar usuário e senha SQL, habilite **SQL Server Authentication** (modo misto: Windows e SQL Server) e use uma conta que tenha permissões para criar/alterar o banco durante a instalação. Os scripts de criação podem exigir privilégios de administrador do SQL Server.
+- SQL Server Management Studio (SSMS), para conectar ao SQL Server e executar os arquivos `.sql` da pasta `Database`.
+- .NET 10 SDK instalado. No PowerShell, `dotnet --version` deve retornar uma versão `10.x`.
+- Os arquivos do projeto extraídos em uma pasta local. Git só é necessário se o projeto for clonado.
 
 ### 1. Obter o projeto
 
-Clone o repositório e entre na pasta que contém `SIVAD.sln` e `SIVAD.csproj`:
+Extraia o ZIP do projeto ou clone o repositório. Abra o PowerShell na pasta do projeto, a mesma que contém `SIVAD.sln` e `SIVAD.csproj`:
 
-```bash
+```powershell
 git clone <URL_DO_REPOSITORIO>
 cd Projeto-Interdisciplinar
 ```
 
-Se recebeu o projeto em um arquivo ZIP, extraia-o e abra um terminal nessa mesma pasta.
+Se recebeu um ZIP, não execute o `git clone`: extraia o arquivo e use `cd` para entrar na pasta extraída que contém esses arquivos.
 
-### 2. Preparar o banco de dados
+### 2. Iniciar o SQL Server e identificar a instância
 
-Conecte o cliente SQL à instância de destino. Para uma instalação nova, abra e execute os arquivos abaixo, **um de cada vez e nesta ordem**:
+Confirme que o serviço do SQL Server está em execução. No Windows, a instância pode ser verificada no **SQL Server Configuration Manager** ou na lista de serviços do Windows. Exemplos de nomes de servidor usados no SSMS e na string de conexão:
 
-1. `Database/Banco.sql` — cria o banco `SQLVendas2026` e o schema inicial. Execute somente em uma instalação nova, pois as tabelas não são recriadas de forma idempotente.
-2. `Database/AtualizarBanco.sql` — aplica os campos e tabelas complementares necessários pela versão atual do sistema.
-3. `Database/Insercoes.sql` — opcional; carrega registros demonstrativos (produtos, funcionários, pedidos e compras). Pode ser executado depois do schema e antes das views.
-4. `Database/Views.sql` — cria as views SQL consultadas pelos repositórios da aplicação. É necessário para o funcionamento normal.
-5. `Database/Procedures.sql` — instala as procedures documentadas no projeto. A aplicação MVC realiza suas operações pelo Repository e não depende dessas procedures para iniciar.
+- Instância padrão ouvindo na porta 1433: `localhost,1433`.
+- SQL Server Express com instância nomeada: normalmente `localhost\SQLEXPRESS` (confirme o nome instalado).
+- Instância local padrão sem porta explicitada: frequentemente `localhost`.
 
-O `Banco.sql` e os demais scripts usam o catálogo `SQLVendas2026`. Se o banco já existe, **não execute novamente `Banco.sql`**; faça backup e aplique apenas a migração adequada ao estado desse banco. Não execute scripts de demonstração em um banco com dados reais.
+No SSMS, informe o nome da instância em **Server name** e escolha o método de autenticação que pretende usar. Com **SQL Server Authentication**, entre com o login e a senha SQL. Se essa opção não estiver habilitada, um administrador da instância precisa habilitar **SQL Server and Windows Authentication mode** nas propriedades de segurança do servidor e reiniciar o serviço. Não altere isso sem a autorização de quem administra a máquina/instância.
 
-### 3. Configurar a conexão
+### 3. Criar e preparar o banco
 
-A aplicação lê a string `ConnectionStrings:DefaultConnection`. Configure-a para apontar para a sua instância SQL Server, usando credenciais válidas e mantendo o catálogo `SQLVendas2026` quando executar os scripts sem alterações. O projeto contém um valor de exemplo em `appsettings.json`; não use uma senha de exemplo em um ambiente real e não grave credenciais reais em commits.
+No SSMS, conecte-se à instância correta com uma conta que tenha permissão para criar o banco. Abra cada arquivo em `Database` e execute-o separadamente com **Execute** (ou `F5`), aguardando a conclusão antes de seguir. Para uma instalação nova, use esta ordem:
 
-É possível sobrescrever a configuração com a variável de ambiente `ConnectionStrings__DefaultConnection`. Exemplo no PowerShell:
+1. `Database/Banco.sql` — cria `SQLVendas2026` e as tabelas iniciais. Use somente quando o banco ainda não existe e está sendo criado do zero; as tabelas não são recriadas de forma idempotente.
+2. `Database/AtualizarBanco.sql` — adiciona campos e tabelas complementares usados pela versão atual. Confira no início do resultado que o banco selecionado é `SQLVendas2026`.
+3. `Database/Insercoes.sql` — **opcional**, carrega dados demonstrativos para a apresentação. Rode depois da criação/atualização e antes das views.
+4. `Database/Views.sql` — cria as views consultadas pela aplicação; é necessário para o funcionamento dos relatórios e consultas que dependem delas.
+5. `Database/Procedures.sql` — **opcional para iniciar o SIVAD**. Instala procedures de apoio/documentação; o fluxo MVC da aplicação executa operações pelo Repository.
+
+Os scripts de diagnóstico e de redefinição de credenciais também são auxiliares, não fazem parte da sequência normal de instalação. `Database/RedefinirCredenciaisDemonstracao.sql` só deve ser usado em banco local de demonstração e depois de `Insercoes.sql`; ele redefine as credenciais demonstrativas.
+
+> **Atenção:** se `SQLVendas2026` já existe, não execute novamente `Banco.sql`. Não rode scripts de demonstração ou redefinição em um banco com dados reais. Em caso de banco existente, faça backup e confirme com a equipe qual atualização é adequada antes de executar scripts.
+
+### 4. Configurar a string de conexão
+
+O SIVAD lê `ConnectionStrings:DefaultConnection` em `appsettings.json`. Substitua servidor, banco, usuário e senha pelos valores usados no SSMS. A string usa ponto e vírgula entre os campos.
+
+**SQL Server Authentication** (usuário e senha SQL; funciona no Windows e no Linux):
+
+```text
+Server=NOME-DO-PC\SQLEXPRESS;Database=SQLVendas2026;User Id=USUARIO_SQL;Password=SENHA_SQL;TrustServerCertificate=True;
+```
+
+Em `appsettings.json`, a entrada fica dentro de `ConnectionStrings`:
+
+```json
+"ConnectionStrings": {
+  "DefaultConnection": "Server=NOME-DO-PC\\SQLEXPRESS;Database=SQLVendas2026;User Id=USUARIO_SQL;Password=SENHA_SQL;TrustServerCertificate=True;"
+}
+```
+
+**Sobre as barras:** no JSON, escreva duas barras (`\\`) para representar uma barra no nome da instância. Em uma variável de ambiente/terminal, use uma barra (`\`), por exemplo `NOME-DO-PC\SQLEXPRESS`. Para uma porta TCP, use `Server=NOME-DO-PC,1433`.
+
+**Autenticação integrada do Windows** (sem `User Id` ou `Password`; usa a conta do Windows que executa o SIVAD):
+
+```text
+Server=NOME-DO-PC\SQLEXPRESS;Database=SQLVendas2026;Integrated Security=True;TrustServerCertificate=True;
+```
+
+No Linux, use SQL Authentication, a menos que Kerberos já esteja configurado para a aplicação; `Integrated Security=True` não usa automaticamente a conta local do Linux.
+
+Se preferir não editar o JSON, defina a variável de ambiente no mesmo terminal em que iniciará o programa.
+
+PowerShell:
 
 ```powershell
-$env:ConnectionStrings__DefaultConnection = "Server=localhost,1433;Database=SQLVendas2026;User Id=SEU_USUARIO;Password=SUA_SENHA;TrustServerCertificate=True;"
+$env:ConnectionStrings__DefaultConnection = "Server=NOME-DO-PC\SQLEXPRESS;Database=SQLVendas2026;User Id=USUARIO_SQL;Password=SENHA_SQL;TrustServerCertificate=True;"
 ```
 
-Exemplo no Bash (Linux/macOS):
+Bash:
 
 ```bash
-export ConnectionStrings__DefaultConnection='Server=localhost,1433;Database=SQLVendas2026;User Id=SEU_USUARIO;Password=SUA_SENHA;TrustServerCertificate=True;'
+export ConnectionStrings__DefaultConnection='Server=NOME-DO-PC,1433;Database=SQLVendas2026;User Id=USUARIO_SQL;Password=SENHA_SQL;TrustServerCertificate=True;'
 ```
 
-Troque servidor, porta, usuário e senha conforme sua instalação. Se usar autenticação integrada do Windows ou uma instância nomeada, ajuste a string para o formato aceito pelo seu SQL Server e pelo ambiente em que a aplicação será executada. Não publique a string com senha.
+Não misture autenticação SQL e integrada, nem compartilhe uma senha real.
 
-### 4. Restaurar, compilar e iniciar
+### 5. Preparar o primeiro acesso
 
-Na pasta do projeto, execute:
+Antes de iniciar, escolha uma das opções:
 
-```bash
+**Configuração manual:** se já existe um administrador cadastrado, mas ainda não há credencial Administrador, defina `Autenticacao__ChaveConfiguracaoInicial` no terminal em que executará o programa.
+
+PowerShell: `$env:Autenticacao__ChaveConfiguracaoInicial = "SUA_CHAVE"`  
+Bash: `export Autenticacao__ChaveConfiguracaoInicial='SUA_CHAVE'`
+
+**Dados demonstrativos:** depois de executar `Database/Insercoes.sql`, rode `Database/RedefinirCredenciaisDemonstracao.sql` no SSMS antes de iniciar o programa. O script restaura os e-mails, perfis e senhas demonstrativas de Ana (administradora) e João (funcionário), reativa essas contas e exibe os UIDs. Use apenas em uma base local de demonstração: ele altera credenciais existentes.
+
+> A carga `Insercoes.sql` já cria credenciais demonstrativas. Portanto, escolha a configuração manual **ou** o acesso demonstrativo; para a apresentação, use os dados demonstrativos.
+
+### 6. Restaurar, compilar e iniciar o programa
+
+Na pasta que contém `SIVAD.csproj`, execute no PowerShell (Windows) ou no Bash (Linux):
+
+```text
 dotnet restore
 dotnet build
 dotnet run --launch-profile http
 ```
 
-O perfil `http` está configurado para abrir `http://localhost:5129`. Também há um perfil HTTPS em `https://localhost:7095`; em desenvolvimento local, o certificado HTTPS pode precisar ser confiado com `dotnet dev-certs https --trust` (quando suportado pelo sistema operacional).
+O perfil `http` abre `http://localhost:5129`. Mantenha o terminal e o SQL Server ativos; encerre com `Ctrl+C`. Também há um perfil HTTPS em `https://localhost:7095`.
 
-Para encerrar a aplicação, pressione `Ctrl+C` no terminal. O SQL Server deve continuar ativo enquanto a aplicação estiver em uso.
+### 7. Entrar no sistema
 
-### 5. Primeiro acesso
+**Configuração manual:** na tela de Login, clique em **Configurar o primeiro administrador**. Informe UID, CPF e e-mail já cadastrados, a chave definida antes de iniciar e uma senha nova. A chave é diferente da senha SQL e da senha de login; ela não cria o registro do administrador.
 
-Há duas opções para preparar as credenciais:
-
-- **Configuração manual do primeiro administrador:** defina a chave inicial em `Autenticacao__ChaveConfiguracaoInicial` e use o link de configuração apresentado na tela de Login quando ainda não houver administrador configurado. Exemplo PowerShell: `$env:Autenticacao__ChaveConfiguracaoInicial = "UMA_CHAVE_LOCAL_FORTE"`. Bash: `export Autenticacao__ChaveConfiguracaoInicial='UMA_CHAVE_LOCAL_FORTE'`. Essa chave é uma proteção da configuração inicial; não a compartilhe nem a use como senha de login.
-- **Demonstração local:** depois de executar `Insercoes.sql`, execute `Database/RedefinirCredenciaisDemonstracao.sql`. O script mostra os UIDs no resultado. As credenciais documentadas nele são `admin1@example.invalid` / senha `Sivad@2026!` para o administrador e `funcionario1@example.invalid` / senha `Funcionario@2026!` para o funcionário; o login da aplicação usa o UID numérico retornado pelo script, não o e-mail. Use esses dados apenas em banco local de demonstração e nunca em produção.
+**Dados demonstrativos:** use o UID exibido pelo script e a senha demonstrativa correspondente. O login pede o UID numérico, não o e-mail.
 
 ### Solução rápida de problemas
 
-- **Erro de conexão/SQL:** confirme que o serviço SQL Server está ativo, que servidor e porta correspondem à string de conexão, e que o usuário tem acesso ao banco `SQLVendas2026`.
-- **Erro de tabela ou coluna ausente:** em um banco novo, confirme a ordem de execução de `Banco.sql` e `AtualizarBanco.sql`. Faça backup antes de aplicar uma migração em um banco existente.
-- **Erro de view SQL inexistente:** execute `Database/Views.sql` no catálogo correto.
-- **Login não funciona:** confirme que há credencial ativa e use o UID numérico, não o e-mail. Para dados demonstrativos, confira o resultado final do script de redefinição.
-- **Comandos `dotnet` não reconhecidos:** instale o .NET 10 SDK e abra um terminal novo.
+- **Erro de autenticação do SQL Server:** confirme o método escolhido no SSMS e na string (SQL Authentication ou Windows Authentication) e as permissões da conta.
+- **Erro de conexão/servidor:** confirme que o serviço está iniciado e que `Server=` corresponde ao nome da instância ou à porta usada tanto no SSMS quanto na variável de ambiente.
+- **Erro de tabela ou coluna ausente:** em uma instalação nova, confirme que executou `Banco.sql` e `AtualizarBanco.sql`; se o erro mencionar uma view, confira `Views.sql`. Não reaplique `Banco.sql` em um banco existente.
+- **O programa aponta para o banco errado:** confira `Database=SQLVendas2026` na string e certifique-se de que os scripts foram executados na mesma instância indicada por `Server=`.
+- **Mudou a string e nada aconteceu:** defina novamente `$env:ConnectionStrings__DefaultConnection` na mesma janela e reinicie o `dotnet run`.
+- **Login não funciona:** confirme que o usuário tem credencial ativa e use o UID numérico, não o e-mail. Para a demonstração, consulte os UIDs retornados pelo script de redefinição.
+- **Comando `dotnet` não reconhecido:** instale o .NET 10 SDK e reabra o PowerShell.
 
 ## Arquitetura
 
