@@ -44,6 +44,14 @@
 
             </div>
 
+            @if (TempData["PrimeiroAdministradorUid"] is string uidPrimeiroAdministrador)
+            {
+                <div class="alert alert-success" role="status">
+                    Cadastro concluído. Seu UID de acesso é <strong>@uidPrimeiroAdministrador</strong>.
+                    Guarde-o para entrar com sua senha.
+                </div>
+            }
+
             <form method="post">
                 @Html.AntiForgeryToken()
 

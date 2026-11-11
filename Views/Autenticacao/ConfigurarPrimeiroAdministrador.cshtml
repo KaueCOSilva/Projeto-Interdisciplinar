@@ -18,7 +18,8 @@
             <div class="text-center">
                 <div class="login-icon"><i class="bi bi-person-lock"></i></div>
                 <h1 class="login-title">Primeiro administrador</h1>
-                <p class="login-subtitle">Configure o acesso usando os dados já cadastrados</p>
+                <p class="login-subtitle">Cadastre os dados do administrador para criar o primeiro acesso.</p>
+                <p class="small text-muted">O UID de login será gerado pelo sistema e exibido após o cadastro.</p>
             </div>
 
             @if (!ViewData.ModelState.IsValid)
@@ -29,30 +30,36 @@
             <form asp-controller="Autenticacao" asp-action="ConfigurarPrimeiroAdministrador" method="post">
                 @Html.AntiForgeryToken()
                 <div class="mb-2">
-                    <label for="uid" class="form-label">UID (ID de Pessoas)*</label>
-                    <input id="uid" name="uid" type="number" min="1" class="form-control" required />
+                    <label for="nome" class="form-label">Nome completo*</label>
+                    <input id="nome" name="nome" type="text" maxlength="150" class="form-control"
+                           autocomplete="name" value="@ViewBag.Nome" required />
                 </div>
                 <div class="mb-2">
-                    <label for="cpf" class="form-label">CPF cadastrado*</label>
-                    <input id="cpf" name="cpf" type="text" class="form-control" autocomplete="off" required />
+                    <label for="cpf" class="form-label">CPF*</label>
+                    <input id="cpf" name="cpf" type="text" maxlength="14" inputmode="numeric"
+                           class="form-control" autocomplete="off" value="@ViewBag.Cpf" required />
                 </div>
                 <div class="mb-2">
-                    <label for="email" class="form-label">E-mail cadastrado*</label>
-                    <input id="email" name="email" type="email" class="form-control" autocomplete="email" required />
+                    <label for="email" class="form-label">E-mail*</label>
+                    <input id="email" name="email" type="email" maxlength="100" class="form-control"
+                           autocomplete="email" value="@ViewBag.Email" required />
                 </div>
                 <div class="mb-2">
                     <label for="chaveConfiguracao" class="form-label">Chave local de configuração*</label>
-                    <input id="chaveConfiguracao" name="chaveConfiguracao" type="password" class="form-control" autocomplete="off" required />
+                    <input id="chaveConfiguracao" name="chaveConfiguracao" type="password" class="form-control"
+                           autocomplete="off" required />
                 </div>
                 <div class="mb-2">
-                    <label for="senha" class="form-label">Nova senha (mínimo 8 caracteres)*</label>
-                    <input id="senha" name="senha" type="password" class="form-control" minlength="8" autocomplete="new-password" required />
+                    <label for="senha" class="form-label">Senha (mínimo 8 caracteres)*</label>
+                    <input id="senha" name="senha" type="password" minlength="8" class="form-control"
+                           autocomplete="new-password" required />
                 </div>
                 <div class="mb-3">
                     <label for="confirmarSenha" class="form-label">Confirme a senha*</label>
-                    <input id="confirmarSenha" name="confirmarSenha" type="password" class="form-control" minlength="8" autocomplete="new-password" required />
+                    <input id="confirmarSenha" name="confirmarSenha" type="password" minlength="8"
+                           class="form-control" autocomplete="new-password" required />
                 </div>
-                <button type="submit" class="btn login-button">Configurar acesso</button>
+                <button type="submit" class="btn login-button">Criar primeiro administrador</button>
             </form>
             <div class="text-center mt-3">
                 <a asp-controller="Autenticacao" asp-action="Login" class="forgot-password">Voltar ao login</a>

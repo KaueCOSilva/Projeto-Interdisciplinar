@@ -153,7 +153,7 @@ Não misture autenticação SQL e integrada, nem compartilhe uma senha real.
 
 Antes de iniciar, escolha uma das opções:
 
-**Configuração manual:** se já existe um administrador cadastrado, mas ainda não há credencial Administrador, defina `Autenticacao__ChaveConfiguracaoInicial` no terminal em que executará o programa.
+**Primeiro administrador:** antes de iniciar, defina `Autenticacao__ChaveConfiguracaoInicial` no terminal em que executará o programa. Não é necessário inserir previamente a pessoa ou o e-mail no banco; o formulário criará o cadastro inicial.
 
 PowerShell: `$env:Autenticacao__ChaveConfiguracaoInicial = "SUA_CHAVE"`  
 Bash: `export Autenticacao__ChaveConfiguracaoInicial='SUA_CHAVE'`
@@ -174,9 +174,9 @@ dotnet run --launch-profile http
 
 O perfil `http` abre `http://localhost:5129`. Mantenha o terminal e o SQL Server ativos; encerre com `Ctrl+C`. Também há um perfil HTTPS em `https://localhost:7095`.
 
-### 7. Entrar no sistema
+### 7. Primeiro acesso ao sistema
 
-**Configuração manual:** na tela de Login, clique em **Configurar o primeiro administrador**. Informe UID, CPF e e-mail já cadastrados, a chave definida antes de iniciar e uma senha nova. A chave é diferente da senha SQL e da senha de login; ela não cria o registro do administrador.
+**Primeiro administrador:** na tela de Login, clique em **Configurar o primeiro administrador** e informe nome, CPF, e-mail, chave local e senha. O sistema cria os registros em `Pessoas`, `Administradores` e `CredenciaisAcesso` numa única transação; não exige cadastro prévio. O banco gera o UID numérico, que será exibido após a conclusão. Guarde-o para os próximos logins. A chave de configuração é diferente da senha SQL e da senha da conta.
 
 **Dados demonstrativos:** use o UID exibido pelo script e a senha demonstrativa correspondente. O login pede o UID numérico, não o e-mail.
 

@@ -64,7 +64,7 @@
                             <div class="col-md-2"><label for="produtoCor">Cor</label><input id="produtoCor" class="form-control" name="Cor" placeholder="Ex.: Azul" maxlength="60" /></div>
                             <div class="col-md-2"><label for="produtoPreco">Preço unitário</label><input id="produtoPreco" class="form-control" name="PrecoUnit" type="number" min="0" step="0.01" required /></div>
                             <div class="col-md-2"><label for="produtoEstoque">Estoque inicial</label><input id="produtoEstoque" class="form-control" name="Estoque" type="number" min="0" value="0" required /></div>
-                            <div class="col-md-2"><label for="produtoCategoria">Categoria</label><select id="produtoCategoria" class="form-select" name="CategoriaCodigo" required><option value="">Selecione</option>@foreach (var categoria in Model.Categorias) { <option value="@categoria.Codigo">@categoria.Nome</option> }</select></div>
+                            <div class="col-md-2"><label for="produtoCategoria">Categoria</label><input id="produtoCategoria" class="form-control" name="categoriaNome" type="text" placeholder="Digite uma categoria" maxlength="100" required /></div>
                         </div>
                         <button type="submit" class="btn btn-primary mt-3">Salvar produto</button>
                     </form>

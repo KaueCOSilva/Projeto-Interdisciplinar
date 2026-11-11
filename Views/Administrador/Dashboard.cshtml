@@ -240,7 +240,7 @@
                                 <span class="activity-dot" style="background:@color;"></span>
                                 <div class="activity-info">
                                     <span class="activity-title">@item.Descricao</span>
-                                    <span class="activity-time">@item.Data.ToString("dd/MM/yyyy HH:mm")</span>
+                                    <span class="activity-time">@item.Data.ToString("dd/MM/yyyy HH:mm", System.Globalization.CultureInfo.GetCultureInfo("pt-BR"))</span>
                                 </div>
                             </div>
                         }
@@ -327,7 +327,8 @@
 <script>
 
     google.charts.load("current", {
-        packages: ["corechart"]
+        packages: ["corechart"],
+        language: "pt_BR"
     });
 
     google.charts.setOnLoadCallback(function () {
@@ -339,6 +340,18 @@
         desenharGraficoComprasHistoricas();
 
     });
+
+    function formatarColunasMoedaPtBr(dados, colunas) {
+        const formatoMoeda = new google.visualization.NumberFormat({
+            prefix: "R$ ",
+            decimalSymbol: ",",
+            groupingSymbol: ".",
+            fractionDigits: 2
+        });
+        colunas.forEach(function (coluna) {
+            formatoMoeda.format(dados, coluna);
+        });
+    }
 
     /* ============================================================
         VENDAS E RECEITA
@@ -355,6 +368,8 @@
 
             ]);
 
+        formatarColunasMoedaPtBr(dados, [1, 2]);
+
         const opcoes = {
 
             backgroundColor: "transparent",
@@ -370,9 +385,9 @@
             ],
 
             chartArea: {
-                left: 52,
+                left: 84,
                 top: 12,
-                width: "86%",
+                width: "82%",
                 height: "77%"
             },
 
@@ -397,7 +412,7 @@
 
                 
 
-                format: "short",
+                format: "currency",
 
                 textStyle: {
                     color: "#9ca3af",
@@ -562,13 +577,14 @@
             ["Ano", "Compras de estoque"],
             ...historico
         ]);
+        formatarColunasMoedaPtBr(dados, [1]);
         const opcoes = {
             backgroundColor: "transparent",
             legend: { position: "none" },
             colors: ["#46c9a2"],
-            chartArea: { left: 58, top: 12, width: "87%", height: "76%" },
+            chartArea: { left: 84, top: 12, width: "82%", height: "76%" },
             hAxis: { textStyle: { color: "#9ca3af", fontSize: 11 }, gridlines: { color: "transparent" }, baselineColor: "#d8dce2" },
-            vAxis: { minValue: 0, format: "short", textStyle: { color: "#9ca3af", fontSize: 10 }, gridlines: { color: "#edf0f3", count: 5 }, baselineColor: "#d8dce2" }
+            vAxis: { minValue: 0, format: "currency", textStyle: { color: "#9ca3af", fontSize: 10 }, gridlines: { color: "#edf0f3", count: 5 }, baselineColor: "#d8dce2" }
         };
         const grafico = new google.visualization.ColumnChart(recipiente);
         grafico.draw(dados, opcoes);

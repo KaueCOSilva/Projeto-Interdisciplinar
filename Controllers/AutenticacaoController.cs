@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Security.Cryptography;
 using System.Text;
 using Microsoft.AspNetCore.Mvc;
@@ -130,8 +131,12 @@ public sealed class AutenticacaoController : Controller
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> ConfigurarPrimeiroAdministrador(
-        int uid, string cpf, string email, string chaveConfiguracao, string senha, string confirmarSenha)
+        string nome, string cpf, string email, string chaveConfiguracao, string senha, string confirmarSenha)
     {
+        ViewBag.Nome = nome;
+        ViewBag.Cpf = cpf;
+        ViewBag.Email = email;
+
         var chaveConfigurada = _configuracao["Autenticacao:ChaveConfiguracaoInicial"];
         if (string.IsNullOrWhiteSpace(chaveConfigurada))
         {
@@ -143,8 +148,13 @@ public sealed class AutenticacaoController : Controller
         var chaveEsperada = Encoding.UTF8.GetBytes(chaveConfigurada);
         if (!CryptographicOperations.FixedTimeEquals(chaveRecebida, chaveEsperada))
             ModelState.AddModelError(string.Empty, "Chave de configuração inválida.");
-        if (uid <= 0 || string.IsNullOrWhiteSpace(cpf) || string.IsNullOrWhiteSpace(email))
-            ModelState.AddModelError(string.Empty, "Informe o UID, CPF e e-mail que já constam no cadastro do administrador.");
+        var cpfNormalizado = (cpf ?? string.Empty).Trim().Replace(".", "").Replace("-", "").Replace(" ", "");
+        if (string.IsNullOrWhiteSpace(nome) || nome.Trim().Length > 150)
+            ModelState.AddModelError(string.Empty, "Informe o nome do administrador (até 150 caracteres).");
+        if (cpfNormalizado.Length != 11 || cpfNormalizado.Any(caractere => caractere < '0' || caractere > '9'))
+            ModelState.AddModelError(string.Empty, "Informe um CPF com 11 números.");
+        if (string.IsNullOrWhiteSpace(email) || email.Trim().Length > 100 || !new EmailAddressAttribute().IsValid(email.Trim()))
+            ModelState.AddModelError(string.Empty, "Informe um e-mail válido com até 100 caracteres.");
         if (string.IsNullOrWhiteSpace(senha) || senha.Length < 8)
             ModelState.AddModelError(string.Empty, "A senha deve ter pelo menos 8 caracteres.");
         if (!string.Equals(senha, confirmarSenha, StringComparison.Ordinal))
@@ -154,24 +164,30 @@ public sealed class AutenticacaoController : Controller
         try
         {
             var senhaHash = GerenciadorSenhas.CriarHash(senha);
-            var configurado = await _repositorio.ConfigurarPrimeiroAdministradorAsync(uid, cpf, email, senhaHash);
-            if (!configurado)
+            var uid = await _repositorio.CadastrarPrimeiroAdministradorAsync(
+                nome.Trim(), cpfNormalizado, email.Trim(), senhaHash);
+            if (!uid.HasValue)
             {
-                ModelState.AddModelError(string.Empty, "O UID, CPF ou e-mail não corresponde a um administrador cadastrado, ou a configuração inicial já foi concluída.");
+                ModelState.AddModelError(string.Empty,
+                    "O primeiro administrador já foi configurado ou o CPF/e-mail informado já está cadastrado. Revise os dados ou volte ao login.");
                 return View();
             }
 
-            HttpContext.Session.SetInt32("id", uid);
-            HttpContext.Session.SetString("nome", "Administrador");
-            HttpContext.Session.SetString("perfil", "Administrador");
-            return RedirectToAction("Dashboard", "Administrador");
+            TempData["PrimeiroAdministradorUid"] = uid.Value.ToString();
+            return RedirectToAction(nameof(Login));
+        }
+        catch (SqlException ex) when (ex.Number is 2601 or 2627)
+        {
+            _registro.LogWarning(ex, "CPF ou e-mail duplicado ao cadastrar o primeiro administrador.");
+            ModelState.AddModelError(string.Empty, "O CPF ou e-mail informado já está cadastrado. Confira os dados e tente novamente.");
+            return View();
         }
         catch (SqlException ex)
         {
-            _registro.LogError(ex, "Erro SQL ao configurar o primeiro administrador. Código {CodigoSql}, estado {EstadoSql}.", ex.Number, ex.State);
+            _registro.LogError(ex, "Erro SQL ao cadastrar o primeiro administrador. Código {CodigoSql}, estado {EstadoSql}.", ex.Number, ex.State);
             ModelState.AddModelError(string.Empty, _ambiente.IsDevelopment()
-                ? $"Falha SQL {ex.Number} (estado {ex.State}). Consulte a saída do terminal; confirme conexão, banco selecionado e migração."
-                : "Não foi possível configurar o acesso. Execute Database/AtualizarBanco.sql e confirme a conexão.");
+                ? $"Falha SQL {ex.Number} (estado {ex.State}). Confirme conexão, banco selecionado e execução dos scripts de criação."
+                : "Não foi possível cadastrar o primeiro administrador. Verifique a conexão e a estrutura do banco.");
             return View();
         }
     }

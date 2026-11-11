@@ -51,43 +51,119 @@ WHERE c.pessoa_id = @pessoaId
         };
     }
 
-    // O primeiro acesso administrativo só é criado se CPF e e-mail correspondem ao cadastro existente.
-    public async Task<bool> ConfigurarPrimeiroAdministradorAsync(int pessoaId, string cpf, string email, string senhaHash)
+    // Cria o primeiro administrador nas tabelas previstas pelo modelo relacional.
+    // Se o cadastro administrativo já existir sem credenciais, permite vinculá-lo também.
+    public async Task<int?> CadastrarPrimeiroAdministradorAsync(string nome, string cpf, string email, string senhaHash)
     {
-        if (pessoaId <= 0 || string.IsNullOrWhiteSpace(cpf) || string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(senhaHash))
-            return false;
+        if (string.IsNullOrWhiteSpace(nome) || string.IsNullOrWhiteSpace(cpf) ||
+            string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(senhaHash))
+            return null;
 
-        var cpfNormalizado = cpf.Trim().Replace(".", "").Replace("-", "").Replace(" ", "");
+        var nomeNormalizado = nome.Trim();
+        var cpfNormalizado = new string(cpf.Where(caractere => caractere >= '0' && caractere <= '9').ToArray());
         var emailNormalizado = email.Trim().ToLowerInvariant();
+        if (nomeNormalizado.Length > 150 || cpfNormalizado.Length != 11 || emailNormalizado.Length > 100)
+            return null;
+
         await using var conexao = CriarConexao();
         await conexao.OpenAsync();
         await using var transacao = (SqlTransaction)await conexao.BeginTransactionAsync(IsolationLevel.Serializable);
 
-        await using (var verificar = new SqlCommand(
-            "SELECT COUNT(*) FROM dbo.CredenciaisAcesso WHERE perfil = 'Administrador'", conexao, transacao))
+        // A transação serializável impede que duas primeiras configurações sejam concluídas em paralelo.
+        await using (var verificarAdministrador = new SqlCommand(
+            "SELECT COUNT(*) FROM dbo.CredenciaisAcesso WITH (UPDLOCK, HOLDLOCK) WHERE perfil = 'Administrador'",
+            conexao, transacao))
         {
-            if (Convert.ToInt32(await verificar.ExecuteScalarAsync()) != 0)
-                return false;
+            if (Convert.ToInt32(await verificarAdministrador.ExecuteScalarAsync()) != 0)
+                return null;
         }
 
-        const string sql = @"
-INSERT INTO dbo.CredenciaisAcesso (pessoa_id, perfil, email, senha_hash, ativo)
-SELECT a.pessoa_id, 'Administrador', @email, @senhaHash, 1
-FROM dbo.Administradores a
-WHERE a.pessoa_id = @pessoaId
-  AND REPLACE(REPLACE(REPLACE(LTRIM(RTRIM(a.cpf)), '.', ''), '-', ''), ' ', '') = @cpf
+        // O e-mail de acesso precisa ser único entre funcionários e administradores.
+        await using (var verificarEmail = new SqlCommand(
+            "SELECT COUNT(*) FROM dbo.CredenciaisAcesso WITH (UPDLOCK, HOLDLOCK) WHERE LOWER(LTRIM(RTRIM(email))) = @email",
+            conexao, transacao))
+        {
+            verificarEmail.Parameters.Add("@email", SqlDbType.VarChar, 254).Value = emailNormalizado;
+            if (Convert.ToInt32(await verificarEmail.ExecuteScalarAsync()) != 0)
+                return null;
+        }
+
+        // Mantém compatibilidade com um administrador de negócio previamente cadastrado,
+        // desde que nome, CPF e e-mail coincidam e ele ainda não tenha credenciais.
+        const string localizarAdministrador = @"
+SELECT TOP (1) a.pessoa_id
+FROM dbo.Administradores a WITH (UPDLOCK, HOLDLOCK)
+INNER JOIN dbo.Pessoas p ON p.id = a.pessoa_id
+WHERE REPLACE(REPLACE(REPLACE(LTRIM(RTRIM(a.cpf)), '.', ''), '-', ''), ' ', '') = @cpf
   AND LOWER(LTRIM(RTRIM(a.email))) = @email
-  AND NOT EXISTS (SELECT 1 FROM dbo.CredenciaisAcesso c WHERE c.pessoa_id = a.pessoa_id)";
-        await using var comando = new SqlCommand(sql, conexao, transacao);
-        AdicionarInteiro(comando, "@pessoaId", pessoaId);
-        comando.Parameters.Add("@cpf", SqlDbType.VarChar, 20).Value = cpfNormalizado;
-        comando.Parameters.Add("@email", SqlDbType.VarChar, 254).Value = emailNormalizado;
-        comando.Parameters.Add("@senhaHash", SqlDbType.VarChar, 200).Value = senhaHash;
-        var inseridos = await comando.ExecuteNonQueryAsync();
-        if (inseridos != 1) return false;
+  AND LOWER(LTRIM(RTRIM(p.nome))) = LOWER(@nome)";
+        int? pessoaId = null;
+        await using (var localizar = new SqlCommand(localizarAdministrador, conexao, transacao))
+        {
+            localizar.Parameters.Add("@cpf", SqlDbType.VarChar, 14).Value = cpfNormalizado;
+            localizar.Parameters.Add("@email", SqlDbType.VarChar, 100).Value = emailNormalizado;
+            localizar.Parameters.Add("@nome", SqlDbType.VarChar, 150).Value = nomeNormalizado;
+            var resultado = await localizar.ExecuteScalarAsync();
+            if (resultado is not null && resultado != DBNull.Value)
+                pessoaId = Convert.ToInt32(resultado);
+        }
+
+        if (pessoaId.HasValue)
+        {
+            await using var verificarCredencialExistente = new SqlCommand(
+                "SELECT COUNT(*) FROM dbo.CredenciaisAcesso WITH (UPDLOCK, HOLDLOCK) WHERE pessoa_id = @pessoaId",
+                conexao, transacao);
+            AdicionarInteiro(verificarCredencialExistente, "@pessoaId", pessoaId.Value);
+            if (Convert.ToInt32(await verificarCredencialExistente.ExecuteScalarAsync()) != 0)
+                return null;
+        }
+        else
+        {
+            // Evita duplicar um CPF ou e-mail que já pertença a outro administrador cadastrado.
+            const string verificarDadosExistentes = @"
+SELECT COUNT(*)
+FROM dbo.Administradores WITH (UPDLOCK, HOLDLOCK)
+WHERE REPLACE(REPLACE(REPLACE(LTRIM(RTRIM(cpf)), '.', ''), '-', ''), ' ', '') = @cpf
+   OR LOWER(LTRIM(RTRIM(email))) = @email";
+            await using (var verificarDados = new SqlCommand(verificarDadosExistentes, conexao, transacao))
+            {
+                verificarDados.Parameters.Add("@cpf", SqlDbType.VarChar, 14).Value = cpfNormalizado;
+                verificarDados.Parameters.Add("@email", SqlDbType.VarChar, 100).Value = emailNormalizado;
+                if (Convert.ToInt32(await verificarDados.ExecuteScalarAsync()) != 0)
+                    return null;
+            }
+
+            await using (var inserirPessoa = new SqlCommand(
+                "INSERT INTO dbo.Pessoas (nome) VALUES (@nome); SELECT CONVERT(INT, SCOPE_IDENTITY());",
+                conexao, transacao))
+            {
+                inserirPessoa.Parameters.Add("@nome", SqlDbType.VarChar, 150).Value = nomeNormalizado;
+                pessoaId = Convert.ToInt32(await inserirPessoa.ExecuteScalarAsync());
+            }
+
+            await using (var inserirAdministrador = new SqlCommand(
+                "INSERT INTO dbo.Administradores (pessoa_id, cpf, email) VALUES (@pessoaId, @cpf, @email)",
+                conexao, transacao))
+            {
+                AdicionarInteiro(inserirAdministrador, "@pessoaId", pessoaId.Value);
+                inserirAdministrador.Parameters.Add("@cpf", SqlDbType.VarChar, 14).Value = cpfNormalizado;
+                inserirAdministrador.Parameters.Add("@email", SqlDbType.VarChar, 100).Value = emailNormalizado;
+                await inserirAdministrador.ExecuteNonQueryAsync();
+            }
+        }
+
+        await using (var inserirCredencial = new SqlCommand(@"
+INSERT INTO dbo.CredenciaisAcesso (pessoa_id, perfil, email, senha_hash, ativo)
+VALUES (@pessoaId, 'Administrador', @email, @senhaHash, 1)", conexao, transacao))
+        {
+            AdicionarInteiro(inserirCredencial, "@pessoaId", pessoaId.Value);
+            inserirCredencial.Parameters.Add("@email", SqlDbType.VarChar, 254).Value = emailNormalizado;
+            inserirCredencial.Parameters.Add("@senhaHash", SqlDbType.VarChar, 200).Value = senhaHash;
+            await inserirCredencial.ExecuteNonQueryAsync();
+        }
 
         await transacao.CommitAsync();
-        return true;
+        return pessoaId;
     }
 
     // Cria ou atualiza o acesso de um funcionário ativo, sempre usando o ID da Pessoa como UID.

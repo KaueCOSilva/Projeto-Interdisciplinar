@@ -197,28 +197,55 @@ public sealed partial class RepositorioSqlServer
         return lista;
     }
 
-    // INSERÇÃO de produto: INSERT parametrizado e OUTPUT do código gerado.
-    public async Task<int> CadastrarProdutoAsync(Produto produto)
+    // Resolve a categoria digitada e mantém o cadastro do produto na procedure existente.
+    public async Task<int> CadastrarProdutoAsync(Produto produto, string categoriaNome)
     {
         if (string.IsNullOrWhiteSpace(produto.CodigoBarras) ||
             string.IsNullOrWhiteSpace(produto.Nome) ||
             produto.PrecoUnit < 0 ||
             produto.Estoque < 0 ||
-            produto.CategoriaCodigo <= 0 ||
+            string.IsNullOrWhiteSpace(categoriaNome) ||
+            categoriaNome.Trim().Length > 100 ||
             (produto.Cor?.Trim().Length ?? 0) > 60)
         {
             throw new InvalidOperationException(
-                "Informe código de barras, nome, cor (até 60 caracteres), preço, quantidade e categoria válidos.");
+                "Informe código de barras, nome, cor (até 60 caracteres), preço, quantidade e uma categoria (até 100 caracteres).");
         }
 
         produto.Cor = string.IsNullOrWhiteSpace(produto.Cor)
             ? "Não informada"
             : produto.Cor.Trim();
+        categoriaNome = categoriaNome.Trim();
 
         await using var conexao = CriarConexao();
         await conexao.OpenAsync();
+        await using var transacao = (SqlTransaction)await conexao.BeginTransactionAsync(IsolationLevel.Serializable);
 
-        await using var comando = new SqlCommand("dbo.prodAdd", conexao)
+        const string buscarCategoriaSql = @"
+SELECT TOP (1) codigo
+FROM dbo.Categorias WITH (UPDLOCK, HOLDLOCK)
+WHERE LOWER(LTRIM(RTRIM(nome))) = LOWER(@nome)
+ORDER BY codigo";
+        int categoriaCodigo;
+        await using (var buscarCategoria = new SqlCommand(buscarCategoriaSql, conexao, transacao))
+        {
+            buscarCategoria.Parameters.Add("@nome", SqlDbType.VarChar, 100).Value = categoriaNome;
+            var codigoExistente = await buscarCategoria.ExecuteScalarAsync();
+            if (codigoExistente is not null && codigoExistente != DBNull.Value)
+            {
+                categoriaCodigo = Convert.ToInt32(codigoExistente);
+            }
+            else
+            {
+                await using var inserirCategoria = new SqlCommand(@"
+INSERT INTO dbo.Categorias (nome) VALUES (@nome);
+SELECT CONVERT(INT, SCOPE_IDENTITY());", conexao, transacao);
+                inserirCategoria.Parameters.Add("@nome", SqlDbType.VarChar, 100).Value = categoriaNome;
+                categoriaCodigo = Convert.ToInt32(await inserirCategoria.ExecuteScalarAsync());
+            }
+        }
+
+        await using var comando = new SqlCommand("dbo.prodAdd", conexao, transacao)
         {
             CommandType = CommandType.StoredProcedure
         };
@@ -234,13 +261,15 @@ public sealed partial class RepositorioSqlServer
 
         AdicionarValorMonetario(comando, "@preco_unit", produto.PrecoUnit);
         AdicionarInteiro(comando, "@estoque", produto.Estoque);
-        AdicionarInteiro(comando, "@categoria_codigo", produto.CategoriaCodigo);
+        AdicionarInteiro(comando, "@categoria_codigo", categoriaCodigo);
 
         comando.Parameters.Add("@ativo", SqlDbType.Bit).Value = true;
 
         try
         {
-            return Convert.ToInt32(await comando.ExecuteScalarAsync());
+            var codigoProduto = Convert.ToInt32(await comando.ExecuteScalarAsync());
+            await transacao.CommitAsync();
+            return codigoProduto;
         }
         catch (SqlException ex) when (ex.Number is 2601 or 2627)
         {

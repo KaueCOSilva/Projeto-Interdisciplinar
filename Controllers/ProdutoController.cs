@@ -17,7 +17,7 @@ public class ProdutoController : Controller
     [HttpPost]
     [ValidateAntiForgeryToken]
     // CREATE: cadastra o produto e retorna o ID gerado pelo banco.
-    public async Task<IActionResult> Cadastrar(Produto produto)
+    public async Task<IActionResult> Cadastrar(Produto produto, string categoriaNome)
     {
         if (!ModelState.IsValid)
         {
@@ -26,7 +26,7 @@ public class ProdutoController : Controller
         }
         try
         {
-            var id = await _repository.CadastrarProdutoAsync(produto);
+            var id = await _repository.CadastrarProdutoAsync(produto, categoriaNome);
             TempData["Sucesso"] = $"Produto #{id} cadastrado com sucesso.";
         }
         catch (InvalidOperationException ex) { TempData["Erro"] = ex.Message; }
