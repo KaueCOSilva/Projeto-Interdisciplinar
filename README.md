@@ -109,6 +109,8 @@ Os scripts de diagnóstico e de redefinição de credenciais também são auxili
 
 O SIVAD lê `ConnectionStrings:DefaultConnection` em `appsettings.json`. Substitua servidor, banco, usuário e senha pelos valores usados no SSMS. A string usa ponto e vírgula entre os campos.
 
+Os valores `NOME-DO-SERVIDOR`, `SEU_USUARIO` e `SUA_SENHA` são marcadores de exemplo: substitua-os pelos dados reais do SQL Server antes de iniciar o programa.
+
 **SQL Server Authentication** (usuário e senha SQL; funciona no Windows e no Linux):
 
 ```text
