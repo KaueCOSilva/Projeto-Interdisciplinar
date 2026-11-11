@@ -114,14 +114,14 @@ Os valores `NOME-DO-SERVIDOR`, `SEU_USUARIO` e `SUA_SENHA` são marcadores de ex
 **SQL Server Authentication** (usuário e senha SQL; funciona no Windows e no Linux):
 
 ```text
-Server=NOME-DO-PC\SQLEXPRESS;Database=SQLVendas2026;User Id=USUARIO_SQL;Password=SENHA_SQL;TrustServerCertificate=True;
+Server=NOME-DO-PC;Database=SQLVendas2026;User Id=USUARIO_SQL;Password=SENHA_SQL;TrustServerCertificate=True;
 ```
 
 Em `appsettings.json`, a entrada fica dentro de `ConnectionStrings`:
 
 ```json
 "ConnectionStrings": {
-  "DefaultConnection": "Server=NOME-DO-PC\\SQLEXPRESS;Database=SQLVendas2026;User Id=USUARIO_SQL;Password=SENHA_SQL;TrustServerCertificate=True;"
+  "DefaultConnection": "Server=NOME-DO-PC;Database=SQLVendas2026;User Id=USUARIO_SQL;Password=SENHA_SQL;TrustServerCertificate=True;"
 }
 ```
 
@@ -130,7 +130,7 @@ Em `appsettings.json`, a entrada fica dentro de `ConnectionStrings`:
 **Autenticação integrada do Windows** (sem `User Id` ou `Password`; usa a conta do Windows que executa o SIVAD):
 
 ```text
-Server=NOME-DO-PC\SQLEXPRESS;Database=SQLVendas2026;Integrated Security=True;TrustServerCertificate=True;
+Server=NOME-DO-PC;Database=SQLVendas2026;Integrated Security=True;TrustServerCertificate=True;
 ```
 
 No Linux, use SQL Authentication, a menos que Kerberos já esteja configurado para a aplicação; `Integrated Security=True` não usa automaticamente a conta local do Linux.
@@ -140,7 +140,7 @@ Se preferir não editar o JSON, defina a variável de ambiente no mesmo terminal
 PowerShell:
 
 ```powershell
-$env:ConnectionStrings__DefaultConnection = "Server=NOME-DO-PC\SQLEXPRESS;Database=SQLVendas2026;User Id=USUARIO_SQL;Password=SENHA_SQL;TrustServerCertificate=True;"
+$env:ConnectionStrings__DefaultConnection = "Server=NOME-DO-PC;Database=SQLVendas2026;User Id=USUARIO_SQL;Password=SENHA_SQL;TrustServerCertificate=True;"
 ```
 
 Bash:
